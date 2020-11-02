@@ -43,8 +43,9 @@ able to explore associations between geographic areas and instances of
 protests/excessive force (using metro/rural classifications, or other).
 
 **please add to the above here with what you want to do with the other
-data source and other analyses you want to run. also is this too
-vague?**
+data source and other analyses you want to run. also is this too vague?
+how detailed is he wanting it? and should we be doing more complex
+analyses than just descriptives?**
 
 #### Visualizations
 
@@ -58,3 +59,16 @@ We anticipate that small cell counts will be available for some of the
 outcomes we are interested in, which may limit our ability to run
 analyses. The data also requires quite a bit of coding. It will also be
 challenging to create an interactive, time-varying map.
+
+### Planned Timeline
+
+**ok this proposal is due Nov 7, so this is based off a weekly timeline
+since then and i think this is due.. dec ? also genuinely no gauge on
+how long some of this will take us, feel free to edit and change dates**
+
+|                   Week | Action item                                                                                                         |
+| ---------------------: | :------------------------------------------------------------------------------------------------------------------ |
+|          November 7-14 | Data exploration, begin data cleaning, create team plan for appropriate data cleaning steps, complete data cleaning |
+|         November 14-21 | Make plan for coding the map and for feasible descriptive analyses, run descriptive analyses, being coding map      |
+|         November 21-28 | Finish coding map, make interactive table to go along with the map                                                  |
+| November 28-December 5 | Create finished product, troubleshoot to ensure all the links work                                                  |
