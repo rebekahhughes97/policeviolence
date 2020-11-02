@@ -14,22 +14,42 @@ This project will be produced by:
 ### Title
 
 Our tentative project title is: **Mapping Police Violence Across the
-United States: An Analysis of 2020 Anti-Police Brutality Protests**
+United States: An Analysis of Police Violence and its Results on
+Correctional Trends**
 
 ### Motivation
 
-This project aims to explore the number of protests across the United
-States, spurred by the killing of George Floyd in the summer of 2020.
-This project is being done to ultimately assess the instances of
-excessive use of force by police, and to determine whether instances of
-excessive force are concentrated geographically.
+This project is motivated by the protests occurring in the United States
+that were spurred by the killing of George Floyd. Along with the
+violence at protests, this project will examine police violence more
+broadly and will analyze the results of the police violence on the
+correctional counts and demographics in the United States. This project
+is ultimately being completed to assess the instances of excessive use
+of force by police and to determine whether instances of excessive force
+are concentrated demographically and geographically.
 
 ### Intended Final Products
 
 Our final project will be an HTML website with links to a mapping
-project.
+project. There will be various tabs on the website with different
+information in each tab and different ways of viewing the data. The
+landing page of the website will include a brief background on the issue
+the project is centered around and will give an overview of everything
+included on the website. There will also be information included on the
+landing page regarding brief descriptions of how the raw data was
+manipulated and analyzed to form the final products.
 
-**no idea how this differs from planned analyses lol help**
+### Anticipated Data Sources
+
+The central data source for the raw data will be the US Crisis Monitor
+from the Armed Conflict Location and Event Data Project (ACLED). This
+data gives information on police violence specifically during 2020
+following the death of George Floyd. There will also be data regarding
+police violence, the results of police violence against certain groups
+of people in the United States, and incarceration trends and their
+correlation to police violence from New Jersey Projects and
+Investigations, Fatal Encounters organization, and Prison Policy
+Initiative organization.
 
 ### Planned Analyses/ Visualizations/ Coding Challenges
 
