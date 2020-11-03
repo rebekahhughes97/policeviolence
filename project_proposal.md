@@ -23,10 +23,15 @@ This project is motivated by the protests occurring in the United States
 that were spurred by the killing of George Floyd. Along with the
 violence at protests, this project will examine police violence more
 broadly and will analyze the results of the police violence on the
-correctional counts and demographics in the United States. This project
-is ultimately being completed to assess the instances of excessive use
-of force by police and to determine whether instances of excessive force
-are concentrated demographically and geographically.
+correctional counts and demographics in the United States.
+
+**how are we going to assess impact of police violence on corrections?
+this might be hard to do, unless we’re looking at protest-related
+arrests?**
+
+This project is ultimately being completed to assess the instances of
+excessive use of force by police and to determine whether instances of
+excessive force are concentrated demographically and geographically.
 
 ### Intended Final Products
 
@@ -83,7 +88,7 @@ challenging to create an interactive, time-varying map.
 ### Planned Timeline
 
 **ok this proposal is due Nov 7, so this is based off a weekly timeline
-since then and i think this is due.. dec ? also genuinely no gauge on
+since then and i think this is due.. dec 5? also genuinely no gauge on
 how long some of this will take us, feel free to edit and change dates**
 
 |                   Week | Action item                                                                                                         |
