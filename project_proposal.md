@@ -76,14 +76,17 @@ analyses than just descriptives?**
 
 This project will include an interactive map with each recorded protest
 over time, in order to ultimately demonstrate the widespread nature of
-the protests nationwide.
+the protests nationwide. There will also be plots and tables showing the
+associations between various variables within the datasets.
 
 #### Coding Challenges
 
 We anticipate that small cell counts will be available for some of the
 outcomes we are interested in, which may limit our ability to run
 analyses. The data also requires quite a bit of coding. It will also be
-challenging to create an interactive, time-varying map.
+challenging to create an interactive, time-varying map, since we have
+had few opportunities to do this in homeworks and assignments thus far
+in the course.
 
 ### Planned Timeline
 
