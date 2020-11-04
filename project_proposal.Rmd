@@ -11,7 +11,7 @@ This project will be produced by:
 * Megan Marziali, UNI: mem2371
 * Leighanne Wang, UNI: lw2883
 * Jinghan Zhang, UNI:
-* Adam Rosenfeld, UNI: 
+* Adam Rosenfeld, UNI: ar4041
 
 ### Title
 
