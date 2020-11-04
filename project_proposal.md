@@ -27,11 +27,16 @@ correctional counts and demographics in the United States.
 
 **how are we going to assess impact of police violence on corrections?
 this might be hard to do, unless we’re looking at protest-related
-arrests?**
+arrests? // do we have any literature on the effect of police violence
+on corrections? doing a quick search, I’m only able to find articles
+about protester arrests.**
 
 This project is ultimately being completed to assess the instances of
 excessive use of force by police and to determine whether instances of
 excessive force are concentrated demographically and geographically.
+**This is kind of a different question than effect of police brutality
+on correctional trends, this one might be easier to map out and look at,
+maybe looking at something predictive for this?**
 
 ### Intended Final Products
 
@@ -70,7 +75,11 @@ protests/excessive force (using metro/rural classifications, or other).
 **please add to the above here with what you want to do with the other
 data source and other analyses you want to run. also is this too vague?
 how detailed is he wanting it? and should we be doing more complex
-analyses than just descriptives?**
+analyses than just descriptives? // based on the example projects that
+he linked us, all of them seem to have some sort of
+regression/prediction modeling; also found this site that has their own
+dataset compiled from other datasets
+<https://mappingpoliceviolence.org/aboutthedata>**
 
 #### Visualizations
 

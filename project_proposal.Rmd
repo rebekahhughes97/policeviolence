@@ -21,9 +21,10 @@ Our tentative project title is: **Mapping Police Violence Across the United Stat
 
 This project is motivated by the protests occurring in the United States that were spurred by the killing of George Floyd. Along with the violence at protests, this project will examine police violence more broadly and will analyze the results of the police violence on the correctional counts and demographics in the United States. 
 
-**how are we going to assess impact of police violence on corrections? this might be hard to do, unless we're looking at protest-related arrests?**
+**how are we going to assess impact of police violence on corrections? this might be hard to do, unless we're looking at protest-related arrests? // do we have any literature on the effect of police violence on corrections? doing a quick search, I'm only able to find articles about protester arrests.**
 
-This project is ultimately being completed to assess the instances of excessive use of force by police and to determine whether instances of excessive force are concentrated demographically and geographically.
+This project is ultimately being completed to assess the instances of excessive use of force by police and to determine whether instances of excessive force are concentrated demographically and geographically. 
+**This is kind of a different question than effect of police brutality on correctional trends, this one might be easier to map out and look at, maybe looking at something predictive for this?**
 
 ### Intended Final Products
 
@@ -39,8 +40,7 @@ The central data source for the raw data will be the US Crisis Monitor from the 
 
 We will conduct descriptive analyses of excessive force and other characterizations of protests. We also plan on including an interactive table with geographic specifications detailing protests and characterizations of protests. Based on the counts available, we may be able to explore associations between geographic areas and instances of protests/excessive force (using metro/rural classifications, or other).
 
-
-**please add to the above here with what you want to do with the other data source and other analyses you want to run. also is this too vague? how detailed is he wanting it? and should we be doing more complex analyses than just descriptives?**
+**please add to the above here with what you want to do with the other data source and other analyses you want to run. also is this too vague? how detailed is he wanting it? and should we be doing more complex analyses than just descriptives? // based on the example projects that he linked us, all of them seem to have some sort of regression/prediction modeling; also found this site that has their own dataset compiled from other datasets https://mappingpoliceviolence.org/aboutthedata**
 
 #### Visualizations
 
