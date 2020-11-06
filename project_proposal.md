@@ -50,7 +50,7 @@ surrounding the situation of the confrontation. There will also be data
 from the US Crisis Monitor from the Armed Conflict Location and Event
 Data Project (ACLED). This data gives information on police violence
 specifically during 2020 protests following the death of George Floyd.
-Other data used will include (include other data here…)
+Other data used will include **(include other data here…)**
 
 ### Planned Analyses/ Visualizations/ Coding Challenges
 
@@ -68,12 +68,11 @@ of protests/excessive force (using metro/rural classifications, or
 other). We will additionally explore the relationship between income and
 police violence and the occurrence of protests, through statistical
 analyses. We plan to conduct multiple regression analyses as well
-focused on the police violence on indivuduals from 2013 to 2020.
+focused on the police violence on individuals from 2013 to 2020.
 
-**based on the example projects that he linked us, all of them seem to
-have some sort of regression/prediction modeling; also found this site
-that has their own dataset compiled from other datasets
-<https://mappingpoliceviolence.org/aboutthedata>**
+\***does anybody have any ideas for regression analyses? \> are we
+running regression on race + income to look at the likelihood of death
+by police brutality?**
 
 **Something that might be interesting is to compare election
 data/changes 2016 and 2020 with recorded protests in the same area
