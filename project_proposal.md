@@ -8,7 +8,7 @@ This project will be produced by:
   - Rebekah Hughes, UNI: rch2155
   - Megan Marziali, UNI: mem2371
   - Leighanne Wang, UNI: lw2883
-  - Jinghan Zhang, UNI:
+  - Jinghan Zhang, UNI: jz3180
   - Adam Rosenfeld, UNI:
 
 ### Title
@@ -65,8 +65,20 @@ an interactive table with geographic specifications detailing protests
 and characterizations of protests. Based on the counts available, we may
 be able to explore associations between geographic areas and instances
 of protests/excessive force (using metro/rural classifications, or
-other). We plan to conduct multiple regression analyses as well focused
-on the police violence on indivuduals from 2013 to 2020.
+other). We will additionally explore the relationship between income and
+police violence and the occurrence of protests, through statistical
+analyses. We plan to conduct multiple regression analyses as well
+focused on the police violence on indivuduals from 2013 to 2020.
+
+**based on the example projects that he linked us, all of them seem to
+have some sort of regression/prediction modeling; also found this site
+that has their own dataset compiled from other datasets
+<https://mappingpoliceviolence.org/aboutthedata>**
+
+**Something that might be interesting is to compare election
+data/changes 2016 and 2020 with recorded protests in the same area
+geographically to see if there are statistically significant
+changes/relationship. This could also just be a visual map.**
 
 #### Visualizations
 
@@ -78,6 +90,12 @@ the United States during 2020. There will also be plots and tables
 included in the project showing the associations between various
 variables within all datasets.
 
+We also plan on creating a geographic heatmap of police violence
+incidents. This could be overlayed with other data, such as protest
+data, to observe interactions of different factors. We additionally plan
+on mapping income by county, and creating a heatmap based off of this
+data, and overlaying protest data on this map.
+
 #### Coding Challenges
 
 We anticipate that small cell counts will be available for some of the
@@ -86,7 +104,9 @@ analyses. The data also requires quite a bit of coding. It will also be
 challenging to create an interactive, time-varying map, since we have
 had few opportunities to do this in homeworks and assignments thus far
 in the course. We anticipate that missing data could be a challenge to
-overcome in some of the datasets as well.
+overcome in some of the datasets as well. Additionally, the data might
+not be sufficiently comprehensive or complete to generate robust
+statistical tests.
 
 ### Planned Timeline
 
