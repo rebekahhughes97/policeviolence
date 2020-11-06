@@ -6,10 +6,19 @@ Final Project Proposal
 This project will be produced by:
 
   - Rebekah Hughes, UNI: rch2155
+
   - Megan Marziali, UNI: mem2371
-  - Leighanne Wang, UNI: lw2883
+
+  - Leighanne Wang, UNI: lw2883 \<\<\<\<\<\<\< HEAD
+
+  - Jinghan Zhang, UNI:
+
+  - # Adam Rosenfeld, UNI: ar4041
+
   - Jinghan Zhang, UNI: jz3180
-  - Adam Rosenfeld, UNI:
+
+  - Adam Rosenfeld, UNI: ar4041 \>\>\>\>\>\>\>
+    c6889d1acec4c55b222d9436789c503787161c5d
 
 ### Title
 
