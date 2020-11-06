@@ -14,8 +14,7 @@ This project will be produced by:
 ### Title
 
 Our tentative project title is: **Mapping Police Violence Across the
-United States: An Analysis of Police Violence and its Results on
-Correctional Trends**
+United States: An Analysis of Police Violence By County Demographics**
 
 ### Motivation
 
