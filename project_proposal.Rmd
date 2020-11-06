@@ -15,11 +15,7 @@ This project will be produced by:
 
 ### Title
 
-<<<<<<< HEAD
 **Police Violence in the United States (2013-2020)**
-=======
-Our tentative project title is: **Mapping Police Violence Across the United States: An Analysis of Police Violence By County Demographics**
->>>>>>> 9e126e9a97dc36184581d98b6f5969b2365658e1
 
 ### Motivation
 
