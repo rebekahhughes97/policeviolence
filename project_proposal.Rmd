@@ -32,7 +32,7 @@ Our final project will be an HTML website with links to a mapping project. There
 
 ### Anticipated Data Sources
 
-The central data source for the raw data will be the Mapping Police Violence dataset from the Mapping Police Violence group. This dataset includes information on individuals killed as a result of police violence, including geographic data, demographic information, and data surrounding the situation of the confrontation. There will also be data from the US Crisis Monitor from the Armed Conflict Location and Event Data Project (ACLED). This data gives information on police violence specifically during 2020 protests following the death of George Floyd. Other data used will include **(include other data here...)**
+The central data source for the raw data will be the Mapping Police Violence dataset from the Mapping Police Violence group. This dataset includes information on individuals killed as a result of police violence, including geographic data, demographic information, and data surrounding the situation of the confrontation. There will also be data from the US Crisis Monitor from the Armed Conflict Location and Event Data Project (ACLED). This data gives information on police violence specifically during 2020 protests following the death of George Floyd. The American Community Survey (ACS) contains sociodemographic information by county, including income. 
 
 ### Planned Analyses/ Visualizations/ Coding Challenges
 
@@ -53,7 +53,7 @@ We also plan on creating a geographic heatmap of police violence incidents. This
 
 #### Coding Challenges
 
-We anticipate that small cell counts will be available for some of the outcomes we are interested in, which may limit our ability to run analyses. The data also requires quite a bit of coding. It will also be challenging to create an interactive, time-varying map, since we have had few opportunities to do this in homeworks and assignments thus far in the course. We anticipate that missing data could be a challenge to overcome in some of the datasets as well. Additionally, the data might not be sufficiently comprehensive or complete to generate robust statistical tests.
+We anticipate that small cell counts will be available for some of the outcomes we are interested in, which may limit our ability to run analyses. The data also requires quite a bit of coding. It will also be challenging to create an interactive, time-varying map, since we have had few opportunities to do this in homeworks and assignments thus far in the course. We anticipate that missing data could be a challenge to overcome in some of the datasets as well- the MPV dataset has missing variables for 2000+ participants. Additionally, the data might not be sufficiently comprehensive or complete to generate robust statistical tests.
 
 ### Planned Timeline
 
