@@ -8,7 +8,7 @@ This project will be produced by:
   - Rebekah Hughes, UNI: rch2155
   - Megan Marziali, UNI: mem2371
   - Leighanne Wang, UNI: lw2883
-  - Jinghan Zhang, UNI:
+  - Jinghan Zhang, UNI: jz3180
   - Adam Rosenfeld, UNI:
 
 ### Title
@@ -81,12 +81,20 @@ regression/prediction modeling; also found this site that has their own
 dataset compiled from other datasets
 <https://mappingpoliceviolence.org/aboutthedata>**
 
+**Something that might be interesting is to compare election
+data/changes 2016 and 2020 with recorded protests in the same area
+geographically to see if there are statistically significant
+changes/relationship. This could also just be a visual map.**
+
 #### Visualizations
 
 This project will include an interactive map with each recorded protest
 over time, in order to ultimately demonstrate the widespread nature of
 the protests nationwide. There will also be plots and tables showing the
-associations between various variables within the datasets.
+associations between various variables within the datasets. We also plan
+on creating a geographic heatmap of police violence incidents. This
+could be overlayed with other data to observe interactions of different
+factors.
 
 #### Coding Challenges
 
@@ -95,7 +103,8 @@ outcomes we are interested in, which may limit our ability to run
 analyses. The data also requires quite a bit of coding. It will also be
 challenging to create an interactive, time-varying map, since we have
 had few opportunities to do this in homeworks and assignments thus far
-in the course.
+in the course. Additionally the data might not be sufficiently
+comprehensive/complete to generate robust statistical tests.
 
 ### Planned Timeline
 
