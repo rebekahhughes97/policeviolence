@@ -47,11 +47,11 @@ Violence dataset from the Mapping Police Violence group. This dataset
 includes information on individuals killed as a result of police
 violence, including geographic data, demographic information, and data
 surrounding the situation of the confrontation. There will also be data
-from the US Crisis Monitor from the Armed Conflict Location and Event
-Data Project (ACLED). This data gives information on police violence
+on the US Crisis Monitor from the Armed Conflict Location and Event Data
+Project (ACLED). This data gives information on police violence
 specifically during 2020 protests following the death of George Floyd.
-The American Community Survey (ACS) contains sociodemographic
-information by county, including income.
+The American Community Survey (ACS), which contains sociodemographic
+information by county, including income, will also be used.
 
 ### Planned Analyses/ Visualizations/ Coding Challenges
 
