@@ -6,19 +6,10 @@ Final Project Proposal
 This project will be produced by:
 
   - Rebekah Hughes, UNI: rch2155
-
   - Megan Marziali, UNI: mem2371
-
-  - Leighanne Wang, UNI: lw2883 \<\<\<\<\<\<\< HEAD
-
-  - Jinghan Zhang, UNI:
-
-  - # Adam Rosenfeld, UNI: ar4041
-
+  - Leighanne Wang, UNI: lw2883
   - Jinghan Zhang, UNI: jz3180
-
-  - Adam Rosenfeld, UNI: ar4041 \>\>\>\>\>\>\>
-    c6889d1acec4c55b222d9436789c503787161c5d
+  - Adam Rosenfeld, UNI: ar4041
 
 ### Title
 
@@ -59,7 +50,8 @@ surrounding the situation of the confrontation. There will also be data
 from the US Crisis Monitor from the Armed Conflict Location and Event
 Data Project (ACLED). This data gives information on police violence
 specifically during 2020 protests following the death of George Floyd.
-Other data used will include **(include other data here…)**
+The American Community Survey (ACS) contains sociodemographic
+information by county, including income.
 
 ### Planned Analyses/ Visualizations/ Coding Challenges
 
@@ -76,17 +68,12 @@ be able to explore associations between geographic areas and instances
 of protests/excessive force (using metro/rural classifications, or
 other). We will additionally explore the relationship between income and
 police violence and the occurrence of protests, through statistical
-analyses. We plan to conduct multiple regression analyses as well
-focused on the police violence on individuals from 2013 to 2020.
-
-\***does anybody have any ideas for regression analyses? \> are we
-running regression on race + income to look at the likelihood of death
-by police brutality?**
-
-**Something that might be interesting is to compare election
-data/changes 2016 and 2020 with recorded protests in the same area
-geographically to see if there are statistically significant
-changes/relationship. This could also just be a visual map.**
+analyses. We plan to conduct regression analyses to explore whether an
+association exists between police violence from 2013-2020 and
+sociodemographic characteristics of counties. This will be done by
+operationalizing the outcome, instances of police violence, as a count
+and investigating whether certain factors are associated with a higher
+count.
 
 #### Visualizations
 
@@ -112,9 +99,11 @@ analyses. The data also requires quite a bit of coding. It will also be
 challenging to create an interactive, time-varying map, since we have
 had few opportunities to do this in homeworks and assignments thus far
 in the course. We anticipate that missing data could be a challenge to
-overcome in some of the datasets as well. Additionally, the data might
-not be sufficiently comprehensive or complete to generate robust
-statistical tests.
+overcome in some of the datasets as well. The MPV dataset has missing
+information for certain variables, which limits the types of variables
+that we can use or the sample size we want to work with. Additionally,
+the data might not be sufficiently comprehensive or complete to generate
+robust statistical tests.
 
 ### Planned Timeline
 

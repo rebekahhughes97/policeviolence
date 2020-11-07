@@ -10,13 +10,9 @@ This project will be produced by:
 * Rebekah Hughes, UNI: rch2155
 * Megan Marziali, UNI: mem2371
 * Leighanne Wang, UNI: lw2883
-<<<<<<< HEAD
-* Jinghan Zhang, UNI:
-* Adam Rosenfeld, UNI: ar4041
-=======
 * Jinghan Zhang, UNI: jz3180
 * Adam Rosenfeld, UNI: ar4041
->>>>>>> c6889d1acec4c55b222d9436789c503787161c5d
+
 
 ### Title
 
@@ -38,12 +34,7 @@ The central data source for the raw data will be the Mapping Police Violence dat
 
 #### Planned Analyses
 
-We will conduct descriptive analyses of force and violence resulting in the death of individuals, and the characteristics of those individuals, the confrontation, and the geographic locations the confrontations happened in. We will also conduct descriptive analyses of excessive force and other characterizations of 2020 protests. We plan on including an interactive table with geographic specifications detailing protests and characterizations of protests. Based on the counts available, we may be able to explore associations between geographic areas and instances of protests/excessive force (using metro/rural classifications, or other). We will additionally explore the relationship between income and police violence and the occurrence of protests, through statistical analyses. We plan to conduct multiple regression analyses as well focused on the police violence on individuals from 2013 to 2020.
-
-
-***does anybody have any ideas for regression analyses? > are we running regression on race + income to look at the likelihood of death by police brutality?**
-
-**Something that might be interesting is to compare election data/changes 2016 and 2020 with recorded protests in the same area geographically to see if there are statistically significant changes/relationship. This could also just be a visual map.**
+We will conduct descriptive analyses of force and violence resulting in the death of individuals, and the characteristics of those individuals, the confrontation, and the geographic locations the confrontations happened in. We will also conduct descriptive analyses of excessive force and other characterizations of 2020 protests. We plan on including an interactive table with geographic specifications detailing protests and characterizations of protests. Based on the counts available, we may be able to explore associations between geographic areas and instances of protests/excessive force (using metro/rural classifications, or other). We will additionally explore the relationship between income and police violence and the occurrence of protests, through statistical analyses. We plan to conduct regression analyses to explore whether an association exists between police violence from 2013-2020 and sociodemographic characteristics of counties. This will be done by operationalizing the outcome, instances of police violence, as a count and investigating whether certain factors are associated with a higher count.
 
 #### Visualizations
 
@@ -53,7 +44,7 @@ We also plan on creating a geographic heatmap of police violence incidents. This
 
 #### Coding Challenges
 
-We anticipate that small cell counts will be available for some of the outcomes we are interested in, which may limit our ability to run analyses. The data also requires quite a bit of coding. It will also be challenging to create an interactive, time-varying map, since we have had few opportunities to do this in homeworks and assignments thus far in the course. We anticipate that missing data could be a challenge to overcome in some of the datasets as well- the MPV dataset has missing variables for 2000+ participants. Additionally, the data might not be sufficiently comprehensive or complete to generate robust statistical tests.
+We anticipate that small cell counts will be available for some of the outcomes we are interested in, which may limit our ability to run analyses. The data also requires quite a bit of coding. It will also be challenging to create an interactive, time-varying map, since we have had few opportunities to do this in homeworks and assignments thus far in the course. We anticipate that missing data could be a challenge to overcome in some of the datasets as well. The MPV dataset has missing information for certain variables, which limits the types of variables that we can use or the sample size we want to work with. Additionally, the data might not be sufficiently comprehensive or complete to generate robust statistical tests.
 
 ### Planned Timeline
 
