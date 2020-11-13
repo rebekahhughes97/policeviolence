@@ -33,3 +33,12 @@ separating out the date variable, changing the names of some of the
 variables and changing some variables to be numeric, and selecting only
 the variables of importance to our analysis for inclusion in the tidied
 dataset.
+
+## USA October 2020 Dataset
+
+``` r
+usa_df =
+  read_excel("./data/usa_2020_oct.xlsx") %>%
+  janitor::clean_names() %>% 
+  separate(event_date, c("year", "month", "day"))
+```
