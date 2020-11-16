@@ -132,8 +132,22 @@ income_df =
          starts_with("estimate_households_percent"))
       ) %>%
   mutate(
-    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars
-  ) 
+    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) 
+# mutate(
+#    income_class =
+#     case_when(
+#  estimate_households_mean_income_dollars < 48500 ~ "Low",
+#      estimate_households_mean_income_dollars %in% 48500:145500 ~ "Middle",
+#      estimate_households_mean_income_dollars > 145500 ~ "High"
+#    )) 
+
+# mutate(
+#    income_class =
+#     case_when(
+#  estimate_households_median_income_dollars < 48500 ~ "Low",
+#      estimate_households_median_income_dollars %in% 48500:145500 ~ "Middle",
+#      estimate_households_median_income_dollars > 145500 ~ "High"
+#    )) 
 
 top_disparity = 
   income_df %>% 
