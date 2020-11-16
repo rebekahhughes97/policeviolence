@@ -1,6 +1,8 @@
 ---
 title: "Data Wrangling for All Datasets Used"
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -112,4 +114,14 @@ age_df =
      names_prefix = "estimate_percent_female_total_population_age"
      ) %>% 
 view()
+```
+
+## ACS Income
+
+```{r}
+income_df =
+  read_csv("./data/acs_income_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  select(-c(id, starts_with("margin_of_error"), starts_with("estimate_families"), starts_with("estimate_married"), starts_with("estimate_nonfamily"), starts_with("estimate_households_percent")))
 ```
