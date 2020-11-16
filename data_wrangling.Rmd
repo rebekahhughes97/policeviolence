@@ -62,8 +62,54 @@ usa_df =
   separate(event_date, c("year", "month", "day"))
 ```
 
+## ACS Datasets
 
 
-```{r}
-
+#### Age and Sex
+```{r age, warning = FALSE}
+age_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(-c(4, 41:80, 117:156, 193:232, 269:308, 345:384, 421:458, starts_with("margin_of_error"))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% view()
+  pivot_longer(
+     estimate_total_total_population_age_under_5_years:estimate_total_total_population_age_85_years_and_over,
+     names_to = "age",
+     values_to = "population_totals",
+     names_prefix = "estimate_total_total_population_age"
+    ) %>% view()
+# error: says my variable isn't found 
+  
+  
+   pivot_longer(
+     cols = starts_with("estimate_percent_total"),
+     names_to = "age_2",
+     values_to = "population_percent", 
+     names_prefix = "estimate_percent_total_population_age"
+     ) %>% 
+   pivot_longer(
+     cols = starts_with("estimate_male_total"),
+     names_to = "age_4",
+     values_to = "male_totals", 
+     names_prefix = "estimate_male_total_population_age"
+     ) %>% 
+   pivot_longer(
+     cols = starts_with("estimate_percent_male_total"),
+     names_to = "age_6",
+     values_to = "male_percent", 
+     names_prefix = "estimate_percent_male_total_population_age"
+     ) %>% 
+   pivot_longer(
+     cols = starts_with("estimate_female_total"),
+     names_to = "age_8",
+     values_to = "female_totals", 
+     names_prefix = "estimate_female_total_population_age"
+     ) %>% 
+   pivot_longer(
+     cols = starts_with("estimate_percent_female_total"),
+     names_to = "age_10",
+     values_to = "female_percent", 
+     names_prefix = "estimate_percent_female_total_population_age"
+     ) %>% 
+view()
 ```
