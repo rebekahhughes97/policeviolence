@@ -40,7 +40,21 @@ dataset.
 usa_df =
   read_excel("./data/usa_2020_oct.xlsx") %>%
   janitor::clean_names() %>% 
-  separate(event_date, c("year", "month", "day"))
+  separate(event_date, c("year", "month", "day")) %>%
+  mutate(
+    state = admin1,
+    county = admin2,
+    city = location,
+    latitude = as.numeric(latitude),
+    longitude = as.numeric(longitude),
+    year = as.numeric(year),
+    month = as.numeric(month),
+    day = as.numeric(day),
+    fatalities = as.numeric(fatalities)) %>%
+  select(
+    year, month, day, event_type, sub_event_type, state, county, city, latitude, longitude, fatalities)
+
+write_csv(usa_df, "./data/usa_tidy.csv")
 ```
 
 ## ACS Datasets
