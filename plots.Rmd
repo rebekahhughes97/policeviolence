@@ -7,6 +7,15 @@ editor_options:
 
 ## MPV Dataset
 
+```{r}
+police_dept_plot = 
+  mpv_df %>% 
+  group_by(police_dept) %>% 
+  count() %>% 
+  arrange(desc(n)) %>% 
+  filter(n >= 49) %>% 
+  ggplot(aes(x = police_dept, color = police_dept)) + geom_histogram()
+```
 
 
 
