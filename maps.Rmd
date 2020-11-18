@@ -33,9 +33,37 @@ mpv_data =
 ```
 
 
-## Age Leaflet
+## Year Leaflet -- with city and police dept in the label
 
 ```{r, warning=FALSE}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_data$year)
+
+
+mpv_data %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("city: ", city, "<br>police department: ", police_dept)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = ~year,
+            title = "Year",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~pal(year),
+    radius = 0.5,
+    popup = ~lab)
+```
+
+
+## Age Leaflet -- with symptoms of mental illness and whether officer was charged as label
+
+```{r}
 pal <- colorNumeric(
   palette = "viridis",
   domain = mpv_data$age)
@@ -44,7 +72,9 @@ pal <- colorNumeric(
 mpv_data %>% 
   drop_na() %>% 
   mutate(
-    lab = str_c("race: ", race, "<br>year: ", year)) %>% 
+    lab = str_c("Age", age,
+                "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness,
+                "<br>Charges on the Police: ", criminal_charges)) %>%
   leaflet() %>% 
   addTiles() %>% 
   setView(-98.483330, 38.712046, zoom = 4) %>% 
@@ -59,4 +89,4 @@ mpv_data %>%
     popup = ~lab)
 ```
 
-
+## Shiny with Year as a dropdown and month as a further drop down
