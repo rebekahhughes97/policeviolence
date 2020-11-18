@@ -24,10 +24,39 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-## MPV Dataset
+
+## Retrieving the MPV Tidy Dataset
+
+```{r}
+mpv_data =
+  read_csv("./data/mpv_final.csv")
+```
+
+
+## Age Leaflet
 
 ```{r, warning=FALSE}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_data$age)
 
+
+mpv_data %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("race: ", race, "<br>year: ", year)) %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = ~age,
+            title = "Age",
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~pal(age),
+    radius = 0.5,
+    popup = ~lab)
 ```
 
 

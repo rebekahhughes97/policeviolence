@@ -46,14 +46,26 @@ mpv_df =
     month = as.numeric(month),
     day = as.numeric(day)) %>%
   select(
-    age, gender, race, police_dept, description, disposition, year,
+    age, gender, race, police_dept, disposition, year,
     month, day, city, state, county, cause_of_death, criminal_charges,
     symptoms_of_mental_illness)
-
-write_csv(mpv_df, "./data/mpv_tidy.csv")
 ```
 
 In the above code chunk, the MPV dataset has been manipulated and tidied by reading in the excel sheet and cleaning the variable names, separating out the date variable, changing the names of some of the variables and changing some variables to be numeric, and selecting only the variables of importance to our analysis for inclusion in the tidied dataset.
+
+## Lat/Long Dataset
+
+```{r}
+lat_long =
+  read_csv("./data/uscities.csv") %>% 
+  mutate(state = state_id) %>% 
+  select(city, lat, lng, state)
+
+mpv_final = left_join(mpv_df, lat_long, by = c("city" = "city", "state" = "state"))
+
+write_csv(mpv_final, "./data/mpv_final.csv")
+```
+
 
 ## USA October 2020 Dataset
 
