@@ -1,35 +1,9 @@
----
-title: "Plotting for MPV"
-output: github_document
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
-library(tidyverse)
-library(ggplot2)
-library(readr)
-library(readxl)
-library(patchwork)
-
-knitr::opts_chunk$set(
-  out.width = "90%"
-)
-
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
-
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-
-scale_colour_discrete = scale_color_viridis_d
-scale_fill_discrete = scale_fill_viridis_d
-```
+Plotting for MPV
+================
 
 ## MPV Dataset
 
-```{r, warning=FALSE}
+``` r
 mpv_df =
   read_excel("./data/MPVDatasetDownload.xlsx",
              sheet = "2013-2020 Police Killings") %>%
@@ -53,9 +27,10 @@ mpv_df =
 write_csv(mpv_df, "./data/mpv_tidy.csv")
 ```
 
-The plot below visualizes the total number of people killed by police, arranged by police department.
+The plot below visualizes the total number of people killed by police,
+arranged by police department.
 
-```{r}
+``` r
 police_dept_plot = 
   mpv_df %>% 
   count(police_dept) %>% 
@@ -72,9 +47,12 @@ police_dept_plot =
 police_dept_plot
 ```
 
-The plots below visualize police killings by state. One includes all states with data, the other includes the top 10 states. 
+<img src="plots_files/figure-gfm/unnamed-chunk-2-1.png" width="90%" />
 
-```{r}
+The plots below visualize police killings by state. One includes all
+states with data, the other includes the top 10 states.
+
+``` r
 state_plot = 
   mpv_df %>% 
   count(state) %>% 
@@ -105,33 +83,24 @@ state_subset_plot =
 state_plot + state_subset_plot
 ```
 
-The plot below shows police killings over time until 2019 (I excluded 2020, because otherwise it looks like 2020 has a drop in police killings).
+<img src="plots_files/figure-gfm/unnamed-chunk-3-1.png" width="90%" />
 
-```{r}
+The plot below shows police killings over time until 2019 (I excluded
+2020, because otherwise it looks like 2020 has a drop in police
+killings).
+
+``` r
 year_plot = 
   mpv_df %>% 
   count(year) %>% 
   rename(total_killed = n) %>% 
   filter(year < 2020) %>% 
-  ggplot(aes(x = year, y = total_killed)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE) +
+  ggplot(aes(x = year, y = total_killed, color = year)) + geom_point() + geom_smooth(method = lm, se = FALSE) +
   scale_y_continuous(limit = c(0, 1400))
 
 year_plot
 ```
 
-Code below shows the breakdown of charges laid against police.
+    ## `geom_smooth()` using formula 'y ~ x'
 
-```{r}
-mpv_case = 
-  mpv_df %>% 
-  count(criminal_charges) %>% 
-  mutate(
-    charges = case_when(
-      startsWith(criminal_charges, "Charged") ~ "Yes",
-      startsWith(criminal_charges, "No") ~ "No",
-    )) %>% 
-  ggplot(aes(x = charges, y = n)) +
-  geom_col() 
-```
-
+<img src="plots_files/figure-gfm/unnamed-chunk-4-1.png" width="90%" />
