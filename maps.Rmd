@@ -72,7 +72,7 @@ pal <- colorNumeric(
 mpv_data %>% 
   drop_na() %>% 
   mutate(
-    lab = str_c("Age", age,
+    lab = str_c("Age: ", age,
                 "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness,
                 "<br>Charges on the Police: ", criminal_charges)) %>%
   leaflet() %>% 

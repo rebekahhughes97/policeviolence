@@ -138,6 +138,8 @@ anim_scatter =
   transition_reveal(year)
 
 animate(anim_scatter, renderer = gifski_renderer())
+
+# might be worth excluding 2020 because of incomplete data, it makes it look like the shootings are trending down
 ```
 
 2. Bar chart showing number of killings by state over time
@@ -184,11 +186,13 @@ bar_anim =
         plot.caption =element_text(size=12, hjust=0.5, face="italic", color="red"),
         plot.background=element_blank(),
         plot.margin = margin(1,4, 1, 8, "cm")) +
-  transition_states(year, transition_length = 4, state_length = 1) +
+  transition_states(states = year, transition_length = 4, state_length = 1) +
   ease_aes('sine-in-out') +
   labs(title = 'Number of Individuals Killed by Police between 2013 and 2020 in the US: {closest_state}')
 
-animate(anim_bar, 100, fps = 20,  width = 750, height = 950, 
+final_animation = animate(bar_anim, 100, fps = 20,  width = 750, height = 950, 
         renderer = gifski_renderer())
+
+final_animation
 ```
 
