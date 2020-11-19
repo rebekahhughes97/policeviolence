@@ -20,11 +20,10 @@ mpv_df =
     month = as.numeric(month),
     day = as.numeric(day)) %>%
   select(
-    age, gender, race, police_dept, description, disposition, year,
+    age, gender, race, police_dept, disposition, year,
     month, day, city, state, county, cause_of_death, criminal_charges,
-    symptoms_of_mental_illness)
-
-write_csv(mpv_df, "./data/mpv_tidy.csv")
+    symptoms_of_mental_illness) %>% 
+  view()
 ```
 
 In the above code chunk, the MPV dataset has been manipulated and tidied
@@ -33,6 +32,42 @@ separating out the date variable, changing the names of some of the
 variables and changing some variables to be numeric, and selecting only
 the variables of importance to our analysis for inclusion in the tidied
 dataset.
+
+## Lat/Long Dataset
+
+``` r
+lat_long =
+  read_csv("./data/uscities.csv") %>% 
+  mutate(state = state_id) %>% 
+  select(city, lat, lng, state)
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   city = col_character(),
+    ##   city_ascii = col_character(),
+    ##   state_id = col_character(),
+    ##   state_name = col_character(),
+    ##   county_fips = col_character(),
+    ##   county_name = col_character(),
+    ##   lat = col_double(),
+    ##   lng = col_double(),
+    ##   population = col_double(),
+    ##   density = col_double(),
+    ##   source = col_character(),
+    ##   military = col_logical(),
+    ##   incorporated = col_logical(),
+    ##   timezone = col_character(),
+    ##   ranking = col_double(),
+    ##   zips = col_character(),
+    ##   id = col_double()
+    ## )
+
+``` r
+mpv_final = left_join(mpv_df, lat_long, by = c("city" = "city", "state" = "state"))
+
+write_csv(mpv_final, "./data/mpv_final.csv")
+```
 
 ## USA October 2020 Dataset
 
@@ -259,12 +294,66 @@ top_disparity =
   income_df %>% 
   select(county, state, disparity_value) %>% 
   arrange(desc(disparity_value)) %>% 
+  top_n(10) %>% 
   knitr::kable()
+```
 
+    ## Selecting by disparity_value
+
+``` r
 disparity_plot =
   income_df %>% 
     ggplot(aes(x = disparity_value)) + 
     geom_histogram()
+
+disparity_plot2 =
+  income_df %>% 
+  group_by(state) %>% 
+  summarise(
+    mean_disparity = mean(disparity_value)
+  ) %>% 
+  top_n(-10) %>% 
+  mutate(
+    state = fct_reorder(state, mean_disparity)
+  ) %>% 
+  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+
+    ## Selecting by mean_disparity
+
+``` r
+disparity_plot3 =
+  income_df %>% 
+  group_by(state) %>% 
+  summarise(
+    mean_disparity = mean(disparity_value)
+  ) %>% 
+  top_n(10) %>% 
+  mutate(
+    state = fct_reorder(state, mean_disparity)
+  ) %>% 
+  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## Selecting by mean_disparity
+
+``` r
+mpv_add = 
+mpv_final %>% 
+  mutate(
+    county = paste(county, "County", sep = " "),
+    county = case_when(
+      state == "LA" ~ str_replace(county, "County", "Parish"),
+      state == "PR" ~ str_replace(county, "County", "Municipio"),
+      TRUE ~ as.character(county)
+  ))
 ```
 
 #### ACS Race

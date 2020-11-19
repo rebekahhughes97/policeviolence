@@ -48,7 +48,8 @@ mpv_df =
   select(
     age, gender, race, police_dept, disposition, year,
     month, day, city, state, county, cause_of_death, criminal_charges,
-    symptoms_of_mental_illness)
+    symptoms_of_mental_illness) %>% 
+  view()
 ```
 
 In the above code chunk, the MPV dataset has been manipulated and tidied by reading in the excel sheet and cleaning the variable names, separating out the date variable, changing the names of some of the variables and changing some variables to be numeric, and selecting only the variables of importance to our analysis for inclusion in the tidied dataset.
@@ -240,6 +241,7 @@ income_df =
       ) %>%
   mutate(
     disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) 
+
 # mutate(
 #    income_class =
 #     case_when(
@@ -260,12 +262,52 @@ top_disparity =
   income_df %>% 
   select(county, state, disparity_value) %>% 
   arrange(desc(disparity_value)) %>% 
+  top_n(10) %>% 
   knitr::kable()
 
 disparity_plot =
   income_df %>% 
     ggplot(aes(x = disparity_value)) + 
     geom_histogram()
+
+disparity_plot2 =
+  income_df %>% 
+  group_by(state) %>% 
+  summarise(
+    mean_disparity = mean(disparity_value)
+  ) %>% 
+  top_n(-10) %>% 
+  mutate(
+    state = fct_reorder(state, mean_disparity)
+  ) %>% 
+  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+disparity_plot3 =
+  income_df %>% 
+  group_by(state) %>% 
+  summarise(
+    mean_disparity = mean(disparity_value)
+  ) %>% 
+  top_n(10) %>% 
+  mutate(
+    state = fct_reorder(state, mean_disparity)
+  ) %>% 
+  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+mpv_add = 
+mpv_final %>% 
+  mutate(
+    county = paste(county, "County", sep = " "),
+    county = case_when(
+      state == "LA" ~ str_replace(county, "County", "Parish"),
+      state == "PR" ~ str_replace(county, "County", "Municipio"),
+      TRUE ~ as.character(county)
+  ))
+
 ```
 
 #### ACS Race
