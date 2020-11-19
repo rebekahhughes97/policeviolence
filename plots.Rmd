@@ -11,6 +11,10 @@ library(ggplot2)
 library(readr)
 library(readxl)
 library(patchwork)
+#you'll need to install the packages below in order to run animated plots or knit
+library(gganimate)
+library(gifski)
+library(png)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -31,26 +35,7 @@ scale_fill_discrete = scale_fill_viridis_d
 
 ```{r, warning=FALSE}
 mpv_df =
-  read_excel("./data/MPVDatasetDownload.xlsx",
-             sheet = "2013-2020 Police Killings") %>%
-  janitor::clean_names() %>% 
-  separate(date_of_incident_month_day_year, c("year", "month", "day")) %>% 
-  mutate(
-    age = as.numeric(victims_age),
-    gender  = victims_gender,
-    race = victims_race,
-    police_dept = agency_responsible_for_death,
-    description = a_brief_description_of_the_circumstances_surrounding_the_death,
-    disposition = official_disposition_of_death_justified_or_other,
-    year = as.numeric(year),
-    month = as.numeric(month),
-    day = as.numeric(day)) %>%
-  select(
-    age, gender, race, police_dept, description, disposition, year,
-    month, day, city, state, county, cause_of_death, criminal_charges,
-    symptoms_of_mental_illness)
-
-write_csv(mpv_df, "./data/mpv_tidy.csv")
+  read_csv("./data/mpv_final.csv")
 ```
 
 The plot below visualizes the total number of people killed by police, arranged by police department.
@@ -133,5 +118,77 @@ mpv_case =
     )) %>% 
   ggplot(aes(x = charges, y = n)) +
   geom_col() 
+```
+
+## Animated Plots
+
+1. Scatter plot showing killings over time separated by race
+
+```{r}
+anim_scatter =
+  mpv_df %>% 
+  group_by(year, race) %>% 
+  count() %>% 
+  ggplot(aes(x = year, y = n, color = race)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Number of Police Killings Over Time by Race",
+       x = "Year",
+       y = "Number of Police Killings") +
+  transition_reveal(year)
+
+animate(anim_scatter, renderer = gifski_renderer())
+```
+
+2. Bar chart showing number of killings by state over time
+
+```{r}
+#don't run this!! It's messed up and bogs down computer
+
+bar_format =
+  mpv_df %>%
+  group_by(year, gender) %>%
+  count() %>% 
+  mutate(rank = rank(-n),
+         Value_rel = n/n[rank==1],
+         Value_lbl = paste0(" ",n)) %>%
+  group_by(gender) %>%
+  filter(rank <= 10)
+
+
+bar_anim =
+  ggplot(bar_format, aes(rank, group = gender))+
+  geom_tile(aes(y = n/2,
+                height = n,
+                width = 0.9), alpha = 0.8, color = NA) +
+  geom_text(aes(y = 0, label = paste(gender, " ")), vjust = 0.2, hjust = 1, size = 7) +
+  geom_text(aes(y= n,label = Value_lbl, hjust=0),size = 8 ) + 
+  coord_flip(clip = "off", expand = TRUE) +
+  scale_x_reverse() +
+  theme_minimal() +
+  theme(axis.line=element_blank(),
+        axis.text.x=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks=element_blank(),
+        axis.title.x=element_blank(),
+        axis.title.y=element_blank(),
+        legend.position="none",
+        panel.background=element_blank(),
+        panel.border=element_blank(),
+        panel.grid.major=element_blank(),
+        panel.grid.minor=element_blank(),
+        panel.grid.major.x = element_line( size=.1, color="grey" ),
+        panel.grid.minor.x = element_line( size=.1, color="grey" ),
+        plot.title=element_text(size=25, hjust=0.5, face="bold",     colour="red", vjust=-1),
+        plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="red"),
+        plot.caption =element_text(size=12, hjust=0.5, face="italic", color="red"),
+        plot.background=element_blank(),
+        plot.margin = margin(1,4, 1, 8, "cm")) +
+  transition_states(year, transition_length = 4, state_length = 1) +
+  ease_aes('sine-in-out') +
+  labs(title = 'Number of Individuals Killed by Police between 2013 and 2020 in the US: {closest_state}')
+
+animate(anim_bar, 100, fps = 20,  width = 750, height = 950, 
+        renderer = gifski_renderer())
 ```
 
