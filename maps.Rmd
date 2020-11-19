@@ -44,7 +44,7 @@ pal <- colorNumeric(
 mpv_data %>% 
   drop_na() %>% 
   mutate(
-    lab = str_c("city: ", city, "<br>police department: ", police_dept)) %>%
+    lab = str_c("City: ", city, "<br>Police Department: ", police_dept)) %>%
   leaflet() %>% 
   addTiles() %>% 
   setView(-98.483330, 38.712046, zoom = 4) %>% 
