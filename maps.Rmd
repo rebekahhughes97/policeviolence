@@ -92,3 +92,32 @@ mpv_data %>%
 ```
 
 
+## USA data
+
+```{r}
+
+usa_protest = read_csv("./data/usa_tidy.csv")
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = usa_protest$fatalities)
+
+usa_protest %>%
+  mutate(
+    lab = str_c("City: ", usa_protest$city, "<br>Type of Protest: ", usa_protest$event_type)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = usa_protest$fatalities,
+            title = "Fatalities",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~pal(usa_protest$fatalities),
+    radius = 0.5,
+    popup = ~lab)
+ 
+```
+
