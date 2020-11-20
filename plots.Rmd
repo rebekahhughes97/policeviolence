@@ -191,9 +191,9 @@ bar_type =
   count() %>% 
   ggplot(aes(x = event_type, y = n, fill = event_type)) +
   geom_col() +
-  geom_text(aes(x = event_type, y = n, label = n), position=position_dodge(width=0.9), vjust=-0.25) +
+  geom_text(aes(x = event_type, y = n, label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
   theme(axis.text.x = element_text(angle = 90),
-        legend.position="right")
+        legend.position = "right")
 
 bar_subtype =
   protest_data %>% 
@@ -201,9 +201,9 @@ bar_subtype =
   count() %>% 
   ggplot(aes(x = sub_event_type, y = n, fill = sub_event_type)) +
   geom_col() +
-  geom_text(aes(x = sub_event_type, y = n, label = n), position=position_dodge(width=0.9), vjust=-0.25) +
+  geom_text(aes(x = sub_event_type, y = n, label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
   theme(axis.text.x = element_text(angle = 90),
-        legend.position="right")
+        legend.position = "right")
 
 bar_type / bar_subtype
 ```
