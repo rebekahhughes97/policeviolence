@@ -1,0 +1,108 @@
+---
+title: "Shiny Dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(viridis)
+library(shiny)
+library(plotly)
+
+mpv_data =
+  read_csv("./data/mpv_final.csv") %>% 
+  select()
+```
+
+Column {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+years = mpv_data %>% distinct(year) %>% pull()
+
+# selectInput widget
+selectInput(
+  "year_choice", 
+  label = h3("Select year"),
+  choices = years, selected = "2013")
+
+renderPrint({ 
+  input[["year_choice"]]
+})
+
+
+
+max_price = 1000
+min_price = nyc_airbnb %>% distinct(price) %>% min()
+  
+# sliderInput widget
+sliderInput(
+  "price_range", 
+  label = h3("Choose price range"), 
+  min = min_price, max = max_price, value = c(100, 400))
+
+
+room_choice = nyc_airbnb %>% distinct(room_type) %>% pull()
+
+# radioButtons widget
+radioButtons(
+  "room_choice", 
+  label = h3("Choose room type"),
+  choices = room_choice, selected = "Entire home/apt")
+```
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Chart A
+
+```{r}
+
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Chart B
+
+```{r}
+
+```
+
+### Chart C
+
+```{r}
+
+```
+```{r setup, include=FALSE}
+library(tidyverse)
+library(shiny)
+
+knitr::opts_chunk$set(
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+
+## Retrieving the MPV Tidy Dataset
+
+```{r}
+
+```
+
+

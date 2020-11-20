@@ -8,6 +8,8 @@ editor_options:
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(leaflet)
+library(rvest)
+library(shiny)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -89,9 +91,4 @@ mpv_data %>%
     popup = ~lab)
 ```
 
-## Shiny with Year as a dropdown and month as a further drop down
-
-```{r}
-
-```
 
