@@ -1,5 +1,5 @@
 ---
-title: "Plotting for MPV"
+title: "Plotting"
 output: github_document
 editor_options: 
   chunk_output_type: console
@@ -31,7 +31,7 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-## MPV Dataset
+# MPV Dataset
 
 ```{r, warning=FALSE}
 mpv_df =
@@ -120,7 +120,7 @@ mpv_case =
   geom_col() 
 ```
 
-## Animated Plots
+## Animated Plot
 
 1. Scatter plot showing killings over time separated by race
 
@@ -142,55 +142,152 @@ animate(anim_scatter, renderer = gifski_renderer())
 # might be worth excluding 2020 because of incomplete data, it makes it look like the shootings are trending down
 ```
 
-2. Bar chart showing number of killings by state over time
+## Plotly
 
 ```{r}
-#don't run this!! It's messed up and bogs down computer
 
-bar_format =
-  mpv_df %>%
-  group_by(year, gender) %>%
+```
+
+
+
+# USA Protest Dataset
+
+```{r}
+protest_data =
+  read_csv("./data/usa_tidy.csv")
+```
+
+Animated Scatter showing average number fatalities over the months by event type:
+
+```{r}
+anim_data =
+  protest_data %>% 
+  group_by(month, event_type) %>% 
+  summarize(
+    av_death = mean(fatalities)
+  )
+
+anim_plot =
+  anim_data %>% 
+  group_by(month) %>% 
+  ggplot(aes(x = month, y = av_death, color = event_type)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Average Number of Fatalities over Time by Event Type",
+       x = "Month",
+       y = "Average Number of Fatalities") +
+  transition_reveal(month)
+
+animate(anim_plot, renderer = gifski_renderer())
+```
+
+2 bar charts showing the number of each event type compared to the number of each sub event type:
+
+```{r}
+bar_type =
+  protest_data %>% 
+  group_by(event_type) %>% 
   count() %>% 
-  mutate(rank = rank(-n),
-         Value_rel = n/n[rank==1],
-         Value_lbl = paste0(" ",n)) %>%
-  group_by(gender) %>%
-  filter(rank <= 10)
+  ggplot(aes(x = event_type, y = n, fill = event_type)) +
+  geom_col() +
+  geom_text(aes(x = event_type, y = n, label = n), position=position_dodge(width=0.9), vjust=-0.25) +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position="right")
 
+bar_subtype =
+  protest_data %>% 
+  group_by(sub_event_type) %>% 
+  count() %>% 
+  ggplot(aes(x = sub_event_type, y = n, fill = sub_event_type)) +
+  geom_col() +
+  geom_text(aes(x = sub_event_type, y = n, label = n), position=position_dodge(width=0.9), vjust=-0.25) +
+  theme(axis.text.x = element_text(angle = 90),
+        legend.position="right")
 
-bar_anim =
-  ggplot(bar_format, aes(rank, group = gender))+
-  geom_tile(aes(y = n/2,
-                height = n,
-                width = 0.9), alpha = 0.8, color = NA) +
-  geom_text(aes(y = 0, label = paste(gender, " ")), vjust = 0.2, hjust = 1, size = 7) +
-  geom_text(aes(y= n,label = Value_lbl, hjust=0),size = 8 ) + 
-  coord_flip(clip = "off", expand = TRUE) +
-  scale_x_reverse() +
-  theme_minimal() +
-  theme(axis.line=element_blank(),
-        axis.text.x=element_blank(),
-        axis.text.y=element_blank(),
-        axis.ticks=element_blank(),
-        axis.title.x=element_blank(),
-        axis.title.y=element_blank(),
-        legend.position="none",
-        panel.background=element_blank(),
-        panel.border=element_blank(),
-        panel.grid.major=element_blank(),
-        panel.grid.minor=element_blank(),
-        panel.grid.major.x = element_line( size=.1, color="grey" ),
-        panel.grid.minor.x = element_line( size=.1, color="grey" ),
-        plot.title=element_text(size=25, hjust=0.5, face="bold",     colour="red", vjust=-1),
-        plot.subtitle=element_text(size=18, hjust=0.5, face="italic", color="red"),
-        plot.caption =element_text(size=12, hjust=0.5, face="italic", color="red"),
-        plot.background=element_blank(),
-        plot.margin = margin(1,4, 1, 8, "cm")) +
-  transition_states(states = year, transition_length = 4, state_length = 1) +
-  ease_aes('sine-in-out') +
-  labs(title = 'Number of Individuals Killed by Police between 2013 and 2020 in the US: {closest_state}')
+bar_type / bar_subtype
+```
 
-final_animation = animate(bar_anim, 100, fps = 20,  width = 750, height = 950, 
-        renderer = gifski_renderer())
+Scatter plots comparing the average fatalities each day over the course of each month:
+
+```{r}
+may =
+  protest_data %>% 
+  filter(month == 5) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in May",
+       y = "Average Fatalities")
+
+june =
+  protest_data %>% 
+  filter(month == 6) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in June",
+       y = "Average Fatalities")
+
+july = 
+  protest_data %>% 
+  filter(month == 7) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in July",
+       y = "Average Fatalities")
+
+august =
+  protest_data %>% 
+  filter(month == 8) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in August",
+       y = "Average Fatalities")
+
+sept =
+  protest_data %>% 
+  filter(month == 9) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in September",
+       y = "Average Fatalities")
+
+oct = 
+  protest_data %>% 
+  filter(month == 10) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_line() +
+  labs(title = "Average Number of Fatalities in October",
+       y = "Average Fatalities")
+
+(may + june) / (july + august) / (sept + oct)
+```
+
+Plotly Plot:
+
+```{r}
+
 ```
 
