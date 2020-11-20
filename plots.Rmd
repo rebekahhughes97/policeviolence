@@ -313,49 +313,41 @@ july =
   protest_data %>% 
   filter(month == 7) %>% 
   group_by(day) %>% 
-  summarize(
-    av_fatal = mean(fatalities)
-  ) %>% 
-  ggplot(aes(x = day, y = av_fatal)) +
+  count(fatalities) %>% 
+  ggplot(aes(x = day, y = n)) +
   geom_smooth(se = FALSE) +
-  labs(title = "Average Number of Fatalities in July",
-       y = "Average Fatalities")
+  labs(title = "Number of Fatalities in July",
+       y = "Fatalities")
 
 august =
   protest_data %>% 
   filter(month == 8) %>% 
   group_by(day) %>% 
-  summarize(
-    av_fatal = mean(fatalities)
-  ) %>% 
-  ggplot(aes(x = day, y = av_fatal)) +
+  count(fatalities) %>% 
+  ggplot(aes(x = day, y = n)) +
   geom_smooth(se = FALSE) +
-  labs(title = "Average Number of Fatalities in August",
-       y = "Average Fatalities")
+  labs(title = "Number of Fatalities in August",
+       y = "Fatalities")
 
 sept =
   protest_data %>% 
   filter(month == 9) %>% 
   group_by(day) %>% 
-  summarize(
-    av_fatal = mean(fatalities)
-  ) %>% 
-  ggplot(aes(x = day, y = av_fatal)) +
+  count(fatalities) %>% 
+  ggplot(aes(x = day, y = n)) +
   geom_smooth(se = FALSE) +
-  labs(title = "Average Number of Fatalities in September",
-       y = "Average Fatalities")
+  labs(title = "Number of Fatalities in September",
+       y = "Fatalities")
 
 oct = 
   protest_data %>% 
   filter(month == 10) %>% 
   group_by(day) %>% 
-  summarize(
-    av_fatal = mean(fatalities)
-  ) %>% 
-  ggplot(aes(x = day, y = av_fatal)) +
-  geom_line() +
-  labs(title = "Average Number of Fatalities in October",
-       y = "Average Fatalities")
+  count(fatalities) %>% 
+  ggplot(aes(x = day, y = n)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Number of Fatalities in October",
+       y = "Fatalities")
 
 (may + june) / (july + august) / (sept + oct)
 ```
