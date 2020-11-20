@@ -163,6 +163,7 @@ Animated Scatter showing average number fatalities over the months by event type
 anim_data =
   protest_data %>% 
   group_by(month, event_type) %>% 
+  filter(event_type != "Battles") %>% 
   summarize(
     av_death = mean(fatalities)
   )
@@ -233,6 +234,80 @@ june =
   geom_smooth(se = FALSE) +
   labs(title = "Average Number of Fatalities in June",
        y = "Average Fatalities")
+
+july = 
+  protest_data %>% 
+  filter(month == 7) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in July",
+       y = "Average Fatalities")
+
+august =
+  protest_data %>% 
+  filter(month == 8) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in August",
+       y = "Average Fatalities")
+
+sept =
+  protest_data %>% 
+  filter(month == 9) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Average Number of Fatalities in September",
+       y = "Average Fatalities")
+
+oct = 
+  protest_data %>% 
+  filter(month == 10) %>% 
+  group_by(day) %>% 
+  summarize(
+    av_fatal = mean(fatalities)
+  ) %>% 
+  ggplot(aes(x = day, y = av_fatal)) +
+  geom_line() +
+  labs(title = "Average Number of Fatalities in October",
+       y = "Average Fatalities")
+
+(may + june) / (july + august) / (sept + oct)
+```
+
+Scatter plots comparing fatalities each day over the course of each month:
+
+```{r}
+may =
+  protest_data %>% 
+  filter(month == 5) %>% 
+  group_by(day) %>% 
+  count(fatalities) %>% 
+  ggplot(aes(x = day, y = n)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Number of Fatalities in May",
+       y = "Fatalities")
+
+june =
+  protest_data %>% 
+  filter(month == 6) %>% 
+  group_by(day) %>% 
+  count(fatalities) %>% 
+  ggplot(aes(x = day, y = n)) +
+  geom_smooth(se = FALSE) +
+  labs(title = "Number of Fatalities in June",
+       y = "Fatalities")
 
 july = 
   protest_data %>% 
