@@ -1,0 +1,96 @@
+---
+title: "Linear models"
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+set.seed(1)
+```
+
+## Model: Outcome = Charges
+
+```{r}
+mpv_df_charges =
+  read_csv("./data/mpv_final.csv") %>% 
+  mutate(
+    charges = case_when(
+      startsWith(criminal_charges, "Charged") ~ 1,
+      startsWith(criminal_charges, "No") ~ 0),
+    race_rec = case_when(
+      race == "Unknown race" ~ "Unknown",
+      race == "unknown race" ~ "Unknown",
+      race == "Native American" ~ "Other",
+      race == "Pacific Islander" ~ "Other",
+      race == "Black" ~ "Black",
+      race == "Hispanic" ~ "Hispanic",
+      race == "White" ~ "White",
+      race == "Asian" ~ "Asian"),
+    race_rec = fct_infreq(race_rec),
+    age_rec = 
+      cut(age, breaks = c(0,20,40,60,100), right = FALSE),
+    age_rec = fct_infreq(age_rec),
+    MI = case_when(
+      symptoms_of_mental_illness == "Yes" ~ "Yes",
+      symptoms_of_mental_illness == "No" ~ "No",
+      symptoms_of_mental_illness == "Unknown" ~ "Unknown",
+      symptoms_of_mental_illness == "Drug or alcohol use" ~ "No",
+    )) %>% 
+  filter(MI != "Unknown") %>% 
+  select(MI, age_rec, race_rec, charges)
+
+xtabs(~charges + MI, data = mpv_df_charges)
+```
+
+Modeling charges laid as outcome:
+
+```{r}
+fit = glm(charges ~ race_rec, data = mpv_df_charges, family = "binomial")
+
+broom::tidy(fit) %>% 
+  select(-std.error, -statistic) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: ")
+  ) %>% 
+  knitr::kable(digits = 3)
+```
+
+```{r}
+fit = glm(charges ~ age_rec, data = mpv_df_charges, family = "binomial")
+
+broom::tidy(fit) %>% 
+  select(-std.error, -statistic) %>% 
+  mutate(
+    term = str_replace(term, "age_rec", "Age: ")
+  ) %>% 
+  knitr::kable(digits = 3)
+```
+
+## Hypothesis tests
+
+Testing influence of mental illness symptoms.
+
+```{r}
+fit_null = glm(charges ~ race_rec, data = mpv_df_charges, family = "binomial")
+fit_alt = glm(charges ~ race_rec + MI, data = mpv_df_charges, family = "binomial")
+
+anova(fit_null, fit_alt) %>% 
+  broom::tidy()
+```
