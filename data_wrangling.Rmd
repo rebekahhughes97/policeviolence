@@ -94,53 +94,54 @@ write_csv(usa_df, "./data/usa_tidy.csv")
 ## ACS Datasets
 
 #### Age and Sex
-```{r age, warning = FALSE, eval = FALSE}
-age_df =
+
+Using the ACS age/sex dataset to create an age only dataset:
+```{r}
+# getting the total ages by county and tidying
+age_total_df =
   read_csv("./data/acs_age_county.csv", skip = 1) %>% 
   janitor::clean_names() %>% 
-  select(-c(4, 41:80, 117:156, 193:232, 269:308, 345:384, 421:458, starts_with("margin_of_error"))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>% view()
+  select(c(1:3, starts_with("estimate_total_total"))) %>% 
+  select(-c("estimate_total_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
   pivot_longer(
-     estimate_total_total_population_age_under_5_years:estimate_total_total_population_age_85_years_and_over,
-     names_to = "age",
-     values_to = "population_totals",
-     names_prefix = "estimate_total_total_population_age"
-    ) %>% view()
-# error: says my variable isn't found 
-   pivot_longer(
-     cols = starts_with("estimate_percent_total"),
-     names_to = "age_2",
-     values_to = "population_percent", 
-     names_prefix = "estimate_percent_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_male_total"),
-     names_to = "age_4",
-     values_to = "male_totals", 
-     names_prefix = "estimate_male_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_percent_male_total"),
-     names_to = "age_6",
-     values_to = "male_percent", 
-     names_prefix = "estimate_percent_male_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_female_total"),
-     names_to = "age_8",
-     values_to = "female_totals", 
-     names_prefix = "estimate_female_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_percent_female_total"),
-     names_to = "age_10",
-     values_to = "female_percent", 
-     names_prefix = "estimate_percent_female_total_population_age"
-     ) %>% 
-view()
+    4:21,
+    names_to = "age",
+    values_to = "total",
+    names_prefix = "estimate_total_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", "")
+  ) %>% view()
+
+# getting the percentage of ages by county and tidying
+age_percent_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_percent_total"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_percent_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "percent",
+    names_prefix = "estimate_percent_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", "")
+  ) %>% view()
+
+# joining the total and percentages together into one dataset
+age_df = 
+  left_join(age_total_df, age_percent_df, by = c("id", "county", "state", "age")) %>% view()
+  
+# export tidy age dataset
+write_csv(age_df, "./data/age_tidy.csv")
 ```
 
-#### Age and Sex_MM edits
+#### Age MM_edits
 
 ```{r, warning = FALSE, message = FALSE}
 age_df =
@@ -222,9 +223,10 @@ age_df =
          age_pct_80_84 = estimate_percent_total_population_age_80_to_84_years,
          age_pct_85_over = estimate_percent_total_population_age_85_years_and_over
   )
+
 ```
 
-## ACS Income
+#### ACS Income
 
 ```{r}
 income_df =
