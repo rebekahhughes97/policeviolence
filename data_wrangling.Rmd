@@ -141,7 +141,112 @@ age_df =
 write_csv(age_df, "./data/age_tidy.csv")
 ```
 
-#### Age MM_edits
+Using the ACS age/sex dataset to create an age by sex dataset:
+```{r}
+# read in total for males by age
+
+male_total_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_male_total"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_male_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "total",
+    names_prefix = "estimate_male_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    sex = "male"
+  ) %>% view()
+
+# read in total for females by age
+
+female_total_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_female_total"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "total",
+    names_prefix = "estimate_female_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    sex = "female"
+  ) %>% view()
+
+# bind male/female total dfs together
+
+sex_total_df =
+  bind_rows(male_total_df, female_total_df) %>% 
+  relocate(id, county, state, age, sex) %>% 
+  view()
+
+# read in percent for males by age
+
+male_percent_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_percent_male"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_percent_male_total_population", contains(c("selected_age_categories", "summary_indicators", "allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "percent",
+    names_prefix = "estimate_percent_male_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    sex = "male"
+  ) %>% view()
+
+# read in percent for females by age
+
+female_percent_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_percent_female"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_percent_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "percent",
+    names_prefix = "estimate_percent_female_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    sex = "female"
+  ) %>% view()
+
+# bind male/female percent dfs together
+
+sex_percent_df =
+  bind_rows(male_percent_df, female_percent_df) %>% 
+  relocate(id, county, state, age, sex) %>% 
+  view()
+
+# join percent and total dfs together
+
+sex_df = 
+  left_join(sex_total_df, sex_percent_df, by = c("id", "county", "state", "age", "sex")) %>% view()
+  
+# export sex by age dataset
+write_csv(sex_df, "./data/age_sex_tidy.csv")
+```
+
+#### Age dataset (not tidy for analysis potentially)
 
 ```{r, warning = FALSE, message = FALSE}
 age_df =
