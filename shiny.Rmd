@@ -1,5 +1,5 @@
 ---
-title: "Shiny Dashboard"
+title: "Police Killings 2013-2020"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -13,54 +13,93 @@ library(tidyverse)
 library(viridis)
 library(shiny)
 library(plotly)
+library(leaflet)
 
 mpv_data =
-  read_csv("./data/mpv_final.csv") %>% 
-  select()
+  read_csv("./data/mpv_final.csv")
+
+mpv_case = 
+  mpv_data %>% 
+  mutate(
+    charges = case_when(
+      startsWith(criminal_charges, "Charged") ~ "Yes",
+      startsWith(criminal_charges, "No") ~ "No"),
+    MI = case_when(
+      symptoms_of_mental_illness == "Yes" ~ "Yes",
+      symptoms_of_mental_illness == "No" ~ "No",
+      symptoms_of_mental_illness == "Unknown" ~ "NA",
+      symptoms_of_mental_illness == "Drug or alcohol use" ~ "No"))
 ```
 
-Column {.sidebar}
+Options {.sidebar}
 -----------------------------------------------------------------------
 
 ```{r}
-years = mpv_data %>% distinct(year) %>% pull()
+charges = 
+  mpv_case %>% 
+  distinct(charges) %>% 
+  pull()
+
+MI = 
+  mpv_case %>% 
+  distinct(MI) %>% 
+  pull()
 
 # selectInput widget
-selectInput(
-  "year_choice", 
-  label = h3("Select year"),
-  choices = years, selected = "2013")
 
-renderPrint({ 
-  input[["year_choice"]]
-})
-
-max_price = 1000
-min_price = nyc_airbnb %>% distinct(price) %>% min()
-  
-# sliderInput widget
 sliderInput(
-  "price_range", 
-  label = h3("Choose price range"), 
-  min = min_price, max = max_price, value = c(100, 400))
+  "year_range",
+  h3("Year Range"),
+  2013, 2020, 
+  value = c(2013, 2014),
+  sep = "")
 
+selectInput(
+  "charges_choice", 
+  h3("Charges laid"),
+  choices = charges, 
+  selected = "No"
+  )
 
-room_choice = nyc_airbnb %>% distinct(room_type) %>% pull()
-
-# radioButtons widget
-radioButtons(
-  "room_choice", 
-  label = h3("Choose room type"),
-  choices = room_choice, selected = "Entire home/apt")
+selectInput(
+  "mi_choice", 
+  h3("Symptoms of mental illness"),
+  choices = MI, 
+  selected = "No"
+  )
 ```
 
-Column {data-width=650}
+Column {data-width=1000}
 -----------------------------------------------------------------------
 
-### Chart A
+### Map of Police Killings
 
 ```{r}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_data$year)
 
+renderLeaflet({
+mpv_case %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("City: ", city,
+                "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness,
+                "<br>Charges on the Police: ", criminal_charges)) %>%
+  filter(
+    charges == input[["charges_choice"]],
+    MI == input[["mi_choice"]],
+    year %in% input[["year_range"]][1]:input[["year_range"]][2]
+  ) %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addCircleMarkers(
+    ~lng, ~lat,
+    radius = 0.5,
+    popup = ~lab)
+})
+  
 ```
 
 Column {data-width=350}
@@ -69,7 +108,30 @@ Column {data-width=350}
 ### Chart B
 
 ```{r}
+renderPlotly({
+  mpv_case %>% 
+    count(charges) %>% 
+    filter(
+      charges == input[["charges_choice"]],
+      MI == input[["mi_choice"]],
+      year %in% input[["year_range"]][1]:input[["year_range"]][2]) %>% 
+    plot_ly(
+      y = ~n, x = ~charges, color = ~charges,
+      type = "bar", colors = "viridis")
+})
 
+renderPlotly({
+nyc_airbnb %>% 
+  filter(
+      neighbourhood_group == input[["borough_choice"]],
+      price %in% input[["price_range"]][1]:input[["price_range"]][2],
+      room_type == input[["room_choice"]]) %>% 
+  count(neighbourhood) %>% 
+  mutate(neighbourhood = fct_reorder(neighbourhood, n)) %>% 
+  plot_ly(
+  x = ~neighbourhood, y = ~n, color = ~neighbourhood, 
+  type = "bar", colors = "viridis")
+})
 ```
 
 ### Chart C
@@ -77,30 +139,3 @@ Column {data-width=350}
 ```{r}
 
 ```
-```{r setup, include=FALSE}
-library(tidyverse)
-library(shiny)
-
-knitr::opts_chunk$set(
-  out.width = "90%"
-)
-
-theme_set(theme_minimal() + theme(legend.position = "bottom"))
-
-options(
-  ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis"
-)
-
-scale_colour_discrete = scale_color_viridis_d
-scale_fill_discrete = scale_fill_viridis_d
-```
-
-
-## Retrieving the MPV Tidy Dataset
-
-```{r}
-
-```
-
-
