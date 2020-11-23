@@ -35,8 +35,6 @@ renderPrint({
   input[["year_choice"]]
 })
 
-
-
 max_price = 1000
 min_price = nyc_airbnb %>% distinct(price) %>% min()
   

@@ -121,3 +121,27 @@ usa_protest %>%
  
 ```
 
+```{r}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = usa_protest$month)
+
+usa_protest %>%
+  mutate(
+    lab = str_c("City: ", usa_protest$city, "<br>Type of Protest: ", usa_protest$event_type)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = usa_protest$month,
+            title = "Month",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~pal(usa_protest$month),
+    radius = 0.5,
+    popup = ~lab)
+ 
+```
+
