@@ -290,13 +290,19 @@ age_data =
 
 sex_data =
   read_csv("./data/age_sex_tidy.csv")
+
+race_data =
+  read_csv("./data/race_tidy.csv")
+
+income_data =
+  read_csv("./data/income_tidy.csv")
 ```
 
 ```{r}
 age_data %>% 
   ggplot(aes(x = total, y = age)) +
   geom_col(aes(fill = age)) +
-  labs(x = "", y = "", title = "Age in the USA")
+  labs(x = "", y = "", title = "Ages of the US Population")
 
 sex_data %>%
   mutate(
@@ -306,7 +312,17 @@ sex_data %>%
   ggplot(aes(x = total, y = age)) +
   geom_col(aes(fill = sex)) +
   scale_x_continuous(labels = abs) +
-  labs(x = "", y = "", title = "Age and Sex in the USA")
+  labs(x = "", y = "", title = "Age by Sex of the US Population")
 
+race_data %>% 
+  ggplot(aes(x = race, y = prop)) +
+  geom_col(aes(fill = race)) +
+  labs(x = "", y = "", title = "Proportion of Race in US Population")
+
+income_data %>% 
+  ggplot(aes(x = total_income, y = estimate_households)) +
+  geom_col(aes(fill = total_income)) +
+  labs(x = "", y = "", title = "Income in US") +
+  theme(axis.text.x = element_text(angle = 90))
 ```
 

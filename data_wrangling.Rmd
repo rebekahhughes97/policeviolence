@@ -471,14 +471,14 @@ disparity_plot3 =
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
 mpv_add = 
-mpv_final %>% 
+read_csv("./data/mpv_final.csv") %>% 
   mutate(
     county = paste(county, "County", sep = " "),
     county = case_when(
       state == "LA" ~ str_replace(county, "County", "Parish"),
       state == "PR" ~ str_replace(county, "County", "Municipio"),
       TRUE ~ as.character(county)
-  ))
+  )) %>% view()
 
 ```
 
