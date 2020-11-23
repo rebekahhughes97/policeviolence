@@ -118,6 +118,8 @@ mpv_case =
     )) %>% 
   ggplot(aes(x = charges, y = n)) +
   geom_col() 
+
+mpv_case
 ```
 
 ## Animated Plot
@@ -277,6 +279,34 @@ oct =
 Plotly Plot:
 
 ```{r}
+
+```
+
+# ACS Datasets
+
+```{r}
+age_data =
+  read_csv("./data/age_tidy.csv")
+
+sex_data =
+  read_csv("./data/age_sex_tidy.csv")
+```
+
+```{r}
+age_data %>% 
+  ggplot(aes(x = total, y = age)) +
+  geom_col(aes(fill = age)) +
+  labs(x = "", y = "", title = "Age in the USA")
+
+sex_data %>%
+  mutate(
+    total = ifelse(sex == "female", total*(-1), total*(1)),
+    percent = paste0(round(percent), "%")
+  ) %>% 
+  ggplot(aes(x = total, y = age)) +
+  geom_col(aes(fill = sex)) +
+  scale_x_continuous(labels = abs) +
+  labs(x = "", y = "", title = "Age and Sex in the USA")
 
 ```
 

@@ -97,7 +97,9 @@ write_csv(usa_df, "./data/usa_tidy.csv")
 
 Using the ACS age/sex dataset to create an age only dataset:
 ```{r}
+
 # getting the total ages by county and tidying
+
 age_total_df =
   read_csv("./data/acs_age_county.csv", skip = 1) %>% 
   janitor::clean_names() %>% 
@@ -112,10 +114,14 @@ age_total_df =
   ) %>%
   mutate(
     age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", "")
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age)
   ) %>% view()
 
 # getting the percentage of ages by county and tidying
+
 age_percent_df =
   read_csv("./data/acs_age_county.csv", skip = 1) %>% 
   janitor::clean_names() %>% 
@@ -130,14 +136,19 @@ age_percent_df =
   ) %>%
   mutate(
     age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", "")
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age)
   ) %>% view()
 
 # joining the total and percentages together into one dataset
+
 age_df = 
   left_join(age_total_df, age_percent_df, by = c("id", "county", "state", "age")) %>% view()
   
 # export tidy age dataset
+
 write_csv(age_df, "./data/age_tidy.csv")
 ```
 
@@ -160,6 +171,9 @@ male_total_df =
   mutate(
     age = str_replace_all(age, "_", " "),
     age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
     sex = "male"
   ) %>% view()
 
@@ -180,6 +194,9 @@ female_total_df =
   mutate(
     age = str_replace_all(age, "_", " "),
     age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
     sex = "female"
   ) %>% view()
 
@@ -207,6 +224,9 @@ male_percent_df =
   mutate(
     age = str_replace_all(age, "_", " "),
     age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
     sex = "male"
   ) %>% view()
 
@@ -227,6 +247,9 @@ female_percent_df =
   mutate(
     age = str_replace_all(age, "_", " "),
     age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
     sex = "female"
   ) %>% view()
 
@@ -339,7 +362,7 @@ income_df =
   janitor::clean_names() %>% 
   separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
   select(
-      -c(id, 
+      -c( 
          starts_with("margin_of_error"), 
          starts_with("estimate_families"), 
          starts_with("estimate_married"), 
@@ -446,9 +469,9 @@ race_df =
     prop_hawaii_pi = hawaii_pi / total_pop * 100,
     prop_other = other / total_pop * 100) %>% 
   select(
-    id, total_pop, white, prop_white, black, prop_black, asian, prop_asian, am_in_alask, prop_am_in_alask, hawaii_pi,
+    id, county, state, total_pop, white, prop_white, black, prop_black, asian, prop_asian, am_in_alask, prop_am_in_alask, hawaii_pi,
     prop_hawaii_pi, other, prop_other
-  )
+  ) %>% view()
 ```
 
 
