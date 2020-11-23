@@ -45,8 +45,6 @@ MI =
   distinct(MI) %>% 
   pull()
 
-# selectInput widget
-
 sliderInput(
   "year_range",
   h3("Year Range"),
@@ -57,19 +55,19 @@ sliderInput(
 selectInput(
   "charges_choice", 
   h3("Charges laid"),
-  choices = charges, 
+  choices = charges,
   selected = "No"
   )
 
 selectInput(
   "mi_choice", 
   h3("Symptoms of mental illness"),
-  choices = MI, 
+  choices = MI,
   selected = "No"
   )
 ```
 
-Column {data-width=1000}
+Column {data-width=800}
 -----------------------------------------------------------------------
 
 ### Map of Police Killings
@@ -105,32 +103,24 @@ mpv_case %>%
 Column {data-width=350}
 -----------------------------------------------------------------------
 
-### Chart B
+### Police Killings by State
 
 ```{r}
 renderPlotly({
   mpv_case %>% 
-    count(charges) %>% 
     filter(
       charges == input[["charges_choice"]],
       MI == input[["mi_choice"]],
       year %in% input[["year_range"]][1]:input[["year_range"]][2]) %>% 
+  count(state) %>% 
+  arrange(desc(n)) %>% 
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, n)
+  ) %>% 
     plot_ly(
-      y = ~n, x = ~charges, color = ~charges,
+      y = ~n, x = ~state, color = ~state,
       type = "bar", colors = "viridis")
-})
-
-renderPlotly({
-nyc_airbnb %>% 
-  filter(
-      neighbourhood_group == input[["borough_choice"]],
-      price %in% input[["price_range"]][1]:input[["price_range"]][2],
-      room_type == input[["room_choice"]]) %>% 
-  count(neighbourhood) %>% 
-  mutate(neighbourhood = fct_reorder(neighbourhood, n)) %>% 
-  plot_ly(
-  x = ~neighbourhood, y = ~n, color = ~neighbourhood, 
-  type = "bar", colors = "viridis")
 })
 ```
 
