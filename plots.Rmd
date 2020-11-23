@@ -335,8 +335,7 @@ income_df =
      estimate_households_median_income_dollars > 75000 ~ "Very High"
    ),
    income_class = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
-  ) %>% 
-  view()
+  )
 
 top_disparity = 
   income_df %>% 
@@ -383,11 +382,16 @@ disparity_plot3 =
   geom_col() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-#violin plots
+#violin plots (not great, still in progress)
 
 income_violin =
   income_df %>% 
   ggplot(aes(x = income_class, y = estimate_households_mean_income_dollars, fill = income_class)) + 
+  geom_violin()
+
+state_plot = 
+  income_df %>%
+  ggplot(aes(x = state, y = disparity_value)) + 
   geom_violin()
 ```
 

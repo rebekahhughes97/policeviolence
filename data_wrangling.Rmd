@@ -470,15 +470,15 @@ disparity_plot3 =
   geom_col() +
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
 
-mpv_add = 
-mpv_final %>% 
-  mutate(
-    county = paste(county, "County", sep = " "),
-    county = case_when(
-      state == "LA" ~ str_replace(county, "County", "Parish"),
-      state == "PR" ~ str_replace(county, "County", "Municipio"),
-      TRUE ~ as.character(county)
-  ))
+# mpv_add = 
+# mpv_final %>% 
+#   mutate(
+#     county = paste(county, "County", sep = " "),
+#     county = case_when(
+#       state == "LA" ~ str_replace(county, "County", "Parish"),
+#       state == "PR" ~ str_replace(county, "County", "Municipio"),
+#       TRUE ~ as.character(county)
+#   ))
 
 ```
 
