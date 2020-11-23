@@ -310,3 +310,84 @@ sex_data %>%
 
 ```
 
+```{r}
+income_df =
+  read_csv("./data/acs_income_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  select(
+      -c( 
+         starts_with("margin_of_error"), 
+         starts_with("estimate_families"), 
+         starts_with("estimate_married"), 
+         starts_with("estimate_nonfamily"), 
+         starts_with("estimate_households_percent"))
+      ) %>%
+  mutate(
+    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) %>% 
+  mutate(
+   income_class =
+    case_when(
+     estimate_households_median_income_dollars < 55000 ~ "Very Low",
+     estimate_households_median_income_dollars %in% 55000:59999 ~ "Low",
+     estimate_households_median_income_dollars %in% 60000:64999 ~ "Middle",
+     estimate_households_median_income_dollars %in% 65000:74999 ~ "High",
+     estimate_households_median_income_dollars > 75000 ~ "Very High"
+   ),
+   income_class = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
+  ) %>% 
+  view()
+
+top_disparity = 
+  income_df %>% 
+  select(county, state, disparity_value) %>% 
+  arrange(desc(disparity_value)) %>% 
+  top_n(10) %>% 
+  knitr::kable()
+
+disparity_plot =
+  income_df %>% 
+    ggplot(aes(x = disparity_value)) + 
+    geom_histogram()
+
+#Top 10 wealth disparity
+
+disparity_plot2 =
+  income_df %>% 
+  group_by(state) %>% 
+  summarise(
+    mean_disparity = mean(disparity_value)
+  ) %>% 
+  top_n(-10) %>% 
+  mutate(
+    state = fct_reorder(state, mean_disparity)
+  ) %>% 
+  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+
+#Bottom 10 wealth disparity
+
+disparity_plot3 =
+  income_df %>% 
+  group_by(state) %>% 
+  summarise(
+    mean_disparity = mean(disparity_value)
+  ) %>% 
+  top_n(10) %>% 
+  mutate(
+    state = fct_reorder(state, mean_disparity)
+  ) %>% 
+  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
+  geom_col() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+
+#violin plots
+
+income_violin =
+  income_df %>% 
+  ggplot(aes(x = income_class, y = estimate_households_mean_income_dollars, fill = income_class)) + 
+  geom_violin()
+```
+
