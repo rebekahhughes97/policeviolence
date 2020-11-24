@@ -431,6 +431,7 @@ mutate(
     county = str_trim(county, side = "right"),
     state = str_trim(state, side = "left"))
 
+<<<<<<< HEAD
 lat_long2 =
   read_csv("./data/uscities.csv") %>% 
   mutate(state = state_id) %>% 
@@ -445,6 +446,17 @@ build_df =
 
 #MPV data and non-tidy income data csv
 write_csv(build_df, "./data/build_df.csv")
+=======
+mpv_add = 
+read_csv("./data/mpv_final.csv") %>% 
+  mutate(
+    county = paste(county, "County", sep = " "),
+    county = case_when(
+      state == "LA" ~ str_replace(county, "County", "Parish"),
+      state == "PR" ~ str_replace(county, "County", "Municipio"),
+      TRUE ~ as.character(county)
+  )) %>% view()
+>>>>>>> 6fee9e0fe2a6d98dd0947c739e8f09ee22284933
 
 ```
 
