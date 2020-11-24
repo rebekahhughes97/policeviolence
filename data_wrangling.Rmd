@@ -412,73 +412,39 @@ income_df =
          starts_with("estimate_households_percent"))
       ) %>%
   mutate(
-    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) 
-
-# mutate(
-#    income_class =
-#     case_when(
-#  estimate_households_mean_income_dollars < 48500 ~ "Low",
-#      estimate_households_mean_income_dollars %in% 48500:145500 ~ "Middle",
-#      estimate_households_mean_income_dollars > 145500 ~ "High"
-#    )) 
-
-# mutate(
-#    income_class =
-#     case_when(
-#  estimate_households_median_income_dollars < 48500 ~ "Low",
-#      estimate_households_median_income_dollars %in% 48500:145500 ~ "Middle",
-#      estimate_households_median_income_dollars > 145500 ~ "High"
-#    )) 
-
-top_disparity = 
-  income_df %>% 
-  select(county, state, disparity_value) %>% 
-  arrange(desc(disparity_value)) %>% 
-  top_n(10) %>% 
-  knitr::kable()
-
-disparity_plot =
-  income_df %>% 
-    ggplot(aes(x = disparity_value)) + 
-    geom_histogram()
-
-disparity_plot2 =
-  income_df %>% 
-  group_by(state) %>% 
-  summarise(
-    mean_disparity = mean(disparity_value)
-  ) %>% 
-  top_n(-10) %>% 
+    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) %>% 
+mutate(
+   income_class =
+    case_when(
+     estimate_households_median_income_dollars < 55000 ~ "Very Low",
+     estimate_households_median_income_dollars %in% 55000:59999 ~ "Low",
+     estimate_households_median_income_dollars %in% 60000:64999 ~ "Middle",
+     estimate_households_median_income_dollars %in% 65000:74999 ~ "High",
+     estimate_households_median_income_dollars > 75000 ~ "Very High"
+   ),
+   income_class = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
+  ) %>%
   mutate(
-    state = fct_reorder(state, mean_disparity)
-  ) %>% 
-  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
-  geom_col() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+    county = str_replace(county, " County", ""),
+    county = str_replace(county, " Parish", ""),
+    county = str_replace(county, " Borough", ""),
+    county = str_trim(county, side = "right"),
+    state = str_trim(state, side = "left"))
 
-disparity_plot3 =
-  income_df %>% 
-  group_by(state) %>% 
-  summarise(
-    mean_disparity = mean(disparity_value)
-  ) %>% 
-  top_n(10) %>% 
-  mutate(
-    state = fct_reorder(state, mean_disparity)
-  ) %>% 
-  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
-  geom_col() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+lat_long2 =
+  read_csv("./data/uscities.csv") %>% 
+  mutate(state = state_id) %>% 
+  select(city, lat, lng, state, state_name)
 
-# mpv_add = 
-# mpv_final %>% 
-#   mutate(
-#     county = paste(county, "County", sep = " "),
-#     county = case_when(
-#       state == "LA" ~ str_replace(county, "County", "Parish"),
-#       state == "PR" ~ str_replace(county, "County", "Municipio"),
-#       TRUE ~ as.character(county)
-#   ))
+mpv_final2 = left_join(mpv_df, lat_long2, by = c("city" = "city", "state" = "state"))
+
+#combines MPV data and non-tidy income data
+build_df = 
+  left_join(mpv_final2, income_df, 
+            by = c("county" = "county", "state_name" = "state"))
+
+#MPV data and non-tidy income data csv
+write_csv(build_df, "./data/build_df.csv")
 
 ```
 

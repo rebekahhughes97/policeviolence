@@ -96,53 +96,358 @@ write_csv(usa_df, "./data/usa_tidy.csv")
 
 #### Age and Sex
 
+Using the ACS age/sex dataset to create an age only dataset:
+
 ``` r
-age_df =
+# getting the total ages by county and tidying
+
+age_total_df =
   read_csv("./data/acs_age_county.csv", skip = 1) %>% 
   janitor::clean_names() %>% 
-  select(-c(4, 41:80, 117:156, 193:232, 269:308, 345:384, 421:458, starts_with("margin_of_error"))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>% view()
+  select(c(1:3, starts_with("estimate_total_total"))) %>% 
+  select(-c("estimate_total_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
   pivot_longer(
-     estimate_total_total_population_age_under_5_years:estimate_total_total_population_age_85_years_and_over,
-     names_to = "age",
-     values_to = "population_totals",
-     names_prefix = "estimate_total_total_population_age"
-    ) %>% view()
-# error: says my variable isn't found 
-   pivot_longer(
-     cols = starts_with("estimate_percent_total"),
-     names_to = "age_2",
-     values_to = "population_percent", 
-     names_prefix = "estimate_percent_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_male_total"),
-     names_to = "age_4",
-     values_to = "male_totals", 
-     names_prefix = "estimate_male_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_percent_male_total"),
-     names_to = "age_6",
-     values_to = "male_percent", 
-     names_prefix = "estimate_percent_male_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_female_total"),
-     names_to = "age_8",
-     values_to = "female_totals", 
-     names_prefix = "estimate_female_total_population_age"
-     ) %>% 
-   pivot_longer(
-     cols = starts_with("estimate_percent_female_total"),
-     names_to = "age_10",
-     values_to = "female_percent", 
-     names_prefix = "estimate_percent_female_total_population_age"
-     ) %>% 
-view()
+    4:21,
+    names_to = "age",
+    values_to = "total",
+    names_prefix = "estimate_total_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age)
+  ) %>% view()
 ```
 
-#### Age and Sex\_MM edits
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   `Margin of Error!!Total!!Total population` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+    ##   # ... with 161 more columns
+    ## )
+
+    ## See spec(...) for full column specifications.
+
+``` r
+# getting the percentage of ages by county and tidying
+
+age_percent_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_percent_total"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_percent_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "percent",
+    names_prefix = "estimate_percent_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age)
+  ) %>% view()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   `Margin of Error!!Total!!Total population` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+    ##   # ... with 161 more columns
+    ## )
+    ## See spec(...) for full column specifications.
+
+``` r
+# joining the total and percentages together into one dataset
+
+age_df = 
+  left_join(age_total_df, age_percent_df, by = c("id", "county", "state", "age")) %>% view()
+  
+# export tidy age dataset
+
+write_csv(age_df, "./data/age_tidy.csv")
+```
+
+Using the ACS age/sex dataset to create an age by sex dataset:
+
+``` r
+# read in total for males by age
+
+male_total_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_male_total"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_male_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "total",
+    names_prefix = "estimate_male_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
+    sex = "male"
+  ) %>% view()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   `Margin of Error!!Total!!Total population` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+    ##   # ... with 161 more columns
+    ## )
+
+    ## See spec(...) for full column specifications.
+
+``` r
+# read in total for females by age
+
+female_total_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_female_total"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "total",
+    names_prefix = "estimate_female_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
+    sex = "female"
+  ) %>% view()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   `Margin of Error!!Total!!Total population` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+    ##   # ... with 161 more columns
+    ## )
+    ## See spec(...) for full column specifications.
+
+``` r
+# bind male/female total dfs together
+
+sex_total_df =
+  bind_rows(male_total_df, female_total_df) %>% 
+  relocate(id, county, state, age, sex) %>% 
+  view()
+
+# read in percent for males by age
+
+male_percent_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_percent_male"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_percent_male_total_population", contains(c("selected_age_categories", "summary_indicators", "allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "percent",
+    names_prefix = "estimate_percent_male_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
+    sex = "male"
+  ) %>% view()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   `Margin of Error!!Total!!Total population` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+    ##   # ... with 161 more columns
+    ## )
+    ## See spec(...) for full column specifications.
+
+``` r
+# read in percent for females by age
+
+female_percent_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with("estimate_percent_female"))) %>% 
+  select(-c("estimate_total_total_population", "estimate_percent_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
+  pivot_longer(
+    4:21,
+    names_to = "age",
+    values_to = "percent",
+    names_prefix = "estimate_percent_female_total_population_age_"
+  ) %>%
+  mutate(
+    age = str_replace_all(age, "_", " "),
+    age = str_replace(age, "years", ""),
+    age = str_replace_all(age, "under 5", "0-5"),
+    age = str_replace_all(age, "85  and over", "85+"),
+    age = as.factor(age),
+    sex = "female"
+  ) %>% view()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   `Margin of Error!!Total!!Total population` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+    ##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+    ##   # ... with 161 more columns
+    ## )
+    ## See spec(...) for full column specifications.
+
+``` r
+# bind male/female percent dfs together
+
+sex_percent_df =
+  bind_rows(male_percent_df, female_percent_df) %>% 
+  relocate(id, county, state, age, sex) %>% 
+  view()
+
+# join percent and total dfs together
+
+sex_df = 
+  left_join(sex_total_df, sex_percent_df, by = c("id", "county", "state", "age", "sex")) %>% view()
+  
+# export sex by age dataset
+write_csv(sex_df, "./data/age_sex_tidy.csv")
+```
+
+Age dataset (not tidy for analysis potentially)
 
 ``` r
 age_df =
@@ -226,7 +531,9 @@ age_df =
   )
 ```
 
-## ACS Income
+#### ACS Income
+
+Tidy income dataset:
 
 ``` r
 income_df =
@@ -234,7 +541,7 @@ income_df =
   janitor::clean_names() %>% 
   separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
   select(
-      -c(id, 
+      -c( 
          starts_with("margin_of_error"), 
          starts_with("estimate_families"), 
          starts_with("estimate_married"), 
@@ -242,7 +549,27 @@ income_df =
          starts_with("estimate_households_percent"))
       ) %>%
   mutate(
-    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) 
+    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars,
+    median_income = estimate_households_mean_income_dollars,
+    mean_income = estimate_households_median_income_dollars
+    ) %>% 
+  pivot_longer(
+    5:14,
+    names_to = "total_income",
+    names_prefix = "estimate_households_total_",
+    values_to = "estimate_households"
+  ) %>% 
+  select(-c(estimate_households_total, estimate_households_mean_income_dollars, estimate_households_median_income_dollars)) %>%
+  relocate(c(id, county, state, total_income, estimate_households, mean_income, median_income)) %>% 
+  mutate(
+    total_income = str_replace_all(total_income, "_", " "),
+    total_income = str_replace_all(total_income, "less than 10 000", "0-10,000"),
+    total_income = str_replace_all(total_income, "200 000 or more", "200,000+"),
+    total_income = str_replace_all(total_income, " to ", "-"),
+    total_income = str_replace_all(total_income, " ", ","),
+    total_income = as.factor(total_income)
+  ) %>% 
+  view()
 ```
 
     ## Parsed with column specification:
@@ -274,89 +601,164 @@ income_df =
     ## See spec(...) for full column specifications.
 
 ``` r
-# mutate(
-#    income_class =
-#     case_when(
-#  estimate_households_mean_income_dollars < 48500 ~ "Low",
-#      estimate_households_mean_income_dollars %in% 48500:145500 ~ "Middle",
-#      estimate_households_mean_income_dollars > 145500 ~ "High"
-#    )) 
-
-# mutate(
-#    income_class =
-#     case_when(
-#  estimate_households_median_income_dollars < 48500 ~ "Low",
-#      estimate_households_median_income_dollars %in% 48500:145500 ~ "Middle",
-#      estimate_households_median_income_dollars > 145500 ~ "High"
-#    )) 
-
-top_disparity = 
-  income_df %>% 
-  select(county, state, disparity_value) %>% 
-  arrange(desc(disparity_value)) %>% 
-  top_n(10) %>% 
-  knitr::kable()
+# export tidy income dataset
+write_csv(income_df, "./data/income_tidy.csv")
 ```
 
-    ## Selecting by disparity_value
+Income dataset and plots (not tidy)
 
 ``` r
-disparity_plot =
-  income_df %>% 
-    ggplot(aes(x = disparity_value)) + 
-    geom_histogram()
-
-disparity_plot2 =
-  income_df %>% 
-  group_by(state) %>% 
-  summarise(
-    mean_disparity = mean(disparity_value)
-  ) %>% 
-  top_n(-10) %>% 
+income_df =
+  read_csv("./data/acs_income_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  select(
+      -c( 
+         starts_with("margin_of_error"), 
+         starts_with("estimate_families"), 
+         starts_with("estimate_married"), 
+         starts_with("estimate_nonfamily"), 
+         starts_with("estimate_households_percent"))
+      ) %>%
   mutate(
-    state = fct_reorder(state, mean_disparity)
-  ) %>% 
-  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
-  geom_col() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) %>% 
+mutate(
+   income_class =
+    case_when(
+     estimate_households_median_income_dollars < 55000 ~ "Very Low",
+     estimate_households_median_income_dollars %in% 55000:59999 ~ "Low",
+     estimate_households_median_income_dollars %in% 60000:64999 ~ "Middle",
+     estimate_households_median_income_dollars %in% 65000:74999 ~ "High",
+     estimate_households_median_income_dollars > 75000 ~ "Very High"
+   ),
+   income_class = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
+  ) %>%
+  mutate(
+    county = str_replace(county, " County", ""),
+    county = str_replace(county, " Parish", ""),
+    county = str_replace(county, " Borough", ""),
+    county = str_trim(county, side = "right"),
+    state = str_trim(state, side = "left"))
 ```
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_character(),
+    ##   `Estimate!!Households!!Total` = col_double(),
+    ##   `Margin of Error!!Households!!Total` = col_double(),
+    ##   `Estimate!!Households!!Total!!Less than $10,000` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!Less than $10,000` = col_double(),
+    ##   `Estimate!!Households!!Total!!$10,000 to $14,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$10,000 to $14,999` = col_double(),
+    ##   `Estimate!!Households!!Total!!$15,000 to $24,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$15,000 to $24,999` = col_double(),
+    ##   `Estimate!!Households!!Total!!$25,000 to $34,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$25,000 to $34,999` = col_double(),
+    ##   `Estimate!!Households!!Total!!$35,000 to $49,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$35,000 to $49,999` = col_double(),
+    ##   `Estimate!!Households!!Total!!$50,000 to $74,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$50,000 to $74,999` = col_double(),
+    ##   `Estimate!!Households!!Total!!$75,000 to $99,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$75,000 to $99,999` = col_double(),
+    ##   `Estimate!!Households!!Total!!$100,000 to $149,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$100,000 to $149,999` = col_double(),
+    ##   `Estimate!!Households!!Total!!$150,000 to $199,999` = col_double(),
+    ##   `Margin of Error!!Households!!Total!!$150,000 to $199,999` = col_double()
+    ##   # ... with 39 more columns
+    ## )
 
-    ## Selecting by mean_disparity
+    ## See spec(...) for full column specifications.
 
 ``` r
-disparity_plot3 =
-  income_df %>% 
-  group_by(state) %>% 
-  summarise(
-    mean_disparity = mean(disparity_value)
-  ) %>% 
-  top_n(10) %>% 
-  mutate(
-    state = fct_reorder(state, mean_disparity)
-  ) %>% 
-  ggplot(aes(x = state, y = mean_disparity, fill = state)) + 
-  geom_col() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+lat_long2 =
+  read_csv("./data/uscities.csv") %>% 
+  mutate(state = state_id) %>% 
+  select(city, lat, lng, state, state_name)
 ```
 
-    ## `summarise()` ungrouping output (override with `.groups` argument)
-    ## Selecting by mean_disparity
+    ## Parsed with column specification:
+    ## cols(
+    ##   city = col_character(),
+    ##   city_ascii = col_character(),
+    ##   state_id = col_character(),
+    ##   state_name = col_character(),
+    ##   county_fips = col_character(),
+    ##   county_name = col_character(),
+    ##   lat = col_double(),
+    ##   lng = col_double(),
+    ##   population = col_double(),
+    ##   density = col_double(),
+    ##   source = col_character(),
+    ##   military = col_logical(),
+    ##   incorporated = col_logical(),
+    ##   timezone = col_character(),
+    ##   ranking = col_double(),
+    ##   zips = col_character(),
+    ##   id = col_double()
+    ## )
 
 ``` r
-mpv_add = 
-mpv_final %>% 
-  mutate(
-    county = paste(county, "County", sep = " "),
-    county = case_when(
-      state == "LA" ~ str_replace(county, "County", "Parish"),
-      state == "PR" ~ str_replace(county, "County", "Municipio"),
-      TRUE ~ as.character(county)
-  ))
+mpv_final2 = left_join(mpv_df, lat_long2, by = c("city" = "city", "state" = "state"))
+
+#combines MPV data and non-tidy income data
+build_df = 
+  left_join(mpv_final2, income_df, 
+            by = c("county" = "county", "state_name" = "state"))
+
+#MPV data and non-tidy income data csv
+write_csv(build_df, "./data/build_df.csv")
 ```
 
 #### ACS Race
+
+Tidy race dataset
+
+``` r
+race_df =
+  read_csv("./data/acs_race_county.csv", skip = 1, na = "null") %>% 
+  janitor::clean_names() %>% 
+  separate(geographic_area_name, 
+           c("county", "state"), sep = ",") %>% 
+  select(-c(starts_with("margin_of_error"),
+            estimate_total_two_or_more_races,
+            estimate_total_two_or_more_races_two_races_including_some_other_race,
+            estimate_total_two_or_more_races_two_races_excluding_some_other_race_and_three_or_more_races)) %>% 
+  rename(
+    total_pop = estimate_total,
+    white = estimate_total_white_alone,
+    black = estimate_total_black_or_african_american_alone,
+    am_in_alask = estimate_total_american_indian_and_alaska_native_alone,
+    asian = estimate_total_asian_alone,
+    hawaii_pi = estimate_total_native_hawaiian_and_other_pacific_islander_alone,
+    other = estimate_total_some_other_race_alone
+  ) %>% 
+  pivot_longer(
+    5:10,
+    names_to = "race",
+    values_to = "total"
+  ) %>% 
+  mutate(
+    prop = total / total_pop * 100
+    ) %>% 
+  view()
+```
+
+    ## Parsed with column specification:
+    ## cols(
+    ##   .default = col_double(),
+    ##   id = col_character(),
+    ##   `Geographic Area Name` = col_character(),
+    ##   `Margin of Error!!Total:` = col_character()
+    ## )
+
+    ## See spec(...) for full column specifications.
+
+``` r
+# export tidy race dataset
+write_csv(race_df, "./data/race_tidy.csv")
+```
+
+Race dataset (not tidy)
 
 ``` r
 race_df =
@@ -385,9 +787,9 @@ race_df =
     prop_hawaii_pi = hawaii_pi / total_pop * 100,
     prop_other = other / total_pop * 100) %>% 
   select(
-    id, total_pop, white, prop_white, black, prop_black, asian, prop_asian, am_in_alask, prop_am_in_alask, hawaii_pi,
+    id, county, state, total_pop, white, prop_white, black, prop_black, asian, prop_asian, am_in_alask, prop_am_in_alask, hawaii_pi,
     prop_hawaii_pi, other, prop_other
-  )
+  ) %>% view()
 ```
 
     ## Parsed with column specification:
