@@ -1,5 +1,5 @@
 ---
-title: "Police Killings 2013-2020"
+title: "Shiny Dashboard"
 output: 
   flexdashboard::flex_dashboard:
     orientation: columns
@@ -29,7 +29,17 @@ mpv_case =
       symptoms_of_mental_illness == "No" ~ "No",
       symptoms_of_mental_illness == "Unknown" ~ "NA",
       symptoms_of_mental_illness == "Drug or alcohol use" ~ "No"))
+
+protest_data =
+  read_csv("./data/usa_tidy.csv") %>% 
+  mutate(
+    month_name = recode(month,
+                        "5" = "May", "6" = "June", "7" = "July", "8" = "August", "9" = "September", "10" = "October")
+  )
 ```
+
+Police Killings 2013-2020
+===================================== 
 
 Options {.sidebar}
 -----------------------------------------------------------------------
@@ -124,8 +134,126 @@ renderPlotly({
 })
 ```
 
-### Chart C
+### Top 10 Cities for Police Killings
 
 ```{r}
-
+renderPlotly({
+  mpv_case %>% 
+    filter(
+      charges == input[["charges_choice"]],
+      MI == input[["mi_choice"]],
+      year %in% input[["year_range"]][1]:input[["year_range"]][2]) %>% 
+    count(city) %>% 
+    arrange(desc(n)) %>% 
+    slice(1:10) %>% 
+    plot_ly(
+      y = ~n, x = ~city, color = ~city,
+      type = "bar", colors = "viridis")
+})
 ```
+
+
+2020 Protests
+===================================== 
+
+Options {.sidebar}
+-----------------------------------------------------------------------
+
+```{r}
+month_name = 
+  protest_data %>% 
+  distinct(month_name) %>% 
+  pull()
+
+event_type = 
+  protest_data %>% 
+  distinct(event_type) %>% 
+  pull()
+
+selectInput(
+  "month_choice", 
+  h3("Month"),
+  choices = month_name,
+  selected = "May"
+  )
+
+selectInput(
+  "event_choice", 
+  h3("Event Type"),
+  choices = event_type,
+  selected = "Protest"
+  )
+```
+
+Column {data-width=800}
+-----------------------------------------------------------------------
+
+### Map of Protests and Related Events
+
+```{r}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = protest_data$month)
+
+renderLeaflet({
+protest_data %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("City: ", city,
+                "<br>Date: ", day,
+                "<br>Fatalities: ", fatalities)) %>%
+  filter(
+    month_name == input[["month_choice"]],
+    event_type == input[["event_choice"]]) %>% 
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    radius = 0.5,
+    popup = ~lab)
+})
+```
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+### Protests by State
+
+```{r}
+renderPlotly({
+  protest_data %>% 
+    filter(
+      month_name == input[["month_choice"]],
+      event_type == input[["event_choice"]]) %>% 
+  count(state) %>% 
+  arrange(desc(n)) %>% 
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, n)
+  ) %>% 
+    plot_ly(
+      y = ~n, x = ~state, color = ~state,
+      type = "bar", colors = "viridis") %>% 
+    layout(yaxis = list(range = c(0, 400)), showlegend = FALSE)
+})
+```
+
+### Cities with the Highest Fatalities
+
+```{r}
+renderPlotly({
+  protest_data %>% 
+    filter(
+      month_name == input[["month_choice"]],
+      event_type == input[["event_choice"]]) %>% 
+    count(city) %>% 
+    arrange(desc(n)) %>% 
+    slice(1:5) %>% 
+    plot_ly(
+      y = ~n, x = ~city, color = ~city,
+      type = "bar", colors = "viridis") %>% 
+    layout(showlegend = FALSE)
+})
+```
+
