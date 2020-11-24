@@ -1,0 +1,12 @@
+name: YML
+output_dir: "."
+navbar:
+  title: "Home"
+  right:
+    - text: "About"
+      href: about.html
+    - text: "Dashboard"
+      href: dashboard.html
+output:
+  html_document:
+    theme: flatly
