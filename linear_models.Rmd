@@ -25,122 +25,26 @@ scale_fill_discrete = scale_fill_viridis_d
 set.seed(1)
 ```
 
-## Model: Outcome = Charges
+## Importing Data
 
 ```{r}
 mpv_df_charges =
-  read_csv("./data/mpv_final.csv") %>% 
+  read_csv("./data/mpv_final.csv", na = c("", "NA", "Unknown")) %>% 
   mutate(
     charges = case_when(
       startsWith(criminal_charges, "Charged") ~ 1,
       startsWith(criminal_charges, "No") ~ 0),
+    resolved = 
+           ifelse(startsWith(disposition, "Pending"), 
+                  {resolved = 0}, 
+                  {resolved = 1}),
     race_rec = case_when(
-      race == "Unknown race" ~ "Unknown",
-      race == "unknown race" ~ "Unknown",
       race == "Native American" ~ "Other",
       race == "Pacific Islander" ~ "Other",
       race == "Black" ~ "Black",
-      race == "Hispanic" ~ "Hispanic",
+      race == "Hispanic" ~ "Other",
       race == "White" ~ "White",
-      race == "Asian" ~ "Asian"),
-    race_rec = fct_infreq(race_rec),
-    age_rec = 
-      cut(age, breaks = c(0,20,40,60,100), right = FALSE),
-    age_rec = fct_infreq(age_rec),
-    MI = case_when(
-      symptoms_of_mental_illness == "Yes" ~ "Yes",
-      symptoms_of_mental_illness == "No" ~ "No",
-      symptoms_of_mental_illness == "Unknown" ~ "Unknown",
-      symptoms_of_mental_illness == "Drug or alcohol use" ~ "No"),
-    gunshot = case_when(
-      cause_of_death == "Asphyxiated" ~ "No",
-      cause_of_death == "Pepper Spray, Physical Restraint" ~ "No",
-      cause_of_death == "Beaten Chemical agent/Pepper spray" ~ "No",
-      cause_of_death == "Gunshot" ~ "Yes",
-      cause_of_death == "Gunshot, Bean Bag Gun" ~ "Yes",
-      cause_of_death == "Gunshot, Beanbag Gun" ~ "Yes",
-      cause_of_death == "Gunshot, Pepper Spray" ~ "Yes",
-      cause_of_death == "Gunshot, Police Dog" ~ "Yes",
-      cause_of_death == "Gunshot, Stabbed" ~ "Yes",
-      cause_of_death == "Gunshot, Taser" ~ "Yes",
-      cause_of_death == "Gunshot, Unspecified Less Lethal Weapon" ~ "Yes",
-      cause_of_death == "Gunshot, Vehicle" ~ "Yes",
-      cause_of_death == "Other" ~ "No",
-      cause_of_death == "Pepper Spray" ~ "No",
-    )) %>% 
-  filter(MI != "Unknown", race_rec != "Unknown", gender != "Transgender", gender != "Unknown") %>% 
-  select(MI, age_rec, race_rec, charges, gender, gunshot)
-
-xtabs(~charges + MI, data = mpv_df_charges)
-xtabs(~charges + gender, data = mpv_df_charges)
-xtabs(~gunshot + MI, data = mpv_df_charges)
-```
-
-Modeling charges laid as outcome:
-
-```{r}
-fit = glm(charges ~ race_rec, data = mpv_df_charges, family = "binomial")
-
-broom::tidy(fit) %>% 
-  select(-std.error, -statistic) %>% 
-  mutate(
-    term = str_replace(term, "race_rec", "Race: ")
-  ) %>% 
-  knitr::kable(digits = 3)
-```
-
-```{r}
-fit = glm(charges ~ age_rec, data = mpv_df_charges, family = "binomial")
-
-broom::tidy(fit) %>% 
-  select(-std.error, -statistic) %>% 
-  mutate(
-    term = str_replace(term, "age_rec", "Age: ")
-  ) %>% 
-  knitr::kable(digits = 3)
-```
-
-```{r}
-fit = glm(charges ~ gender, data = mpv_df_charges, family = "binomial")
-
-broom::tidy(fit) %>% 
-  select(-std.error, -statistic) %>% 
-  mutate(
-    term = str_replace(term, "gender", "Gender: ")
-  ) %>% 
-  knitr::kable(digits = 3)
-```
-
-```{r}
-fit = glm(charges ~ gunshot, data = mpv_df_charges, family = "binomial")
-
-broom::tidy(fit) %>% 
-  select(-std.error, -statistic) %>% 
-  mutate(
-    term = str_replace(term, "gunshot", "Gunshot: ")
-  ) %>% 
-  knitr::kable(digits = 3)
-```
-
-## Model 2: Outcome = MI
-
-
-```{r}
-mpv_df_mi =
-  read_csv("./data/mpv_final.csv") %>% 
-  mutate(
-    charges = case_when(
-      startsWith(criminal_charges, "Charged") ~ 1,
-      startsWith(criminal_charges, "No") ~ 0),
-    race_rec = case_when(
-      race == "Unknown race" ~ "Unknown",
-      race == "unknown race" ~ "Unknown",
-      race == "Native American" ~ "Other",
-      race == "Pacific Islander" ~ "Other",
-      race == "Black" ~ "Black",
-      race == "Hispanic" ~ "Hispanic",
-      race == "White" ~ "White",
-      race == "Asian" ~ "Asian"),
+      race == "Asian" ~ "Other"),
     race_rec = fct_infreq(race_rec),
     age_rec = 
       cut(age, breaks = c(0,20,40,60,100), right = FALSE),
@@ -165,55 +69,110 @@ mpv_df_mi =
       cause_of_death == "Other" ~ "No",
       cause_of_death == "Pepper Spray" ~ "No",
     )) %>% 
-  filter(MI != "Unknown", race_rec != "Unknown", gender != "Transgender", gender != "Unknown") %>% 
-  select(MI, age_rec, race_rec, charges, gender, gunshot)
-
-xtabs(~MI + gender, data = mpv_df_charges)
+  filter(race_rec != "Other", gender != "Transgender") %>% 
+  select(MI, age_rec, race_rec, charges, gender, gunshot, year, resolved)
 ```
 
-Modeling charges laid as outcome:
+## Model 1: Charges
+
+Modeling charges laid as outcome and race as the exposure:
 
 ```{r}
-fit_mi_race = glm(MI ~ race_rec, data = mpv_df_mi, family = "binomial")
+xtabs(~charges + race_rec, data = mpv_df_charges) %>% 
+  knitr::kable()
 
-broom::tidy(fit_mi_race) %>% 
-  select(-std.error, -statistic) %>% 
+glm(charges ~ race_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
   mutate(
-    term = str_replace(term, "race_rec", "Race: ")
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
   ) %>% 
-  knitr::kable(digits = 3)
-```
-
-```{r}
-fit_mi_gender = glm(MI ~ gender, data = mpv_df_mi, family = "binomial")
-
-broom::tidy(fit_mi_gender) %>% 
-  select(-std.error, -statistic) %>% 
+  select(term, OR, starts_with("CI")) %>% 
   mutate(
-    term = str_replace(term, "gender", "Gender: ")
-  ) %>% 
-  knitr::kable(digits = 3)
+    term = str_replace(term, "race_rec", "Race: ")) %>% 
+    knitr::kable(digits = 3)
 ```
 
-```{r}
-fit_mi_age = glm(MI ~ age_rec, data = mpv_df_mi, family = "binomial")
+Crude analyses show that, in instances where the victim of police violence is Black, the odds of charges being laid is increased by 112% (95% CI: 1.49, 3.03). 
 
-broom::tidy(fit_mi_age) %>% 
-  select(-std.error, -statistic) %>% 
-  mutate(
-    term = str_replace(term, "age_rec", "Age: ")
-  ) %>% 
-  knitr::kable(digits = 3)
-```
-
-## Hypothesis tests
-
-Testing influence of mental illness symptoms. THIS DOESN'T WORK - unclear why, will revisit.
+The following code chunk explores potential confounders.
 
 ```{r}
-fit_null = glm(MI ~ race_rec, data = mpv_df_mi, family = "binomial")
-fit_alt = glm(MI ~ race_rec + gender, data = mpv_df_mi, family = "binomial")
-
-anova(fit_null, fit_alt) %>% 
+#Year - Not significant, not further explored
+glm(charges ~ year, data = mpv_df_charges, family = binomial()) %>% 
   broom::tidy()
+
+#Gender - Significant, further explored
+glm(charges ~ gender, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy()
+
+glm(charges ~ race_rec + gender, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy()
+
+#Age - Not significant, not further explored
+glm(charges ~ age_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy()
+```
+
+Adjusted analysis included gender as a confounder.
+
+```{r}
+glm(charges ~ race_rec + gender, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+Adjusted analyses show that, in instances where the victim of police violence is Black, the odds of charges being laid is increased by 136% (95% CI: 1.65, 3.39).
+
+#### Sensitivity Analysis: Model 1
+
+We then opted to conducted a sensitivity analysis, exploring whether a pending investigation was the cause for what seems like a spuriously inflated OR. Therefore, we restricted the sample to only resolved cases.
+
+```{r}
+mpv_solved = 
+  mpv_df_charges %>% 
+  filter(resolved == "1")
+
+glm(charges ~ race_rec + gender, data = mpv_solved, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+Adjusted analyses show that, in instances where the victim of police violence is Black, the odds of charges being laid is increased by 128% (95% CI: 1.57, 3.32), adjusting for gender. Restricting to solved cases did not change the association.
+
+## Model 2: Symptoms of Mental Illness
+
+Modeling symptoms of mental illness as outcome.
+
+```{r}
+xtabs(~MI + gender, data = mpv_df_charges)
+
+glm(MI ~ gender, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "gender", "Gender: ")) %>% 
+    knitr::kable(digits = 3)
 ```
