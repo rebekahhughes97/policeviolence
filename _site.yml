@@ -2,21 +2,6 @@ name: "P8105 Final Website"
 output_dir: "."
 navbar:
 title: "Home"
-  right:
-    - text: "Background"
-      href: background.html
-    - text: "Police Violence"
-      menu:
-      - text: "Maps"
-        href: policeviolencemaps.html
-      - text: "Analysis"
-        href: policeviolenceanalysis.html
-    - text: "Protests"
-      menu:
-      - text: "Maps"
-        href: protestsemaps.html
-      - text: "Analysis"
-        href: protestsanalysis.html
 output:
   html_document:
     theme: flatly
