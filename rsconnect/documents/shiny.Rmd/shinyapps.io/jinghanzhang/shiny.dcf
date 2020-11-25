@@ -1,0 +1,10 @@
+name: shiny
+title:
+username:
+account: jinghanzhang
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3297491
+bundleId: 3902199
+url: https://jinghanzhang.shinyapps.io/shiny/
+when: 1606264263.49128

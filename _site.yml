@@ -1,7 +1,26 @@
 name: "P8105 Final Website"
 output_dir: "."
 navbar:
-title: "Home"
+  title: "Home"
+  right:
+    - text: "Background"
+      href: background.html
+    - text: "Analysis"
+      menu:
+        - text: "Police Violence"
+          href: 
+        - text: "Protests"
+          href: 
+    - text: "Interactive Maps"
+      menu:
+        - text: "Police Violence"
+          href: https://jinghanzhang.shinyapps.io/shiny/#section-police-killings-2013-2020
+        - text: "Protests"
+          href: https://jinghanzhang.shinyapps.io/shiny/#section-protests
+    - icon: fa-envelope fa-lg
+      href:
+    - icon: fa-github fa-lg
+      href: https://github.com/rebekahhughes97/p8105_final_proj.github.io.git
 output:
   html_document:
     theme: flatly
