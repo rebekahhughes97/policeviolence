@@ -257,3 +257,8 @@ renderPlotly({
 })
 ```
 
+```{r}
+  library(rsconnect)
+  rsconnect::deployApp('./shiny.Rmd')
+```
+
