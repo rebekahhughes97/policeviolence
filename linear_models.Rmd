@@ -176,3 +176,39 @@ glm(MI ~ gender, data = mpv_df_charges, family = binomial()) %>%
     term = str_replace(term, "gender", "Gender: ")) %>% 
     knitr::kable(digits = 3)
 ```
+
+Gender is significantly associated with MI; males are 40% less likely to exhibit symptoms of mental illness among those killed by police (OR: 0.60; 95% CI: 0.46, 0.78).
+
+```{r}
+glm(MI ~ race_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+Race is also significantly associated with symptoms of mental illness, in that Black individuals have 0.40 times the odds of reporting symptoms of mental illness (95% CI: 0.34, 0.46).
+
+#### Sensitivity Analysis: Model 2
+
+```{r}
+glm(MI ~ gender + race_rec, data = mpv_solved, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+After restricting to solved cases, gender was no longer significantly associated with symptoms of mental illness.
