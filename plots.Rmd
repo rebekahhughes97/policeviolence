@@ -144,13 +144,6 @@ animate(anim_scatter, renderer = gifski_renderer())
 # might be worth excluding 2020 because of incomplete data, it makes it look like the shootings are trending down
 ```
 
-## Plotly
-
-```{r}
-
-```
-
-
 
 # USA Protest Dataset
 
