@@ -1,5 +1,5 @@
 ---
-title: "Analysis of 2020 Protests in the US"
+title: "Exploratory Analysis of 2020 Protests in the US"
 output: 
   html_document:
     code_folding: hide
@@ -13,6 +13,7 @@ library(ggplot2)
 library(readr)
 library(readxl)
 library(patchwork)
+library(plotly)
 #you'll need to install the packages below in order to run animated plots or knit
 library(gganimate)
 library(gifski)
@@ -37,123 +38,78 @@ protest_data =
   read_csv("./data/usa_tidy.csv")
 ```
 
-Animated Scatter showing average number fatalities over the months by event type:
+Since early 2020, there has been a lot of media coverage of the Black Lives Matter protests in the United States. While there were peaceful protests occurring, it seemed that riots and events that turned violent were getting more media coverage, and therefore would appear to be occurring more than peaceful protests. The following plots show various ways to view the amount of protests that occurred in the United States between May and October 2020, and give perspective in the matter.
+
+### Proportion of Demonstrations that were Peaceful Protests vs. Riots in 2020
 
 ```{r, message=FALSE}
-##this needs to be changed
-
 anim_data =
-  protest_data %>% 
+  protest_data %>%
   group_by(month, event_type) %>% 
-  filter(event_type != "Battles") %>% 
+  filter(event_type %in% c("Protests", "Riots")) %>%
+  count(event_type) %>% 
   summarize(
-    max_death = max(fatalities)
+    prop_event = sum(n)/15215
   )
 
 anim_plot =
   anim_data %>% 
-  group_by(month) %>% 
-  ggplot(aes(x = month, y = max_death, color = event_type)) +
+  ggplot(aes(x = month, y = prop_event, color = event_type)) +
   geom_line() +
   geom_point() +
-  labs(title = "Number of Fatalities over Time by Event Type",
+  labs(title = "Proportion of Protest and Riot Events by Month",
        x = "Month",
-       y = "Max Number of Fatalities") +
+       y = "Proportion of Events") +
+  theme(plot.title = element_text(hjust = 0.5)) +
   transition_reveal(month)
 
 animate(anim_plot, renderer = gifski_renderer())
 ```
 
+As shown in the plot above, there were overall more peaceful protests than riots each month in the data. To us, this shows the power that the media has in shaping the perspective of individuals.
 
-2 bar charts showing the number of each event type compared to the number of each sub event type:
+### Number of each Event Type and Number of Each Event Subtype Recorded
 
 ```{r}
-bar_type =
-  protest_data %>% 
+protest_data %>% 
   group_by(event_type) %>% 
   count() %>% 
   ggplot(aes(x = event_type, y = n, fill = event_type)) +
   geom_col() +
   geom_text(aes(x = event_type, y = n, label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
   theme(axis.text.x = element_text(angle = 90),
-        legend.position = "right")
+        legend.position = "right") +
+  labs(x = "Event Type")
 
-bar_subtype =
-  protest_data %>% 
+protest_data %>% 
   group_by(sub_event_type) %>% 
   count() %>% 
   ggplot(aes(x = sub_event_type, y = n, fill = sub_event_type)) +
   geom_col() +
   geom_text(aes(x = sub_event_type, y = n, label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
   theme(axis.text.x = element_text(angle = 90),
-        legend.position = "right")
-
-bar_type / bar_subtype
+        legend.position = "right") +
+  labs(x = "Sub-Event Type")
 ```
 
-Scatter plots comparing fatalities each day over the course of each month:
+The first bar plot reiterates what was shown in the scatterplot above: there were far more protests recorded than any other type of event, contrary to what is often depicted. The second bar plot further breaks down the events in the first bar plot into sub-event types and shows that peaceful protests were again the type of event that happened overall far more than the other sub-event types.
+
+
+### Protest Events by State
 
 ```{r, message=FALSE}
-may =
-  protest_data %>% 
-  filter(month == 5) %>% 
-  group_by(day) %>% 
-  count(fatalities) %>% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = "Number of Fatalities in May",
-       y = "Fatalities")
-
-june =
-  protest_data %>% 
-  filter(month == 6) %>% 
-  group_by(day) %>% 
-  count(fatalities) %>% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = "Number of Fatalities in June",
-       y = "Fatalities")
-
-july = 
-  protest_data %>% 
-  filter(month == 7) %>% 
-  group_by(day) %>% 
-  count(fatalities) %>% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = "Number of Fatalities in July",
-       y = "Fatalities")
-
-august =
-  protest_data %>% 
-  filter(month == 8) %>% 
-  group_by(day) %>% 
-  count(fatalities) %>% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = "Number of Fatalities in August",
-       y = "Fatalities")
-
-sept =
-  protest_data %>% 
-  filter(month == 9) %>% 
-  group_by(day) %>% 
-  count(fatalities) %>% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = "Number of Fatalities in September",
-       y = "Fatalities")
-
-oct = 
-  protest_data %>% 
-  filter(month == 10) %>% 
-  group_by(day) %>% 
-  count(fatalities) %>% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = "Number of Fatalities in October",
-       y = "Fatalities")
-
-(may + june) / (july + august) / (sept + oct)
+protest_data %>% 
+  group_by(state, event_type) %>% 
+  filter(event_type == "Protests") %>% 
+  count(state) %>% 
+  arrange(desc(n)) %>%
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, n)
+  ) %>% 
+   plot_ly(
+      y = ~n, x = ~state, color = ~state,
+      type = "bar", colors = "viridis")
 ```
 
+The above plot depicts the number of protest events that occurred in each state between May and October 2020. Overall, there were far more protests in California than in any other state. Florida, Illinois, New York, Pennsylvania, and Texas also had larger numbers of protests during the data coverage period. This is not surprising given that these states have large populations and have big, highly populated cities.

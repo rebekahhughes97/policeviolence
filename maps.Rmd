@@ -10,6 +10,7 @@ library(tidyverse)
 library(leaflet)
 library(rvest)
 library(shiny)
+library(RColorBrewer)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -145,10 +146,67 @@ usa_protest %>%
  
 ```
 
-# ACS maps
+# ACS Income maps
 
+## Police Killings by Income Class
 ```{r}
+build_df =
+  read_csv("./data/build_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
 
+factpal <- colorFactor("RdYlGn", build_df %>% pull(income_class))
+
+build_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop = str_c("Cause of Death: ", cause_of_death,
+              "<br>Police Dept: ", police_dept,
+              "<br>Age: ", age, 
+              "<br>Year: ", year,
+              "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~factpal(income_class),
+    radius = 0.5,
+    popup = ~pop
+    )
 ```
 
+## Protest Data by Income Class
+```{r}
+protest_income_df =
+  read_csv("./data/protest_income_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
 
+factpal2 <- colorFactor("BuGn", protest_income_df %>% pull(income_class))
+
+protest_income_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop1 = str_c("City: ", city, "<br>Event Type: ", 
+               sub_event_type, "<br>Year: ", year, "<br>Fatalities: ", fatalities)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal2,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~factpal2(income_class),
+    radius = 0.5,
+    popup = ~pop1
+    )
+```

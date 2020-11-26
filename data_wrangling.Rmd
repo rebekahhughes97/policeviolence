@@ -446,6 +446,12 @@ build_df =
 #MPV data and non-tidy income data csv
 write_csv(build_df, "./data/build_df.csv")
 
+#combine non-tidy income data and protest data
+protest_income_df = 
+  left_join(usa_protest, income_df, 
+            by = c("county" = "county", "state" = "state"))
+
+write_csv(protest_income_df, "./data/protest_income_df.csv")
 ```
 
 #### ACS Race

@@ -11,7 +11,7 @@
 
 
 
-<title>Analysis of 2020 Protests in the US</title>
+<title>Exploratory Analysis of 2020 Protests in the US</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,6 +26,13 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<script src="site_libs/htmlwidgets-1.5.2/htmlwidgets.js"></script>
+<script src="site_libs/plotly-binding-4.9.2.1/plotly.js"></script>
+<script src="site_libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="site_libs/crosstalk-1.1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="site_libs/crosstalk-1.1.0.1/js/crosstalk.min.js"></script>
+<link href="site_libs/plotly-htmlwidgets-css-1.52.2/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="site_libs/plotly-main-1.52.2/plotly-latest.min.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
@@ -414,125 +421,85 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Analysis of 2020 Protests in the US</h1>
+<h1 class="title toc-ignore">Exploratory Analysis of 2020 Protests in the US</h1>
 
 </div>
 
 
-<p>Animated Scatter showing average number fatalities over the months by event type:</p>
+<p>Since early 2020, there has been a lot of media coverage of the Black Lives Matter protests in the United States. While there were peaceful protests occurring, it seemed that riots and events that turned violent were getting more media coverage, and therefore would appear to be occurring more than peaceful protests. The following plots show various ways to view the amount of protests that occurred in the United States between May and October 2020, and give perspective in the matter.</p>
+<div id="proportion-of-demonstrations-that-were-peaceful-protests-vs.-riots-in-2020" class="section level3">
+<h3>Proportion of Demonstrations that were Peaceful Protests vs. Riots in 2020</h3>
 <pre class="r"><code>anim_data =
-  protest_data %&gt;% 
+  protest_data %&gt;%
   group_by(month, event_type) %&gt;% 
-  filter(event_type != &quot;Battles&quot;) %&gt;% 
+  filter(event_type %in% c(&quot;Protests&quot;, &quot;Riots&quot;)) %&gt;%
+  count(event_type) %&gt;% 
   summarize(
-    av_death = mean(fatalities)
-  )</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;month&#39; (override with `.groups` argument)</code></pre>
-<pre class="r"><code>anim_plot =
+    prop_event = sum(n)/15215
+  )
+
+anim_plot =
   anim_data %&gt;% 
-  group_by(month) %&gt;% 
-  ggplot(aes(x = month, y = av_death, color = event_type)) +
+  ggplot(aes(x = month, y = prop_event, color = event_type)) +
   geom_line() +
   geom_point() +
-  labs(title = &quot;Average Number of Fatalities over Time by Event Type&quot;,
+  labs(title = &quot;Proportion of Protest and Riot Events by Month&quot;,
        x = &quot;Month&quot;,
-       y = &quot;Average Number of Fatalities&quot;) +
+       y = &quot;Proportion of Events&quot;) +
+  theme(plot.title = element_text(hjust = 0.5)) +
   transition_reveal(month)
 
 animate(anim_plot, renderer = gifski_renderer())</code></pre>
 <p><img src="analysis_protests_files/figure-html/unnamed-chunk-2-1.gif" width="90%" /></p>
-<p>2 bar charts showing the number of each event type compared to the number of each sub event type:</p>
-<pre class="r"><code>bar_type =
-  protest_data %&gt;% 
+<p>As shown in the plot above, there were overall more peaceful protests than riots each month in the data. To us, this shows the power that the media has in shaping the perspective of individuals.</p>
+</div>
+<div id="number-of-each-event-type-and-number-of-each-event-subtype-recorded" class="section level3">
+<h3>Number of each Event Type and Number of Each Event Subtype Recorded</h3>
+<pre class="r"><code>protest_data %&gt;% 
   group_by(event_type) %&gt;% 
   count() %&gt;% 
   ggplot(aes(x = event_type, y = n, fill = event_type)) +
   geom_col() +
   geom_text(aes(x = event_type, y = n, label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
   theme(axis.text.x = element_text(angle = 90),
-        legend.position = &quot;right&quot;)
-
-bar_subtype =
-  protest_data %&gt;% 
+        legend.position = &quot;right&quot;) +
+  labs(x = &quot;Event Type&quot;)</code></pre>
+<p><img src="analysis_protests_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
+<pre class="r"><code>protest_data %&gt;% 
   group_by(sub_event_type) %&gt;% 
   count() %&gt;% 
   ggplot(aes(x = sub_event_type, y = n, fill = sub_event_type)) +
   geom_col() +
   geom_text(aes(x = sub_event_type, y = n, label = n), position = position_dodge(width = 0.9), vjust = -0.25) +
   theme(axis.text.x = element_text(angle = 90),
-        legend.position = &quot;right&quot;)
-
-bar_type / bar_subtype</code></pre>
-<p><img src="analysis_protests_files/figure-html/unnamed-chunk-3-1.png" width="90%" /></p>
-<p>Scatter plots comparing fatalities each day over the course of each month:</p>
-<pre class="r"><code>may =
-  protest_data %&gt;% 
-  filter(month == 5) %&gt;% 
-  group_by(day) %&gt;% 
-  count(fatalities) %&gt;% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = &quot;Number of Fatalities in May&quot;,
-       y = &quot;Fatalities&quot;)
-
-june =
-  protest_data %&gt;% 
-  filter(month == 6) %&gt;% 
-  group_by(day) %&gt;% 
-  count(fatalities) %&gt;% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = &quot;Number of Fatalities in June&quot;,
-       y = &quot;Fatalities&quot;)
-
-july = 
-  protest_data %&gt;% 
-  filter(month == 7) %&gt;% 
-  group_by(day) %&gt;% 
-  count(fatalities) %&gt;% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = &quot;Number of Fatalities in July&quot;,
-       y = &quot;Fatalities&quot;)
-
-august =
-  protest_data %&gt;% 
-  filter(month == 8) %&gt;% 
-  group_by(day) %&gt;% 
-  count(fatalities) %&gt;% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = &quot;Number of Fatalities in August&quot;,
-       y = &quot;Fatalities&quot;)
-
-sept =
-  protest_data %&gt;% 
-  filter(month == 9) %&gt;% 
-  group_by(day) %&gt;% 
-  count(fatalities) %&gt;% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = &quot;Number of Fatalities in September&quot;,
-       y = &quot;Fatalities&quot;)
-
-oct = 
-  protest_data %&gt;% 
-  filter(month == 10) %&gt;% 
-  group_by(day) %&gt;% 
-  count(fatalities) %&gt;% 
-  ggplot(aes(x = day, y = n)) +
-  geom_smooth(se = FALSE) +
-  labs(title = &quot;Number of Fatalities in October&quot;,
-       y = &quot;Fatalities&quot;)
-
-(may + june) / (july + august) / (sept + oct)</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
-## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
-## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
-## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
-## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
-## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="analysis_protests_files/figure-html/unnamed-chunk-4-1.png" width="90%" /></p>
+        legend.position = &quot;right&quot;) +
+  labs(x = &quot;Sub-Event Type&quot;)</code></pre>
+<p><img src="analysis_protests_files/figure-html/unnamed-chunk-3-2.png" width="90%" /></p>
+<p>The first bar plot reiterates what was shown in the scatterplot above: there were far more protests recorded than any other type of event, contrary to what is often depicted. The second bar plot further breaks down the events in the first bar plot into sub-event types and shows that peaceful protests were again the type of event that happened overall far more than the other sub-event types.</p>
+</div>
+<div id="protest-events-by-state" class="section level3">
+<h3>Protest Events by State</h3>
+<pre class="r"><code>protest_data %&gt;% 
+  group_by(state, event_type) %&gt;% 
+  filter(event_type == &quot;Protests&quot;) %&gt;% 
+  count(state) %&gt;% 
+  arrange(desc(n)) %&gt;%
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, n)
+  ) %&gt;% 
+   plot_ly(
+      y = ~n, x = ~state, color = ~state,
+      type = &quot;bar&quot;, colors = &quot;viridis&quot;)</code></pre>
+<pre><code>## Warning: `arrange_()` is deprecated as of dplyr 0.7.0.
+## Please use `arrange()` instead.
+## See vignette(&#39;programming&#39;) for more help
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<div id="htmlwidget-9d5d2875a37913cbcd05" style="width:90%;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-9d5d2875a37913cbcd05">{"x":{"visdat":{"183c758bebcc1":["function () ","plotlyVisDat"]},"cur_data":"183c758bebcc1","attrs":{"183c758bebcc1":{"y":{},"x":{},"color":{},"colors":"viridis","alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"bar"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"xaxis":{"domain":[0,1],"automargin":true,"title":"state","type":"category","categoryorder":"array","categoryarray":["Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut","Delaware","District of Columbia","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa","Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan","Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire","New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio","Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota","Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia","Wisconsin","Wyoming"]},"yaxis":{"domain":[0,1],"automargin":true,"title":"n"},"hovermode":"closest","showlegend":true},"source":"A","config":{"showSendToCloud":false},"data":[{"y":[206],"x":["Alabama"],"type":"bar","name":"Alabama","marker":{"color":"rgba(68,1,84,1)","line":{"color":"rgba(68,1,84,1)"}},"textfont":{"color":"rgba(68,1,84,1)"},"error_y":{"color":"rgba(68,1,84,1)"},"error_x":{"color":"rgba(68,1,84,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[64],"x":["Alaska"],"type":"bar","name":"Alaska","marker":{"color":"rgba(70,8,92,1)","line":{"color":"rgba(70,8,92,1)"}},"textfont":{"color":"rgba(70,8,92,1)"},"error_y":{"color":"rgba(70,8,92,1)"},"error_x":{"color":"rgba(70,8,92,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[165],"x":["Arizona"],"type":"bar","name":"Arizona","marker":{"color":"rgba(71,16,99,1)","line":{"color":"rgba(71,16,99,1)"}},"textfont":{"color":"rgba(71,16,99,1)"},"error_y":{"color":"rgba(71,16,99,1)"},"error_x":{"color":"rgba(71,16,99,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[111],"x":["Arkansas"],"type":"bar","name":"Arkansas","marker":{"color":"rgba(72,23,105,1)","line":{"color":"rgba(72,23,105,1)"}},"textfont":{"color":"rgba(72,23,105,1)"},"error_y":{"color":"rgba(72,23,105,1)"},"error_x":{"color":"rgba(72,23,105,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[1566],"x":["California"],"type":"bar","name":"California","marker":{"color":"rgba(72,30,111,1)","line":{"color":"rgba(72,30,111,1)"}},"textfont":{"color":"rgba(72,30,111,1)"},"error_y":{"color":"rgba(72,30,111,1)"},"error_x":{"color":"rgba(72,30,111,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[275],"x":["Colorado"],"type":"bar","name":"Colorado","marker":{"color":"rgba(72,37,117,1)","line":{"color":"rgba(72,37,117,1)"}},"textfont":{"color":"rgba(72,37,117,1)"},"error_y":{"color":"rgba(72,37,117,1)"},"error_x":{"color":"rgba(72,37,117,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[303],"x":["Connecticut"],"type":"bar","name":"Connecticut","marker":{"color":"rgba(71,43,122,1)","line":{"color":"rgba(71,43,122,1)"}},"textfont":{"color":"rgba(71,43,122,1)"},"error_y":{"color":"rgba(71,43,122,1)"},"error_x":{"color":"rgba(71,43,122,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[50],"x":["Delaware"],"type":"bar","name":"Delaware","marker":{"color":"rgba(70,49,126,1)","line":{"color":"rgba(70,49,126,1)"}},"textfont":{"color":"rgba(70,49,126,1)"},"error_y":{"color":"rgba(70,49,126,1)"},"error_x":{"color":"rgba(70,49,126,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[94],"x":["District of Columbia"],"type":"bar","name":"District of Columbia","marker":{"color":"rgba(69,56,130,1)","line":{"color":"rgba(69,56,130,1)"}},"textfont":{"color":"rgba(69,56,130,1)"},"error_y":{"color":"rgba(69,56,130,1)"},"error_x":{"color":"rgba(69,56,130,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[736],"x":["Florida"],"type":"bar","name":"Florida","marker":{"color":"rgba(67,62,133,1)","line":{"color":"rgba(67,62,133,1)"}},"textfont":{"color":"rgba(67,62,133,1)"},"error_y":{"color":"rgba(67,62,133,1)"},"error_x":{"color":"rgba(67,62,133,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[354],"x":["Georgia"],"type":"bar","name":"Georgia","marker":{"color":"rgba(65,68,135,1)","line":{"color":"rgba(65,68,135,1)"}},"textfont":{"color":"rgba(65,68,135,1)"},"error_y":{"color":"rgba(65,68,135,1)"},"error_x":{"color":"rgba(65,68,135,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[71],"x":["Hawaii"],"type":"bar","name":"Hawaii","marker":{"color":"rgba(62,73,137,1)","line":{"color":"rgba(62,73,137,1)"}},"textfont":{"color":"rgba(62,73,137,1)"},"error_y":{"color":"rgba(62,73,137,1)"},"error_x":{"color":"rgba(62,73,137,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[88],"x":["Idaho"],"type":"bar","name":"Idaho","marker":{"color":"rgba(60,79,138,1)","line":{"color":"rgba(60,79,138,1)"}},"textfont":{"color":"rgba(60,79,138,1)"},"error_y":{"color":"rgba(60,79,138,1)"},"error_x":{"color":"rgba(60,79,138,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[559],"x":["Illinois"],"type":"bar","name":"Illinois","marker":{"color":"rgba(58,84,140,1)","line":{"color":"rgba(58,84,140,1)"}},"textfont":{"color":"rgba(58,84,140,1)"},"error_y":{"color":"rgba(58,84,140,1)"},"error_x":{"color":"rgba(58,84,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[243],"x":["Indiana"],"type":"bar","name":"Indiana","marker":{"color":"rgba(55,90,140,1)","line":{"color":"rgba(55,90,140,1)"}},"textfont":{"color":"rgba(55,90,140,1)"},"error_y":{"color":"rgba(55,90,140,1)"},"error_x":{"color":"rgba(55,90,140,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[180],"x":["Iowa"],"type":"bar","name":"Iowa","marker":{"color":"rgba(53,96,141,1)","line":{"color":"rgba(53,96,141,1)"}},"textfont":{"color":"rgba(53,96,141,1)"},"error_y":{"color":"rgba(53,96,141,1)"},"error_x":{"color":"rgba(53,96,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[132],"x":["Kansas"],"type":"bar","name":"Kansas","marker":{"color":"rgba(50,101,142,1)","line":{"color":"rgba(50,101,142,1)"}},"textfont":{"color":"rgba(50,101,142,1)"},"error_y":{"color":"rgba(50,101,142,1)"},"error_x":{"color":"rgba(50,101,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[267],"x":["Kentucky"],"type":"bar","name":"Kentucky","marker":{"color":"rgba(48,106,142,1)","line":{"color":"rgba(48,106,142,1)"}},"textfont":{"color":"rgba(48,106,142,1)"},"error_y":{"color":"rgba(48,106,142,1)"},"error_x":{"color":"rgba(48,106,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[188],"x":["Louisiana"],"type":"bar","name":"Louisiana","marker":{"color":"rgba(46,111,142,1)","line":{"color":"rgba(46,111,142,1)"}},"textfont":{"color":"rgba(46,111,142,1)"},"error_y":{"color":"rgba(46,111,142,1)"},"error_x":{"color":"rgba(46,111,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[139],"x":["Maine"],"type":"bar","name":"Maine","marker":{"color":"rgba(44,115,142,1)","line":{"color":"rgba(44,115,142,1)"}},"textfont":{"color":"rgba(44,115,142,1)"},"error_y":{"color":"rgba(44,115,142,1)"},"error_x":{"color":"rgba(44,115,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[250],"x":["Maryland"],"type":"bar","name":"Maryland","marker":{"color":"rgba(42,120,142,1)","line":{"color":"rgba(42,120,142,1)"}},"textfont":{"color":"rgba(42,120,142,1)"},"error_y":{"color":"rgba(42,120,142,1)"},"error_x":{"color":"rgba(42,120,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[441],"x":["Massachusetts"],"type":"bar","name":"Massachusetts","marker":{"color":"rgba(40,125,142,1)","line":{"color":"rgba(40,125,142,1)"}},"textfont":{"color":"rgba(40,125,142,1)"},"error_y":{"color":"rgba(40,125,142,1)"},"error_x":{"color":"rgba(40,125,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[441],"x":["Michigan"],"type":"bar","name":"Michigan","marker":{"color":"rgba(38,130,142,1)","line":{"color":"rgba(38,130,142,1)"}},"textfont":{"color":"rgba(38,130,142,1)"},"error_y":{"color":"rgba(38,130,142,1)"},"error_x":{"color":"rgba(38,130,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[198],"x":["Minnesota"],"type":"bar","name":"Minnesota","marker":{"color":"rgba(36,134,142,1)","line":{"color":"rgba(36,134,142,1)"}},"textfont":{"color":"rgba(36,134,142,1)"},"error_y":{"color":"rgba(36,134,142,1)"},"error_x":{"color":"rgba(36,134,142,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[117],"x":["Mississippi"],"type":"bar","name":"Mississippi","marker":{"color":"rgba(34,139,141,1)","line":{"color":"rgba(34,139,141,1)"}},"textfont":{"color":"rgba(34,139,141,1)"},"error_y":{"color":"rgba(34,139,141,1)"},"error_x":{"color":"rgba(34,139,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[307],"x":["Missouri"],"type":"bar","name":"Missouri","marker":{"color":"rgba(33,144,141,1)","line":{"color":"rgba(33,144,141,1)"}},"textfont":{"color":"rgba(33,144,141,1)"},"error_y":{"color":"rgba(33,144,141,1)"},"error_x":{"color":"rgba(33,144,141,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[79],"x":["Montana"],"type":"bar","name":"Montana","marker":{"color":"rgba(31,149,139,1)","line":{"color":"rgba(31,149,139,1)"}},"textfont":{"color":"rgba(31,149,139,1)"},"error_y":{"color":"rgba(31,149,139,1)"},"error_x":{"color":"rgba(31,149,139,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[98],"x":["Nebraska"],"type":"bar","name":"Nebraska","marker":{"color":"rgba(31,154,138,1)","line":{"color":"rgba(31,154,138,1)"}},"textfont":{"color":"rgba(31,154,138,1)"},"error_y":{"color":"rgba(31,154,138,1)"},"error_x":{"color":"rgba(31,154,138,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[105],"x":["Nevada"],"type":"bar","name":"Nevada","marker":{"color":"rgba(31,159,136,1)","line":{"color":"rgba(31,159,136,1)"}},"textfont":{"color":"rgba(31,159,136,1)"},"error_y":{"color":"rgba(31,159,136,1)"},"error_x":{"color":"rgba(31,159,136,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[58],"x":["New Hampshire"],"type":"bar","name":"New Hampshire","marker":{"color":"rgba(32,163,134,1)","line":{"color":"rgba(32,163,134,1)"}},"textfont":{"color":"rgba(32,163,134,1)"},"error_y":{"color":"rgba(32,163,134,1)"},"error_x":{"color":"rgba(32,163,134,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[286],"x":["New Jersey"],"type":"bar","name":"New Jersey","marker":{"color":"rgba(34,168,132,1)","line":{"color":"rgba(34,168,132,1)"}},"textfont":{"color":"rgba(34,168,132,1)"},"error_y":{"color":"rgba(34,168,132,1)"},"error_x":{"color":"rgba(34,168,132,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[143],"x":["New Mexico"],"type":"bar","name":"New Mexico","marker":{"color":"rgba(38,173,129,1)","line":{"color":"rgba(38,173,129,1)"}},"textfont":{"color":"rgba(38,173,129,1)"},"error_y":{"color":"rgba(38,173,129,1)"},"error_x":{"color":"rgba(38,173,129,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[926],"x":["New York"],"type":"bar","name":"New York","marker":{"color":"rgba(44,177,126,1)","line":{"color":"rgba(44,177,126,1)"}},"textfont":{"color":"rgba(44,177,126,1)"},"error_y":{"color":"rgba(44,177,126,1)"},"error_x":{"color":"rgba(44,177,126,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[450],"x":["North Carolina"],"type":"bar","name":"North Carolina","marker":{"color":"rgba(51,182,122,1)","line":{"color":"rgba(51,182,122,1)"}},"textfont":{"color":"rgba(51,182,122,1)"},"error_y":{"color":"rgba(51,182,122,1)"},"error_x":{"color":"rgba(51,182,122,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[36],"x":["North Dakota"],"type":"bar","name":"North Dakota","marker":{"color":"rgba(58,186,118,1)","line":{"color":"rgba(58,186,118,1)"}},"textfont":{"color":"rgba(58,186,118,1)"},"error_y":{"color":"rgba(58,186,118,1)"},"error_x":{"color":"rgba(58,186,118,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[470],"x":["Ohio"],"type":"bar","name":"Ohio","marker":{"color":"rgba(67,190,113,1)","line":{"color":"rgba(67,190,113,1)"}},"textfont":{"color":"rgba(67,190,113,1)"},"error_y":{"color":"rgba(67,190,113,1)"},"error_x":{"color":"rgba(67,190,113,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[138],"x":["Oklahoma"],"type":"bar","name":"Oklahoma","marker":{"color":"rgba(77,195,107,1)","line":{"color":"rgba(77,195,107,1)"}},"textfont":{"color":"rgba(77,195,107,1)"},"error_y":{"color":"rgba(77,195,107,1)"},"error_x":{"color":"rgba(77,195,107,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[376],"x":["Oregon"],"type":"bar","name":"Oregon","marker":{"color":"rgba(87,199,102,1)","line":{"color":"rgba(87,199,102,1)"}},"textfont":{"color":"rgba(87,199,102,1)"},"error_y":{"color":"rgba(87,199,102,1)"},"error_x":{"color":"rgba(87,199,102,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[638],"x":["Pennsylvania"],"type":"bar","name":"Pennsylvania","marker":{"color":"rgba(98,203,95,1)","line":{"color":"rgba(98,203,95,1)"}},"textfont":{"color":"rgba(98,203,95,1)"},"error_y":{"color":"rgba(98,203,95,1)"},"error_x":{"color":"rgba(98,203,95,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[76],"x":["Rhode Island"],"type":"bar","name":"Rhode Island","marker":{"color":"rgba(110,206,88,1)","line":{"color":"rgba(110,206,88,1)"}},"textfont":{"color":"rgba(110,206,88,1)"},"error_y":{"color":"rgba(110,206,88,1)"},"error_x":{"color":"rgba(110,206,88,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[196],"x":["South Carolina"],"type":"bar","name":"South Carolina","marker":{"color":"rgba(122,209,81,1)","line":{"color":"rgba(122,209,81,1)"}},"textfont":{"color":"rgba(122,209,81,1)"},"error_y":{"color":"rgba(122,209,81,1)"},"error_x":{"color":"rgba(122,209,81,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[31],"x":["South Dakota"],"type":"bar","name":"South Dakota","marker":{"color":"rgba(134,213,73,1)","line":{"color":"rgba(134,213,73,1)"}},"textfont":{"color":"rgba(134,213,73,1)"},"error_y":{"color":"rgba(134,213,73,1)"},"error_x":{"color":"rgba(134,213,73,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[309],"x":["Tennessee"],"type":"bar","name":"Tennessee","marker":{"color":"rgba(147,215,65,1)","line":{"color":"rgba(147,215,65,1)"}},"textfont":{"color":"rgba(147,215,65,1)"},"error_y":{"color":"rgba(147,215,65,1)"},"error_x":{"color":"rgba(147,215,65,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[608],"x":["Texas"],"type":"bar","name":"Texas","marker":{"color":"rgba(161,218,56,1)","line":{"color":"rgba(161,218,56,1)"}},"textfont":{"color":"rgba(161,218,56,1)"},"error_y":{"color":"rgba(161,218,56,1)"},"error_x":{"color":"rgba(161,218,56,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[133],"x":["Utah"],"type":"bar","name":"Utah","marker":{"color":"rgba(174,220,48,1)","line":{"color":"rgba(174,220,48,1)"}},"textfont":{"color":"rgba(174,220,48,1)"},"error_y":{"color":"rgba(174,220,48,1)"},"error_x":{"color":"rgba(174,220,48,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[102],"x":["Vermont"],"type":"bar","name":"Vermont","marker":{"color":"rgba(188,223,39,1)","line":{"color":"rgba(188,223,39,1)"}},"textfont":{"color":"rgba(188,223,39,1)"},"error_y":{"color":"rgba(188,223,39,1)"},"error_x":{"color":"rgba(188,223,39,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[388],"x":["Virginia"],"type":"bar","name":"Virginia","marker":{"color":"rgba(201,225,31,1)","line":{"color":"rgba(201,225,31,1)"}},"textfont":{"color":"rgba(201,225,31,1)"},"error_y":{"color":"rgba(201,225,31,1)"},"error_x":{"color":"rgba(201,225,31,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[383],"x":["Washington"],"type":"bar","name":"Washington","marker":{"color":"rgba(215,226,25,1)","line":{"color":"rgba(215,226,25,1)"}},"textfont":{"color":"rgba(215,226,25,1)"},"error_y":{"color":"rgba(215,226,25,1)"},"error_x":{"color":"rgba(215,226,25,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[103],"x":["West Virginia"],"type":"bar","name":"West Virginia","marker":{"color":"rgba(228,228,25,1)","line":{"color":"rgba(228,228,25,1)"}},"textfont":{"color":"rgba(228,228,25,1)"},"error_y":{"color":"rgba(228,228,25,1)"},"error_x":{"color":"rgba(228,228,25,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[356],"x":["Wisconsin"],"type":"bar","name":"Wisconsin","marker":{"color":"rgba(241,229,29,1)","line":{"color":"rgba(241,229,29,1)"}},"textfont":{"color":"rgba(241,229,29,1)"},"error_y":{"color":"rgba(241,229,29,1)"},"error_x":{"color":"rgba(241,229,29,1)"},"xaxis":"x","yaxis":"y","frame":null},{"y":[53],"x":["Wyoming"],"type":"bar","name":"Wyoming","marker":{"color":"rgba(253,231,37,1)","line":{"color":"rgba(253,231,37,1)"}},"textfont":{"color":"rgba(253,231,37,1)"},"error_y":{"color":"rgba(253,231,37,1)"},"error_x":{"color":"rgba(253,231,37,1)"},"xaxis":"x","yaxis":"y","frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<p>The above plot depicts the number of protest events that occurred in each state between May and October 2020. Overall, there were far more protests in California than in any other state. Florida, Illinois, New York, Pennsylvania, and Texas also had larger numbers of protests during the data coverage period. This is not surprising given that these states have large populations and have big, highly populated cities.</p>
+</div>
 
 
 
