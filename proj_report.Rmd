@@ -1,9 +1,31 @@
 ---
-title: "Background"
+title: "Project Report"
 output: 
   html_document:
     code_folding: hide
     toc: true
     toc_float: true
 ---
+
+# Motivation
+
+### Related Sources
+
+# Questions
+
+# Data
+## Data Sources
+
+## Variables Used
+
+## Data Cleaning
+
+# Exploratory Analysis
+
+# Regression Analysis
+
+# Discussion
+
+# Conclusions
+
 
