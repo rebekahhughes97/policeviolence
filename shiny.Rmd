@@ -15,8 +15,16 @@ library(shiny)
 library(plotly)
 library(leaflet)
 
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
 mpv_data =
-  read_csv("./data/mpv_final.csv")
+  read_csv("mpv_final.csv")
 
 mpv_case = 
   mpv_data %>% 
@@ -31,11 +39,14 @@ mpv_case =
       symptoms_of_mental_illness == "Drug or alcohol use" ~ "No"))
 
 protest_data =
-  read_csv("./data/usa_tidy.csv") %>% 
+  read_csv("usa_tidy.csv") %>% 
   mutate(
-    month_name = recode(month,
-                        "5" = "May", "6" = "June", "7" = "July", "8" = "August", "9" = "September", "10" = "October")
-  )
+    month_name = 
+      recode(month,
+            "5" = "May", "6" = "June", "7" = "July", "8" = "August", "9" = "September", "10" = "October")) %>% 
+  filter(event_type != "Battles",
+         event_type != "Violence against civilians",
+         event_type != "Strategic developments")
 ```
 
 Police Killings 2013-2020
@@ -110,7 +121,7 @@ mpv_case %>%
   
 ```
 
-Column {data-width=350}
+Column {data-width=500}
 -----------------------------------------------------------------------
 
 ### Police Killings by State
@@ -130,7 +141,10 @@ renderPlotly({
   ) %>% 
     plot_ly(
       y = ~n, x = ~state, color = ~state,
-      type = "bar", colors = "viridis")
+      type = "bar", colors = "viridis") %>% 
+    layout(
+      yaxis = list(title = "Total Killings"),
+      xaxis = list(title = "States", automargin = TRUE, tickangle = 45))
 })
 ```
 
@@ -148,7 +162,10 @@ renderPlotly({
     slice(1:10) %>% 
     plot_ly(
       y = ~n, x = ~city, color = ~city,
-      type = "bar", colors = "viridis")
+      type = "bar", colors = "viridis") %>% 
+    layout(
+      yaxis = list(title = "Total Killings"),
+      xaxis = list(title = "Cities", automargin = TRUE, tickangle = 45))
 })
 ```
 
@@ -177,11 +194,18 @@ selectInput(
   selected = "May"
   )
 
+sliderInput(
+  "date_range",
+  h3("Date Range"),
+  1, 31, 
+  value = c(1, 30),
+  sep = "")
+
 selectInput(
   "event_choice", 
   h3("Event Type"),
   choices = event_type,
-  selected = "Protest"
+  selected = "Protests"
   )
 ```
 
@@ -204,6 +228,7 @@ protest_data %>%
                 "<br>Fatalities: ", fatalities)) %>%
   filter(
     month_name == input[["month_choice"]],
+    day %in% input[["date_range"]][1]:input[["date_range"]][2],
     event_type == input[["event_choice"]]) %>% 
   leaflet() %>% 
   addTiles() %>% 
@@ -215,16 +240,14 @@ protest_data %>%
 })
 ```
 
-Column {data-width=350}
------------------------------------------------------------------------
-
-### Protests by State
+### Total Event Type by State
 
 ```{r}
 renderPlotly({
   protest_data %>% 
     filter(
       month_name == input[["month_choice"]],
+      day %in% input[["date_range"]][1]:input[["date_range"]][2],
       event_type == input[["event_choice"]]) %>% 
   count(state) %>% 
   arrange(desc(n)) %>% 
@@ -235,24 +258,9 @@ renderPlotly({
     plot_ly(
       y = ~n, x = ~state, color = ~state,
       type = "bar", colors = "viridis") %>% 
-    layout(yaxis = list(range = c(0, 400)), showlegend = FALSE)
-})
-```
-
-### Cities with the Highest Fatalities
-
-```{r}
-renderPlotly({
-  protest_data %>% 
-    filter(
-      month_name == input[["month_choice"]],
-      event_type == input[["event_choice"]]) %>% 
-    count(city) %>% 
-    arrange(desc(n)) %>% 
-    slice(1:5) %>% 
-    plot_ly(
-      y = ~n, x = ~city, color = ~city,
-      type = "bar", colors = "viridis") %>% 
-    layout(showlegend = FALSE)
+    layout(
+      margin = list(b = 140),
+      yaxis = list(title = "Total Events", range = c(0, 400)),
+      xaxis = list(title = "States", automargin = TRUE, tickangle = 45))
 })
 ```
