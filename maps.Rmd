@@ -161,7 +161,9 @@ factpal <- colorFactor("RdYlGn", build_df %>% pull(income_class))
 build_df %>% 
   drop_na() %>% 
   mutate(
-  pop = str_c("City: ", city, "<br>Cause of Death: ", cause_of_death, "<br>Age: ", age, "<br>Year: ", year)) %>%
+  pop = str_c("City: ", city, "<br>Cause of Death: ", cause_of_death,
+              "<br>Police Department: ", police_dept,
+              "<br>Age: ", age, "<br>Year: ", year)) %>%
   leaflet() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
   addLegend("bottomright", pal = factpal,
@@ -177,4 +179,32 @@ build_df %>%
     )
 ```
 
+## Protest Data by Income Class
+```{r}
+protest_income_df =
+  read_csv("./data/protest_income_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
 
+factpal2 <- colorFactor("BuGn", protest_income_df %>% pull(income_class))
+
+protest_income_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop1 = str_c("City: ", city, "<br>Event Type: ", 
+               sub_event_type, "<br>Year: ", year, "<br>Fatalities: ", fatalities)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal2,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~factpal2(income_class),
+    radius = 0.5,
+    popup = ~pop1
+    )
+```
