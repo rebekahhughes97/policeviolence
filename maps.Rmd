@@ -10,6 +10,7 @@ library(tidyverse)
 library(leaflet)
 library(rvest)
 library(shiny)
+library(RColorBrewer)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -145,10 +146,35 @@ usa_protest %>%
  
 ```
 
-# ACS maps
+# ACS Income maps
 
+## Police Killings by Income Class
 ```{r}
+build_df =
+  read_csv("./data/build_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
 
+factpal <- colorFactor("RdYlGn", build_df %>% pull(income_class))
+
+build_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop = str_c("City: ", city, "<br>Cause of Death: ", cause_of_death, "<br>Age: ", age, "<br>Year: ", year)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~factpal(income_class),
+    radius = 0.5,
+    popup = ~pop
+    )
 ```
 
 
