@@ -161,9 +161,11 @@ factpal <- colorFactor("RdYlGn", build_df %>% pull(income_class))
 build_df %>% 
   drop_na() %>% 
   mutate(
-  pop = str_c("City: ", city, "<br>Cause of Death: ", cause_of_death,
-              "<br>Police Department: ", police_dept,
-              "<br>Age: ", age, "<br>Year: ", year)) %>%
+  pop = str_c("Cause of Death: ", cause_of_death,
+              "<br>Police Dept: ", police_dept,
+              "<br>Age: ", age, 
+              "<br>Year: ", year,
+              "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness)) %>%
   leaflet() %>% 
   addProviderTiles(providers$CartoDB.Positron) %>% 
   addLegend("bottomright", pal = factpal,
