@@ -293,9 +293,14 @@ income_data =
 
 ```{r}
 age_data %>% 
-  ggplot(aes(x = total, y = age)) +
+  mutate(
+    age = as.factor(age),
+    age = fct_relevel(age, "0-5", "5 to 9")
+  ) %>% 
+  ggplot(aes(x = age, y = total)) +
   geom_col(aes(fill = age)) +
-  labs(x = "", y = "", title = "Ages of the US Population")
+  labs(x = "", y = "", title = "Age of the US Population") +
+  theme(axis.text.x = element_text(angle = 45))
 
 sex_data %>%
   mutate(
@@ -308,15 +313,15 @@ sex_data %>%
   labs(x = "", y = "", title = "Age by Sex of the US Population")
 
 race_data %>% 
-  ggplot(aes(x = race, y = prop)) +
+  ggplot(aes(x = race, y = total)) +
   geom_col(aes(fill = race)) +
-  labs(x = "", y = "", title = "Proportion of Race in US Population")
-
+  labs(x = "", y = "", title = "US Population by Race")
+  
 income_data %>% 
   ggplot(aes(x = total_income, y = estimate_households)) +
   geom_col(aes(fill = total_income)) +
-  labs(x = "", y = "", title = "Income in US") +
-  theme(axis.text.x = element_text(angle = 90))
+  labs(x = "Total Income per Household", y = "", title = "Income in US") +
+  theme(axis.text.x = element_text(angle = 45))
 ```
 
 ```{r}
