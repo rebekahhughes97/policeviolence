@@ -269,7 +269,7 @@ sex_df =
 write_csv(sex_df, "./data/age_sex_tidy.csv")
 ```
 
-Sex dataset (not tidy)
+Age by Sex dataset (not tidy)
 
 ```{r}
 male_df =
@@ -313,7 +313,7 @@ write_csv(sex_df2, "./data/sex2.csv")
 ```
 
 
-Age dataset (not tidy for analysis potentially)
+Age dataset (not tidy)
 
 ```{r, warning = FALSE, message = FALSE}
 age_df2 =
@@ -442,13 +442,24 @@ income_df =
     total_income = str_replace_all(total_income, " ", ","),
     total_income = as.factor(total_income)
   ) %>% 
+  mutate(
+   income_class =
+    case_when(
+     median_income < 55000 ~ "Very Low",
+     median_income %in% 55000:59999 ~ "Low",
+     median_income %in% 60000:64999 ~ "Middle",
+     median_income %in% 65000:74999 ~ "High",
+     median_income > 75000 ~ "Very High"
+   ),
+   income_class = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
+  ) %>% 
   view()
 
 # export tidy income dataset
 write_csv(income_df, "./data/income_tidy.csv")
 ```
 
-Income dataset and plots (not tidy)
+Income dataset (not tidy)
 ```{r}
 income_df =
   read_csv("./data/acs_income_county.csv", skip = 1) %>% 
@@ -585,8 +596,7 @@ race_df2 =
 write_csv(race_df2, "./data/race2.csv")
 ```
 
-
-Joining all the ACS data with the protest data:
+### Joining non-tidy ACS data with the protest data:
 
 ```{r}
 race_df =
@@ -626,7 +636,7 @@ protest_demo_df =
 write_csv(protest_demo_df, "./data/protest_demo_df.csv")
 ```
 
-
+### Joining MPV data and non-tidy ACS data
 ```{r}
 race_df =
   read_csv("./data/race2.csv")
