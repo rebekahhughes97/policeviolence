@@ -102,10 +102,9 @@ protest_data %>%
   group_by(state, event_type) %>% 
   filter(event_type == "Protests") %>% 
   count(state) %>% 
-  arrange(desc(n)) %>%
   mutate(
-    state = factor(state),
-    state = fct_reorder(state, n)
+    state = as.factor(state),
+    state = fct_reorder(state, n, .desc = TRUE)
   ) %>% 
    plot_ly(
       y = ~n, x = ~state, color = ~state,
