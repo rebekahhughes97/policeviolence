@@ -131,8 +131,8 @@ The police violence and protest datasets were both similarly cleaned. The data w
 
 For the ACS data we looked at Race, Income, and Age by Sex; each category had their own separate dataset. All datasets have a tidy and non-tidy version; tidy datasets were used for visualization and exploratory analyses and the non-tidy datasets were joined with the Police Violence Dataset and Protest Dataset separately in order to conduct further statistical analyses and plotting. However, for both the tidy and non-tidy versions, variable names were shortened for convenience and only a subset of of the original datasets' categories were kept (for example, in all datasets 'margin of error estimates' were removed). Below are the specific data cleaning steps for each dataset:
 * **Race:** This dataset excludes data for those who identify as more than one race. Additionally, proportion was calculated for each race category.
-* **Age by Sex and Age Only:** The 'Age Only' dataset contains total estimate and percent estimate of each age group and the 'Age by Sex' contains the total and percent estimate for each age group by male or female.
-* **Income:** This dataset includes only the total estimates by household income. A variable for income class and disparity value were created.
+* **Age by Sex and Age Only:** The 'Age Only' dataset contains total estimate and percent estimate of each age group and the 'Age by Sex' contains the total and percent estimate for each age group by male or female. *might just remove 'age only' datasets because the 'age by sex' is sufficient*
+* **Income:** This dataset includes only the total percent estimates by household income. Variables for income class and disparity value were created from the mean and median income of each county.
 
 &nbsp;
 

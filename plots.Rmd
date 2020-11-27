@@ -122,8 +122,6 @@ mpv_case =
 mpv_case
 ```
 
-## Animated Plot
-
 1. Scatter plot showing killings over time separated by race
 
 ```{r}
@@ -269,14 +267,9 @@ oct =
 (may + june) / (july + august) / (sept + oct)
 ```
 
-Plotly Plot:
-
-```{r}
-
-```
-
 # ACS Datasets
 
+Read in ACS datasets (tidy)
 ```{r}
 age_data =
   read_csv("./data/age_tidy.csv")
@@ -291,7 +284,7 @@ income_data =
   read_csv("./data/income_tidy.csv")
 ```
 
-Age of US Population and Age By Sex
+Age of US Population By Sex
 ```{r}
 age_data %>% 
   mutate(
@@ -321,12 +314,12 @@ race_data %>%
   geom_col(aes(fill = race)) +
   labs(x = "", y = "", title = "US Population by Race")
 
+# population by race in each state
 race_data %>% 
   group_by(state, race) %>% 
   plot_ly(
       y = ~total, x = ~state, color = ~race,
       type = "scatter",mode = "markers", colors = "viridis")
-
 ```
 
 Total Income per Household in US and Mean Household Income by State
@@ -337,6 +330,7 @@ income_data %>%
   labs(x = "Total Income per Household", y = "", title = "Income in US") +
   theme(axis.text.x = element_text(angle = 45))
 
+# mean household income by state
 income_data %>% 
   mutate(
     state = fct_reorder(state, mean_income)
@@ -346,6 +340,7 @@ income_data %>%
       type = "box", colors = "viridis")
 ```
 
+Income plots: Wealth disparity
 ```{r}
 income_df =
   read_csv("./data/income2.csv")
@@ -408,9 +403,19 @@ state_plot =
   geom_violin()
 ```
 
+# MPV and ACS Joint Dataset
+
+Read in MPV and ACS datasets
 ```{r}
 build_df =
   read_csv("./data/build_df.csv")
+
+mpv_demo_df =
+    read_csv("./data/mpv_demo_df.csv")
+```
+
+Income and MPV plots
+```{r}
 
 build_plot = 
   build_df %>% 
@@ -421,5 +426,17 @@ build_plot2 =
   build_df %>% 
   ggplot(aes(x = symptoms_of_mental_illness, y = estimate_households_median_income_dollars)) + 
   geom_violin()
+```
+
+# Protest and ACS Joint Dataset
+
+Read in Protest and ACS datasets
+```{r}
+protest_income_df =
+  mpv_demo_df =
+    read_csv("./data/protest_income_df.csv")
+protest_demo_df =
+  mpv_demo_df =
+    read_csv("./data/protest_demo_df.csv")
 ```
 
