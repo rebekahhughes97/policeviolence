@@ -1,7 +1,7 @@
 ---
 title: "Shiny Dashboard"
 output: 
-  flexdashboard::flex_dashboard:
+    flexdashboard::flex_dashboard:
     orientation: columns
     vertical_layout: fill
 runtime: shiny
@@ -24,7 +24,7 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 mpv_data =
-  read_csv("mpv_final.csv")
+  read_csv("./data/mpv_final.csv")
 
 mpv_case = 
   mpv_data %>% 
@@ -39,7 +39,7 @@ mpv_case =
       symptoms_of_mental_illness == "Drug or alcohol use" ~ "No"))
 
 protest_data =
-  read_csv("usa_tidy.csv") %>% 
+  read_csv("./data/usa_tidy.csv") %>% 
   mutate(
     month_name = 
       recode(month,
@@ -264,3 +264,5 @@ renderPlotly({
       xaxis = list(title = "States", automargin = TRUE, tickangle = 45))
 })
 ```
+
+

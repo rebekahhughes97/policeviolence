@@ -353,37 +353,43 @@ div.tocify {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
-        
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Exploratory Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="analysis_mpv.html">Police Violence</a>
+    </li>
+    <li>
+      <a href="analysis_protests.html">Protests</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Regression Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="regression_mpv.html">Police Violence</a>
+    </li>
+    <li>
+      <a href="regression_protest.html">Protests</a>
+    </li>
+  </ul>
+</li>
+<li>
+  <a href="https://rebekahhughes.shinyapps.io/shiny/">Interactive Maps</a>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="background.html">Background</a>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Analysis
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li class="dropdown-header">Police Violence</li>
-    <li class="dropdown-header">Protests</li>
-  </ul>
-</li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Interactive Maps
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="https://jinghanzhang.shinyapps.io/shiny/#section-police-killings-2013-2020">Police Violence</a>
-    </li>
-    <li>
-      <a href="https://jinghanzhang.shinyapps.io/shiny/#section-protests">Protests</a>
-    </li>
-  </ul>
+  <a href="proj_report.html">Project Report</a>
 </li>
 <li>
   <a>
@@ -443,7 +449,7 @@ h1 {color:slategray;}
 <li>What is the spread of police violence over time and space, accounting for basic demographics?</li>
 <li>What were common characteristics of instances of police violence against individuals, including court rulings of the police involved?</li>
 <li>What is the geographic spread of Black Lives Matter demonstrations in the US during 2020?</li>
-<li>How does the spread of Black Lives Matter Protests relate to avergae income across states and cities in the US?</li>
+<li>How does the spread of Black Lives Matter Protests relate to average income across states and cities in the US?</li>
 </ol>
 <p> </p>
 </div>
@@ -488,26 +494,30 @@ h1 {color:slategray;}
 <div id="acs-dataset" class="section level5">
 <h5><strong>ACS Dataset</strong></h5>
 <ul>
-<li></li>
-<li></li>
-<li></li>
+<li><code>id</code></li>
+<li><code>county</code></li>
+<li><code>state</code></li>
 </ul>
+<p><strong>Income</strong> * <code>total_income</code> * <code>estimate_households</code>: percent estimate for each county by total household income * <code>mean_income</code>: the mean income in each county * <code>median_income</code>: the median income in each county * <code>disparity_value</code>: mean income - median income in each county * <code>income_class</code>: ranges from “Very Low” to “Very High” based on <code>median_income</code> value for each county</p>
+<p><strong>Age by Sex</strong> * <code>age</code> * <code>sex</code> * <code>total</code>: total estimate for each county by age and sex * <code>percent</code>: percent estimate for each county by age and sex</p>
+<p><strong>Race</strong> * <code>race</code> * <code>total</code>: total estimate for each county for each race category * <code>prop</code>: percent estimate for each county for each race category</p>
 <p> </p>
 </div>
 </div>
 <div id="data-cleaning" class="section level4">
 <h4><em>Data Cleaning</em></h4>
 <p>The police violence and protest datasets were both similarly cleaned. The data was first imported into R. The variables were then renamed and selected based on if they were intuitive and if they were needed for this analysis. While the protest data already had a latitude and longitude included, an external source was joined with the police violence dataset so latitudes and longitudes of cities could be included in the dataset.</p>
+<p>For the ACS data we looked at Race, Income, and Age by Sex; each category had their own separate dataset. All datasets have a tidy and non-tidy version; tidy datasets were used for visualization and exploratory analyses and the non-tidy datasets were joined with the Police Violence Dataset and Protest Dataset separately in order to conduct further statistical analyses and plotting. However, for both the tidy and non-tidy versions, variable names were shortened for convenience and only a subset of of the original datasets’ categories were kept (for example, in all datasets ‘margin of error estimates’ were removed). Below are the specific data cleaning steps for each dataset: * <strong>Race:</strong> This dataset excludes data for those who identify as more than one race. Additionally, proportion was calculated for each race category. * <strong>Age by Sex and Age Only:</strong> The ‘Age Only’ dataset contains total estimate and percent estimate of each age group and the ‘Age by Sex’ contains the total and percent estimate for each age group by male or female. <em>might just remove ‘age only’ datasets because the ‘age by sex’ is sufficient</em> * <strong>Income:</strong> This dataset includes only the total percent estimates by household income. Variables for income class and disparity value were created from the mean and median income of each county.</p>
 <p> </p>
 </div>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>Exploratory Analysis</h2>
+<p><em>ACS Data</em></p>
 <p><em>Police Violence Data</em> The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape of the data. <strong>Age Map with with symptoms of mental illness and whether the officer was charged included</strong> The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by age, with information on symptoms of mental illness and whether the officer was charged included.</p>
 <p><strong>Distribution of deaths due to police violence across states</strong></p>
 <p><strong>Number of individuals killed due to police violence by race</strong></p>
 <p><em>Protest Data</em></p>
-<p><em>ACS Data</em></p>
 <p> </p>
 </div>
 <div id="regression-analysis" class="section level2">

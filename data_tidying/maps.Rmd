@@ -1,0 +1,288 @@
+---
+title: "Maps for MPV"
+output: 
+ html_document:
+    code_folding: hide
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(leaflet)
+library(rvest)
+library(shiny)
+library(RColorBrewer)
+
+knitr::opts_chunk$set(
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+
+
+## Retrieving the MPV Tidy Dataset
+
+```{r}
+mpv_data =
+  read_csv("./data/mpv_final.csv")
+```
+
+
+## Year Leaflet -- with city and police dept in the label
+
+```{r, warning=FALSE}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_data$year)
+
+
+mpv_data %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("City: ", city, "<br>Police Department: ", police_dept)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = ~year,
+            title = "Year",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~pal(year),
+    radius = 0.5,
+    popup = ~lab)
+```
+
+
+## Age Leaflet -- with symptoms of mental illness and whether officer was charged as label
+
+```{r}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_data$age)
+
+
+mpv_data %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("Age: ", age,
+                "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness,
+                "<br>Charges on the Police: ", criminal_charges)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = ~age,
+            title = "Age",
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~pal(age),
+    radius = 0.5,
+    popup = ~lab)
+```
+
+
+## USA data
+
+```{r}
+
+usa_protest = read_csv("./data/usa_tidy.csv")
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = usa_protest$fatalities)
+
+usa_protest %>%
+  mutate(
+    lab = str_c("City: ", usa_protest$city, "<br>Type of Protest: ", usa_protest$event_type)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = usa_protest$fatalities,
+            title = "Fatalities",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~pal(usa_protest$fatalities),
+    radius = 0.5,
+    popup = ~lab)
+ 
+```
+
+```{r}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = usa_protest$month)
+
+usa_protest %>%
+  mutate(
+    lab = str_c("City: ", usa_protest$city, "<br>Type of Protest: ", usa_protest$event_type)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = usa_protest$month,
+            title = "Month",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~pal(usa_protest$month),
+    radius = 0.5,
+    popup = ~lab)
+ 
+```
+
+# ACS Income maps
+
+## Police Killings by Income Class
+```{r}
+build_df =
+  read_csv("./data/build_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
+
+factpal <- colorFactor("RdYlGn", build_df %>% pull(income_class))
+
+build_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop = str_c("Cause of Death: ", cause_of_death,
+              "<br>Police Dept: ", police_dept,
+              "<br>Age: ", age, 
+              "<br>Year: ", year,
+              "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~factpal(income_class),
+    radius = 0.5,
+    popup = ~pop
+    )
+```
+
+## Protest Data by Income Class
+```{r}
+protest_income_df =
+  read_csv("./data/protest_income_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
+
+quantile(protest_income_df$disparity_value, na.rm = TRUE)
+
+factpal2 <- colorFactor("BuGn", protest_income_df %>% pull(income_class))
+
+protest_income_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop1 = str_c("City: ", city, "<br>Event Type: ", 
+               sub_event_type, "<br>Year: ", year, "<br>Fatalities: ", fatalities)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal2,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~factpal2(income_class),
+    radius = 0.5,
+    popup = ~pop1
+    )
+```
+
+## Police Killings by Disparity Score
+```{r}
+build_df =
+  read_csv("./data/build_df.csv")
+
+valpal <- colorNumeric("RdYlGn", build_df %>% pull(disparity_value))
+
+build_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop = str_c("Cause of Death: ", cause_of_death,
+              "<br>Police Dept: ", police_dept,
+              "<br>Age: ", age, 
+              "<br>Year: ", year,
+              "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = valpal,
+            values = ~disparity_value,
+            title = "Income Disparity",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~valpal(disparity_value),
+    radius = 0.5,
+    popup = ~pop
+    )
+```
+
+
+## Protest Data by Disparity Score
+```{r}
+protest_income_df =
+  read_csv("./data/protest_income_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  ) %>% 
+  mutate(
+   disparity_level =
+    case_when(
+     disparity_value < 20000 ~ "Very Low",
+     disparity_value %in% 20000:24999 ~ "Low",
+     disparity_value %in% 25000:30000 ~ "Middle",
+     disparity_value %in% 30000:40000 ~ "High",
+     disparity_value > 40000 ~ "Very High"
+   ),
+   disparity_level = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
+  )
+
+factpal3 <- colorFactor("magma", protest_income_df %>% pull(disparity_level))
+
+protest_income_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop2 = str_c("City: ", city, "<br>Event Type: ", 
+               sub_event_type, "<br>Year: ", year, "<br>Fatalities: ", fatalities)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal3,
+            values = ~disparity_level,
+            title = "Income Disparity",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~factpal3(disparity_level),
+    radius = 0.5,
+    popup = ~pop2
+    )
+```

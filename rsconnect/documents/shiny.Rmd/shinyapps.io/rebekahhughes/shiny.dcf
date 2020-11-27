@@ -1,0 +1,10 @@
+name: shiny
+title:
+username:
+account: rebekahhughes
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3313051
+bundleId: 3914048
+url: https://rebekahhughes.shinyapps.io/shiny/
+when: 1606512697.32072

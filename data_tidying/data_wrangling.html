@@ -1,0 +1,1569 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Data Wrangling for All Datasets Used</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 60px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h2 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h3 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h4 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h5 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.section h6 {
+  padding-top: 65px;
+  margin-top: -65px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Home</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Exploratory Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="analysis_mpv.html">Police Violence</a>
+    </li>
+    <li>
+      <a href="analysis_protests.html">Protests</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Regression Analyses
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="regression_mpv.html">Police Violence</a>
+    </li>
+    <li>
+      <a href="regression_protest.html">Protests</a>
+    </li>
+  </ul>
+</li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Interactive Maps
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li class="dropdown-header">Police Violence</li>
+    <li class="dropdown-header">Protests</li>
+  </ul>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="proj_report.html">Project Report</a>
+</li>
+<li>
+  <a>
+    <span class="fa fa-envelope fa-lg"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/rebekahhughes97/p8105_final_proj.github.io.git">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Data Wrangling for All Datasets Used</h1>
+
+</div>
+
+
+<div id="mpv-dataset" class="section level2">
+<h2>MPV Dataset</h2>
+<pre class="r"><code>mpv_df =
+  read_excel(&quot;./data/MPVDatasetDownload.xlsx&quot;,
+             sheet = &quot;2013-2020 Police Killings&quot;) %&gt;%
+  janitor::clean_names() %&gt;% 
+  separate(date_of_incident_month_day_year, c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;)) %&gt;% 
+  mutate(
+    age = as.numeric(victims_age),
+    gender  = victims_gender,
+    race = victims_race,
+    police_dept = agency_responsible_for_death,
+    description = a_brief_description_of_the_circumstances_surrounding_the_death,
+    disposition = official_disposition_of_death_justified_or_other,
+    year = as.numeric(year),
+    month = as.numeric(month),
+    day = as.numeric(day)) %&gt;%
+  select(
+    age, gender, race, police_dept, disposition, year,
+    month, day, city, state, county, cause_of_death, criminal_charges,
+    symptoms_of_mental_illness) %&gt;% 
+  view()</code></pre>
+<p>In the above code chunk, the MPV dataset has been manipulated and tidied by reading in the excel sheet and cleaning the variable names, separating out the date variable, changing the names of some of the variables and changing some variables to be numeric, and selecting only the variables of importance to our analysis for inclusion in the tidied dataset.</p>
+</div>
+<div id="latlong-dataset" class="section level2">
+<h2>Lat/Long Dataset</h2>
+<pre class="r"><code>lat_long =
+  read_csv(&quot;./data/uscities.csv&quot;) %&gt;% 
+  mutate(state = state_id) %&gt;% 
+  select(city, lat, lng, state)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   city = col_character(),
+##   city_ascii = col_character(),
+##   state_id = col_character(),
+##   state_name = col_character(),
+##   county_fips = col_character(),
+##   county_name = col_character(),
+##   lat = col_double(),
+##   lng = col_double(),
+##   population = col_double(),
+##   density = col_double(),
+##   source = col_character(),
+##   military = col_logical(),
+##   incorporated = col_logical(),
+##   timezone = col_character(),
+##   ranking = col_double(),
+##   zips = col_character(),
+##   id = col_double()
+## )</code></pre>
+<pre class="r"><code>mpv_final = left_join(mpv_df, lat_long, by = c(&quot;city&quot; = &quot;city&quot;, &quot;state&quot; = &quot;state&quot;))
+
+write_csv(mpv_final, &quot;./data/mpv_final.csv&quot;)</code></pre>
+</div>
+<div id="usa-october-2020-dataset" class="section level2">
+<h2>USA October 2020 Dataset</h2>
+<pre class="r"><code>usa_df =
+  read_excel(&quot;./data/usa_2020_oct.xlsx&quot;) %&gt;%
+  janitor::clean_names() %&gt;% 
+  separate(event_date, c(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;)) %&gt;%
+  mutate(
+    state = admin1,
+    county = admin2,
+    city = location,
+    latitude = as.numeric(latitude),
+    longitude = as.numeric(longitude),
+    year = as.numeric(year),
+    month = as.numeric(month),
+    day = as.numeric(day),
+    fatalities = as.numeric(fatalities)) %&gt;%
+  select(
+    year, month, day, event_type, sub_event_type, state, county, city, latitude, longitude, fatalities)
+
+write_csv(usa_df, &quot;./data/usa_tidy.csv&quot;)</code></pre>
+</div>
+<div id="acs-datasets" class="section level2">
+<h2>ACS Datasets</h2>
+<div id="age-and-sex" class="section level4">
+<h4>Age and Sex</h4>
+<p>Using the ACS age/sex dataset to create an age only dataset:</p>
+<pre class="r"><code># getting the total ages by county and tidying
+
+age_total_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(&quot;estimate_total_total&quot;))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;percent_allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;%
+  pivot_longer(
+    4:21,
+    names_to = &quot;age&quot;,
+    values_to = &quot;total&quot;,
+    names_prefix = &quot;estimate_total_total_population_age_&quot;
+  ) %&gt;%
+  mutate(
+    age = str_replace_all(age, &quot;_&quot;, &quot; &quot;),
+    age = str_replace(age, &quot;years&quot;, &quot;&quot;),
+    age = str_replace_all(age, &quot;under 5&quot;, &quot;0-5&quot;),
+    age = str_replace_all(age, &quot;85  and over&quot;, &quot;85+&quot;),
+    age = as.factor(age)
+  ) %&gt;% view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># getting the percentage of ages by county and tidying
+
+age_percent_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(&quot;estimate_percent_total&quot;))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, &quot;estimate_percent_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;percent_allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;%
+  pivot_longer(
+    4:21,
+    names_to = &quot;age&quot;,
+    values_to = &quot;percent&quot;,
+    names_prefix = &quot;estimate_percent_total_population_age_&quot;
+  ) %&gt;%
+  mutate(
+    age = str_replace_all(age, &quot;_&quot;, &quot; &quot;),
+    age = str_replace(age, &quot;years&quot;, &quot;&quot;),
+    age = str_replace_all(age, &quot;under 5&quot;, &quot;0-5&quot;),
+    age = str_replace_all(age, &quot;85  and over&quot;, &quot;85+&quot;),
+    age = as.factor(age)
+  ) %&gt;% view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># joining the total and percentages together into one dataset
+
+age_df = 
+  left_join(age_total_df, age_percent_df, by = c(&quot;id&quot;, &quot;county&quot;, &quot;state&quot;, &quot;age&quot;)) %&gt;% view()
+  
+# export tidy age dataset
+
+write_csv(age_df, &quot;./data/age_tidy.csv&quot;)</code></pre>
+<p>Using the ACS age/sex dataset to create an age by sex dataset:</p>
+<pre class="r"><code># read in total for males by age
+
+male_total_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(&quot;estimate_male_total&quot;))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, &quot;estimate_male_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;percent_allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  pivot_longer(
+    4:21,
+    names_to = &quot;age&quot;,
+    values_to = &quot;total&quot;,
+    names_prefix = &quot;estimate_male_total_population_age_&quot;
+  ) %&gt;%
+  mutate(
+    age = str_replace_all(age, &quot;_&quot;, &quot; &quot;),
+    age = str_replace(age, &quot;years&quot;, &quot;&quot;),
+    age = str_replace_all(age, &quot;under 5&quot;, &quot;0-5&quot;),
+    age = str_replace_all(age, &quot;85  and over&quot;, &quot;85+&quot;),
+    age = as.factor(age),
+    sex = &quot;male&quot;
+  ) %&gt;% view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># read in total for females by age
+
+female_total_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(&quot;estimate_female_total&quot;))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, &quot;estimate_female_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;percent_allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;%
+  pivot_longer(
+    4:21,
+    names_to = &quot;age&quot;,
+    values_to = &quot;total&quot;,
+    names_prefix = &quot;estimate_female_total_population_age_&quot;
+  ) %&gt;%
+  mutate(
+    age = str_replace_all(age, &quot;_&quot;, &quot; &quot;),
+    age = str_replace(age, &quot;years&quot;, &quot;&quot;),
+    age = str_replace_all(age, &quot;under 5&quot;, &quot;0-5&quot;),
+    age = str_replace_all(age, &quot;85  and over&quot;, &quot;85+&quot;),
+    age = as.factor(age),
+    sex = &quot;female&quot;
+  ) %&gt;% view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># bind male/female total dfs together
+
+sex_total_df =
+  bind_rows(male_total_df, female_total_df) %&gt;% 
+  relocate(id, county, state, age, sex) %&gt;% 
+  view()
+
+# read in percent for males by age
+
+male_percent_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(&quot;estimate_percent_male&quot;))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, &quot;estimate_percent_male_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  pivot_longer(
+    4:21,
+    names_to = &quot;age&quot;,
+    values_to = &quot;percent&quot;,
+    names_prefix = &quot;estimate_percent_male_total_population_age_&quot;
+  ) %&gt;%
+  mutate(
+    age = str_replace_all(age, &quot;_&quot;, &quot; &quot;),
+    age = str_replace(age, &quot;years&quot;, &quot;&quot;),
+    age = str_replace_all(age, &quot;under 5&quot;, &quot;0-5&quot;),
+    age = str_replace_all(age, &quot;85  and over&quot;, &quot;85+&quot;),
+    age = as.factor(age),
+    sex = &quot;male&quot;
+  ) %&gt;% view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># read in percent for females by age
+
+female_percent_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(&quot;estimate_percent_female&quot;))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, &quot;estimate_percent_female_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;percent_allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;%
+  pivot_longer(
+    4:21,
+    names_to = &quot;age&quot;,
+    values_to = &quot;percent&quot;,
+    names_prefix = &quot;estimate_percent_female_total_population_age_&quot;
+  ) %&gt;%
+  mutate(
+    age = str_replace_all(age, &quot;_&quot;, &quot; &quot;),
+    age = str_replace(age, &quot;years&quot;, &quot;&quot;),
+    age = str_replace_all(age, &quot;under 5&quot;, &quot;0-5&quot;),
+    age = str_replace_all(age, &quot;85  and over&quot;, &quot;85+&quot;),
+    age = as.factor(age),
+    sex = &quot;female&quot;
+  ) %&gt;% view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># bind male/female percent dfs together
+
+sex_percent_df =
+  bind_rows(male_percent_df, female_percent_df) %&gt;% 
+  relocate(id, county, state, age, sex) %&gt;% 
+  view()
+
+# join percent and total dfs together
+
+sex_df = 
+  left_join(sex_total_df, sex_percent_df, by = c(&quot;id&quot;, &quot;county&quot;, &quot;state&quot;, &quot;age&quot;, &quot;sex&quot;)) %&gt;% view()
+  
+# export sex by age dataset
+write_csv(sex_df, &quot;./data/age_sex_tidy.csv&quot;)</code></pre>
+<p>Age by Sex dataset (not tidy)</p>
+<pre class="r"><code>male_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(c(&quot;estimate_male_total&quot;, &quot;estimate_percent_male&quot;)))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, &quot;estimate_male_total_population&quot;, &quot;estimate_percent_male_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;percent_allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  rename_at(
+    vars(starts_with(&quot;estimate_male_total_population&quot;)), funs(str_replace(., &quot;estimate_male_total_population_age&quot;, &quot;male&quot;)),
+    ) %&gt;% 
+  rename_at(
+        vars(starts_with(&quot;estimate_percent_male_total_population&quot;)), funs(str_replace(., &quot;estimate_percent_male_total_population_age&quot;, &quot;male_percent&quot;))
+  ) %&gt;% 
+  view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre><code>## Warning: `funs()` is deprecated as of dplyr 0.8.0.
+## Please use a list of either functions or lambdas: 
+## 
+##   # Simple named list: 
+##   list(mean = mean, median = median)
+## 
+##   # Auto named with `tibble::lst()`: 
+##   tibble::lst(mean, median)
+## 
+##   # Using lambdas
+##   list(~ mean(., trim = .2), ~ median(., na.rm = TRUE))
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_warnings()` to see where this warning was generated.</code></pre>
+<pre class="r"><code>female_df =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(c(1:3, starts_with(c(&quot;estimate_female_total&quot;, &quot;estimate_percent_female&quot;)))) %&gt;% 
+  select(-c(&quot;estimate_total_total_population&quot;, &quot;estimate_female_total_population&quot;, &quot;estimate_percent_female_total_population&quot;, contains(c(&quot;selected_age_categories&quot;, &quot;summary_indicators&quot;, &quot;percent_allocated&quot;)))) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;%
+  rename_at(
+    vars(starts_with(&quot;estimate_female_total_population&quot;)), funs(str_replace(., &quot;estimate_female_total_population_age&quot;, &quot;female&quot;)),
+    ) %&gt;% 
+  rename_at(
+        vars(starts_with(&quot;estimate_percent_female_total_population&quot;)), funs(str_replace(., &quot;estimate_percent_female_total_population_age&quot;, &quot;female_percent&quot;))
+  ) %&gt;% 
+  view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total!!Total population` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!Under 5 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!15 to 19 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!20 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!25 to 29 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!30 to 34 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!45 to 49 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!AGE!!50 to 54 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!5 to 14 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 17 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!Under 18 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 to 24 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!15 to 44 years` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!18 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!65 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SELECTED AGE CATEGORIES!!75 years and over` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Sex ratio (males per 100 females)` = col_character(),
+##   `Margin of Error!!Total!!Total population!!SUMMARY INDICATORS!!Age dependency ratio` = col_character()
+##   # ... with 161 more columns
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>sex_df2 =
+  left_join(male_df, female_df, by = c(&quot;id&quot;, &quot;county&quot;, &quot;state&quot;)) %&gt;%
+  mutate(
+    county = str_replace(county, &quot; County&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Parish&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Borough&quot;, &quot;&quot;),
+    county = str_trim(county, side = &quot;right&quot;),
+    state = str_trim(state, side = &quot;left&quot;)) %&gt;% view()
+
+write_csv(sex_df2, &quot;./data/sex2.csv&quot;)</code></pre>
+<p>Age dataset (not tidy)</p>
+<pre class="r"><code>age_df2 =
+  read_csv(&quot;./data/acs_age_county.csv&quot;, skip = 1, na = &quot;null&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  select(-c(starts_with(&quot;margin_of_error&quot;))) %&gt;% 
+  select(geographic_area_name,
+         estimate_total_total_population_age_under_5_years,
+         estimate_total_total_population_age_5_to_9_years,
+         estimate_total_total_population_age_10_to_14_years,
+         estimate_total_total_population_age_15_to_19_years,
+         estimate_total_total_population_age_20_to_24_years,
+         estimate_total_total_population_age_25_to_29_years,
+         estimate_total_total_population_age_30_to_34_years,
+         estimate_total_total_population_age_35_to_39_years,
+         estimate_total_total_population_age_40_to_44_years,
+         estimate_total_total_population_age_45_to_49_years,
+         estimate_total_total_population_age_50_to_54_years,
+         estimate_total_total_population_age_55_to_59_years,
+         estimate_total_total_population_age_60_to_64_years,
+         estimate_total_total_population_age_65_to_69_years,
+         estimate_total_total_population_age_70_to_74_years,
+         estimate_total_total_population_age_75_to_79_years,
+         estimate_total_total_population_age_80_to_84_years,
+         estimate_total_total_population_age_85_years_and_over,
+         estimate_percent_total_population_age_under_5_years,
+         estimate_percent_total_population_age_5_to_9_years,
+         estimate_percent_total_population_age_10_to_14_years,
+         estimate_percent_total_population_age_15_to_19_years,
+         estimate_percent_total_population_age_20_to_24_years,
+         estimate_percent_total_population_age_25_to_29_years,
+         estimate_percent_total_population_age_30_to_34_years,
+         estimate_percent_total_population_age_35_to_39_years,
+         estimate_percent_total_population_age_40_to_44_years,
+         estimate_percent_total_population_age_45_to_49_years,
+         estimate_percent_total_population_age_50_to_54_years,
+         estimate_percent_total_population_age_55_to_59_years,
+         estimate_percent_total_population_age_60_to_64_years,
+         estimate_percent_total_population_age_65_to_69_years,
+         estimate_percent_total_population_age_70_to_74_years,
+         estimate_percent_total_population_age_75_to_79_years,
+         estimate_percent_total_population_age_80_to_84_years,
+         estimate_percent_total_population_age_85_years_and_over) %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  rename(age_under_5 = estimate_total_total_population_age_under_5_years,
+         age_5_9 = estimate_total_total_population_age_5_to_9_years,
+         age_10_14 = estimate_total_total_population_age_10_to_14_years,
+         age_15_19 = estimate_total_total_population_age_15_to_19_years,
+         age_20_24 = estimate_total_total_population_age_20_to_24_years,
+         age_25_29 = estimate_total_total_population_age_25_to_29_years,
+         age_30_34 = estimate_total_total_population_age_30_to_34_years,
+         age_35_39 = estimate_total_total_population_age_35_to_39_years,
+         age_40_44 = estimate_total_total_population_age_40_to_44_years,
+         age_45_49 = estimate_total_total_population_age_45_to_49_years,
+         age_50_54 = estimate_total_total_population_age_50_to_54_years,
+         age_55_59 = estimate_total_total_population_age_55_to_59_years,
+         age_60_64 = estimate_total_total_population_age_60_to_64_years,
+         age_65_69 = estimate_total_total_population_age_65_to_69_years,
+         age_70_74 = estimate_total_total_population_age_70_to_74_years,
+         age_75_79 = estimate_total_total_population_age_75_to_79_years,
+         age_80_84 = estimate_total_total_population_age_80_to_84_years,
+         age_85_over = estimate_total_total_population_age_85_years_and_over,
+         age_pct_under_5 = estimate_percent_total_population_age_under_5_years,
+         age_pct_5_9 = estimate_percent_total_population_age_5_to_9_years,
+         age_pct_10_14 = estimate_percent_total_population_age_10_to_14_years,
+         age_pct_15_19 = estimate_percent_total_population_age_15_to_19_years,
+         age_pct_20_24 = estimate_percent_total_population_age_20_to_24_years,
+         age_pct_25_29 = estimate_percent_total_population_age_25_to_29_years,
+         age_pct_30_34 = estimate_percent_total_population_age_30_to_34_years,
+         age_pct_35_39 = estimate_percent_total_population_age_35_to_39_years,
+         age_pct_40_44 = estimate_percent_total_population_age_40_to_44_years,
+         age_pct_45_49 = estimate_percent_total_population_age_45_to_49_years,
+         age_pct_50_54 = estimate_percent_total_population_age_50_to_54_years,
+         age_pct_55_59 = estimate_percent_total_population_age_55_to_59_years,
+         age_pct_60_64 = estimate_percent_total_population_age_60_to_64_years,
+         age_pct_65_69 = estimate_percent_total_population_age_65_to_69_years,
+         age_pct_70_74 = estimate_percent_total_population_age_70_to_74_years,
+         age_pct_75_79 = estimate_percent_total_population_age_75_to_79_years,
+         age_pct_80_84 = estimate_percent_total_population_age_80_to_84_years,
+         age_pct_85_over = estimate_percent_total_population_age_85_years_and_over
+  ) %&gt;%
+  mutate(
+    county = str_replace(county, &quot; County&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Parish&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Borough&quot;, &quot;&quot;),
+    county = str_trim(county, side = &quot;right&quot;),
+    state = str_trim(state, side = &quot;left&quot;))
+
+write_csv(age_df2, &quot;./data/age2.csv&quot;)</code></pre>
+</div>
+<div id="acs-income" class="section level4">
+<h4>ACS Income</h4>
+<p>Tidy income dataset:</p>
+<pre class="r"><code>income_df =
+  read_csv(&quot;./data/acs_income_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  select(
+      -c( 
+         starts_with(&quot;margin_of_error&quot;), 
+         starts_with(&quot;estimate_families&quot;), 
+         starts_with(&quot;estimate_married&quot;), 
+         starts_with(&quot;estimate_nonfamily&quot;), 
+         starts_with(&quot;estimate_households_percent&quot;))
+      ) %&gt;%
+  mutate(
+    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars,
+    median_income = estimate_households_mean_income_dollars,
+    mean_income = estimate_households_median_income_dollars
+    ) %&gt;% 
+  pivot_longer(
+    5:14,
+    names_to = &quot;total_income&quot;,
+    names_prefix = &quot;estimate_households_total_&quot;,
+    values_to = &quot;estimate_households&quot;
+  ) %&gt;% 
+  select(-c(estimate_households_total, estimate_households_mean_income_dollars, estimate_households_median_income_dollars)) %&gt;%
+  relocate(c(id, county, state, total_income, estimate_households, mean_income, median_income)) %&gt;% 
+  mutate(
+    total_income = str_replace_all(total_income, &quot;_&quot;, &quot; &quot;),
+    total_income = str_replace_all(total_income, &quot;less than 10 000&quot;, &quot;0-10,000&quot;),
+    total_income = str_replace_all(total_income, &quot;200 000 or more&quot;, &quot;200,000+&quot;),
+    total_income = str_replace_all(total_income, &quot; to &quot;, &quot;-&quot;),
+    total_income = str_replace_all(total_income, &quot; &quot;, &quot;,&quot;),
+    total_income = as.factor(total_income)
+  ) %&gt;% 
+  mutate(
+   income_class =
+    case_when(
+     median_income &lt; 55000 ~ &quot;Very Low&quot;,
+     median_income %in% 55000:59999 ~ &quot;Low&quot;,
+     median_income %in% 60000:64999 ~ &quot;Middle&quot;,
+     median_income %in% 65000:74999 ~ &quot;High&quot;,
+     median_income &gt; 75000 ~ &quot;Very High&quot;
+   ),
+   income_class = fct_relevel(income_class, &quot;Very Low&quot;, &quot;Low&quot;, &quot;Middle&quot;, &quot;High&quot;, &quot;Very High&quot;)
+  ) %&gt;% 
+  view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   `Estimate!!Households!!Total` = col_double(),
+##   `Margin of Error!!Households!!Total` = col_double(),
+##   `Estimate!!Households!!Total!!Less than $10,000` = col_double(),
+##   `Margin of Error!!Households!!Total!!Less than $10,000` = col_double(),
+##   `Estimate!!Households!!Total!!$10,000 to $14,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$10,000 to $14,999` = col_double(),
+##   `Estimate!!Households!!Total!!$15,000 to $24,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$15,000 to $24,999` = col_double(),
+##   `Estimate!!Households!!Total!!$25,000 to $34,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$25,000 to $34,999` = col_double(),
+##   `Estimate!!Households!!Total!!$35,000 to $49,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$35,000 to $49,999` = col_double(),
+##   `Estimate!!Households!!Total!!$50,000 to $74,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$50,000 to $74,999` = col_double(),
+##   `Estimate!!Households!!Total!!$75,000 to $99,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$75,000 to $99,999` = col_double(),
+##   `Estimate!!Households!!Total!!$100,000 to $149,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$100,000 to $149,999` = col_double(),
+##   `Estimate!!Households!!Total!!$150,000 to $199,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$150,000 to $199,999` = col_double()
+##   # ... with 39 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># export tidy income dataset
+write_csv(income_df, &quot;./data/income_tidy.csv&quot;)</code></pre>
+<p>Income dataset (not tidy)</p>
+<pre class="r"><code>income_df =
+  read_csv(&quot;./data/acs_income_county.csv&quot;, skip = 1) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  separate(geographic_area_name, c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  select(
+      -c( 
+         starts_with(&quot;margin_of_error&quot;), 
+         starts_with(&quot;estimate_families&quot;), 
+         starts_with(&quot;estimate_married&quot;), 
+         starts_with(&quot;estimate_nonfamily&quot;), 
+         starts_with(&quot;estimate_households_percent&quot;))
+      ) %&gt;%
+  mutate(
+    disparity_value = estimate_households_mean_income_dollars - estimate_households_median_income_dollars) %&gt;% 
+mutate(
+   income_class =
+    case_when(
+     estimate_households_median_income_dollars &lt; 55000 ~ &quot;Very Low&quot;,
+     estimate_households_median_income_dollars %in% 55000:59999 ~ &quot;Low&quot;,
+     estimate_households_median_income_dollars %in% 60000:64999 ~ &quot;Middle&quot;,
+     estimate_households_median_income_dollars %in% 65000:74999 ~ &quot;High&quot;,
+     estimate_households_median_income_dollars &gt; 75000 ~ &quot;Very High&quot;
+   ),
+   income_class = fct_relevel(income_class, &quot;Very Low&quot;, &quot;Low&quot;, &quot;Middle&quot;, &quot;High&quot;, &quot;Very High&quot;)
+  ) %&gt;%
+  mutate(
+    county = str_replace(county, &quot; County&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Parish&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Borough&quot;, &quot;&quot;),
+    county = str_trim(county, side = &quot;right&quot;),
+    state = str_trim(state, side = &quot;left&quot;))</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_character(),
+##   `Estimate!!Households!!Total` = col_double(),
+##   `Margin of Error!!Households!!Total` = col_double(),
+##   `Estimate!!Households!!Total!!Less than $10,000` = col_double(),
+##   `Margin of Error!!Households!!Total!!Less than $10,000` = col_double(),
+##   `Estimate!!Households!!Total!!$10,000 to $14,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$10,000 to $14,999` = col_double(),
+##   `Estimate!!Households!!Total!!$15,000 to $24,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$15,000 to $24,999` = col_double(),
+##   `Estimate!!Households!!Total!!$25,000 to $34,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$25,000 to $34,999` = col_double(),
+##   `Estimate!!Households!!Total!!$35,000 to $49,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$35,000 to $49,999` = col_double(),
+##   `Estimate!!Households!!Total!!$50,000 to $74,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$50,000 to $74,999` = col_double(),
+##   `Estimate!!Households!!Total!!$75,000 to $99,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$75,000 to $99,999` = col_double(),
+##   `Estimate!!Households!!Total!!$100,000 to $149,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$100,000 to $149,999` = col_double(),
+##   `Estimate!!Households!!Total!!$150,000 to $199,999` = col_double(),
+##   `Margin of Error!!Households!!Total!!$150,000 to $199,999` = col_double()
+##   # ... with 39 more columns
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>lat_long2 =
+  read_csv(&quot;./data/uscities.csv&quot;) %&gt;% 
+  mutate(state = state_id) %&gt;% 
+  select(city, lat, lng, state, state_name)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   city = col_character(),
+##   city_ascii = col_character(),
+##   state_id = col_character(),
+##   state_name = col_character(),
+##   county_fips = col_character(),
+##   county_name = col_character(),
+##   lat = col_double(),
+##   lng = col_double(),
+##   population = col_double(),
+##   density = col_double(),
+##   source = col_character(),
+##   military = col_logical(),
+##   incorporated = col_logical(),
+##   timezone = col_character(),
+##   ranking = col_double(),
+##   zips = col_character(),
+##   id = col_double()
+## )</code></pre>
+<pre class="r"><code>mpv_final2 = left_join(mpv_df, lat_long2, by = c(&quot;city&quot; = &quot;city&quot;, &quot;state&quot; = &quot;state&quot;))
+
+#combines MPV data and non-tidy income data
+build_df = 
+  left_join(mpv_final2, income_df, 
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state_name&quot; = &quot;state&quot;))
+
+#MPV data and non-tidy income data csv
+write_csv(build_df, &quot;./data/build_df.csv&quot;)
+
+#combine non-tidy income data and protest data
+protest_income_df = 
+  left_join(usa_df, income_df, 
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state&quot; = &quot;state&quot;))
+
+write_csv(protest_income_df, &quot;./data/protest_income_df.csv&quot;)</code></pre>
+</div>
+<div id="acs-race" class="section level4">
+<h4>ACS Race</h4>
+<p>Tidy race dataset</p>
+<pre class="r"><code>race_df =
+  read_csv(&quot;./data/acs_race_county.csv&quot;, skip = 1, na = &quot;null&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  separate(geographic_area_name, 
+           c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  select(-c(starts_with(&quot;margin_of_error&quot;),
+            estimate_total_two_or_more_races,
+            estimate_total_two_or_more_races_two_races_including_some_other_race,
+            estimate_total_two_or_more_races_two_races_excluding_some_other_race_and_three_or_more_races)) %&gt;% 
+  rename(
+    total_pop = estimate_total,
+    white = estimate_total_white_alone,
+    black = estimate_total_black_or_african_american_alone,
+    am_in_alask = estimate_total_american_indian_and_alaska_native_alone,
+    asian = estimate_total_asian_alone,
+    hawaii_pi = estimate_total_native_hawaiian_and_other_pacific_islander_alone,
+    other = estimate_total_some_other_race_alone
+  ) %&gt;% 
+  pivot_longer(
+    5:10,
+    names_to = &quot;race&quot;,
+    values_to = &quot;total&quot;
+  ) %&gt;% 
+  mutate(
+    prop = total / total_pop * 100
+    ) %&gt;% 
+  view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total:` = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code># export tidy race dataset
+write_csv(race_df, &quot;./data/race_tidy.csv&quot;)</code></pre>
+<p>Race dataset (not tidy)</p>
+<pre class="r"><code>race_df2 =
+  read_csv(&quot;./data/acs_race_county.csv&quot;, skip = 1, na = &quot;null&quot;) %&gt;% 
+  janitor::clean_names() %&gt;% 
+  separate(geographic_area_name, 
+           c(&quot;county&quot;, &quot;state&quot;), sep = &quot;,&quot;) %&gt;% 
+  select(-c(starts_with(&quot;margin_of_error&quot;),
+            estimate_total_two_or_more_races,
+            estimate_total_two_or_more_races_two_races_including_some_other_race,
+            estimate_total_two_or_more_races_two_races_excluding_some_other_race_and_three_or_more_races)) %&gt;% 
+  rename(
+    total_pop = estimate_total,
+    white = estimate_total_white_alone,
+    black = estimate_total_black_or_african_american_alone,
+    am_in_alask = estimate_total_american_indian_and_alaska_native_alone,
+    asian = estimate_total_asian_alone,
+    hawaii_pi = estimate_total_native_hawaiian_and_other_pacific_islander_alone,
+    other = estimate_total_some_other_race_alone
+  ) %&gt;% 
+  mutate(
+    prop_white = white / total_pop * 100,
+    prop_black = black / total_pop * 100,
+    prop_am_in_alask = am_in_alask / total_pop * 100,
+    prop_asian = asian / total_pop * 100,
+    prop_hawaii_pi = hawaii_pi / total_pop * 100,
+    prop_other = other / total_pop * 100) %&gt;% 
+  select(
+    id, county, state, total_pop, white, prop_white, black, prop_black, asian, prop_asian, am_in_alask, prop_am_in_alask, hawaii_pi,
+    prop_hawaii_pi, other, prop_other
+  ) %&gt;%
+  mutate(
+    county = str_replace(county, &quot; County&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Parish&quot;, &quot;&quot;),
+    county = str_replace(county, &quot; Borough&quot;, &quot;&quot;),
+    county = str_trim(county, side = &quot;right&quot;),
+    state = str_trim(state, side = &quot;left&quot;))</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   `Geographic Area Name` = col_character(),
+##   `Margin of Error!!Total:` = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>write_csv(race_df2, &quot;./data/race2.csv&quot;)</code></pre>
+</div>
+<div id="joining-non-tidy-acs-data-with-the-protest-data" class="section level3">
+<h3>Joining non-tidy ACS data with the protest data:</h3>
+<pre class="r"><code>race_df =
+  read_csv(&quot;./data/race2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   id = col_character(),
+##   county = col_character(),
+##   state = col_character(),
+##   total_pop = col_double(),
+##   white = col_double(),
+##   prop_white = col_double(),
+##   black = col_double(),
+##   prop_black = col_double(),
+##   asian = col_double(),
+##   prop_asian = col_double(),
+##   am_in_alask = col_double(),
+##   prop_am_in_alask = col_double(),
+##   hawaii_pi = col_double(),
+##   prop_hawaii_pi = col_double(),
+##   other = col_double(),
+##   prop_other = col_double()
+## )</code></pre>
+<pre class="r"><code>age_df =
+  read_csv(&quot;./data/age2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   county = col_character(),
+##   state = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>sex_df =
+  read_csv(&quot;./data/sex2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   county = col_character(),
+##   state = col_character()
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>income_df =
+  read_csv(&quot;./data/income2.csv&quot;) %&gt;% 
+  select(-estimate_households_total) %&gt;% 
+  rename_at(
+    vars(starts_with(&quot;estimate_households_total&quot;)), funs(str_replace(., &quot;estimate_households_total_&quot;, &quot;&quot;)),
+    ) %&gt;% 
+  rename_at(
+        vars(starts_with(&quot;estimate_households&quot;)), funs(str_replace(., &quot;estimate_households_&quot;, &quot;&quot;))
+  ) %&gt;% 
+  view()</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   id = col_character(),
+##   county = col_character(),
+##   state = col_character(),
+##   estimate_households_total = col_double(),
+##   estimate_households_total_less_than_10_000 = col_double(),
+##   estimate_households_total_10_000_to_14_999 = col_double(),
+##   estimate_households_total_15_000_to_24_999 = col_double(),
+##   estimate_households_total_25_000_to_34_999 = col_double(),
+##   estimate_households_total_35_000_to_49_999 = col_double(),
+##   estimate_households_total_50_000_to_74_999 = col_double(),
+##   estimate_households_total_75_000_to_99_999 = col_double(),
+##   estimate_households_total_100_000_to_149_999 = col_double(),
+##   estimate_households_total_150_000_to_199_999 = col_double(),
+##   estimate_households_total_200_000_or_more = col_double(),
+##   estimate_households_median_income_dollars = col_double(),
+##   estimate_households_mean_income_dollars = col_double(),
+##   disparity_value = col_double(),
+##   income_class = col_character()
+## )</code></pre>
+<pre class="r"><code>usa_protest_df =
+  read_csv(&quot;./data/usa_tidy.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   year = col_double(),
+##   month = col_double(),
+##   day = col_double(),
+##   event_type = col_character(),
+##   sub_event_type = col_character(),
+##   state = col_character(),
+##   county = col_character(),
+##   city = col_character(),
+##   latitude = col_double(),
+##   longitude = col_double(),
+##   fatalities = col_double()
+## )</code></pre>
+<pre class="r"><code># joining protest data with acs data (nontidy)
+protest_demo_df = 
+  left_join(usa_protest_df, income_df,
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state&quot; = &quot;state&quot;)) %&gt;% 
+  left_join(sex_df,
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state&quot; = &quot;state&quot;, &quot;id&quot; = &quot;id&quot;)) %&gt;% 
+  left_join(race_df,
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state&quot; = &quot;state&quot;, &quot;id&quot; = &quot;id&quot;)) %&gt;% 
+  view()
+
+# export as csv
+write_csv(protest_demo_df, &quot;./data/protest_demo_df.csv&quot;)</code></pre>
+</div>
+<div id="joining-mpv-data-and-non-tidy-acs-data" class="section level3">
+<h3>Joining MPV data and non-tidy ACS data</h3>
+<pre class="r"><code>race_df =
+  read_csv(&quot;./data/race2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   id = col_character(),
+##   county = col_character(),
+##   state = col_character(),
+##   total_pop = col_double(),
+##   white = col_double(),
+##   prop_white = col_double(),
+##   black = col_double(),
+##   prop_black = col_double(),
+##   asian = col_double(),
+##   prop_asian = col_double(),
+##   am_in_alask = col_double(),
+##   prop_am_in_alask = col_double(),
+##   hawaii_pi = col_double(),
+##   prop_hawaii_pi = col_double(),
+##   other = col_double(),
+##   prop_other = col_double()
+## )</code></pre>
+<pre class="r"><code>age_df =
+  read_csv(&quot;./data/age2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   county = col_character(),
+##   state = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>sex_df =
+  read_csv(&quot;./data/sex2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   id = col_character(),
+##   county = col_character(),
+##   state = col_character()
+## )
+## See spec(...) for full column specifications.</code></pre>
+<pre class="r"><code>mpv_df3 = 
+  read_csv(&quot;./data/mpv_final.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   age = col_double(),
+##   gender = col_character(),
+##   race = col_character(),
+##   police_dept = col_character(),
+##   disposition = col_character(),
+##   year = col_double(),
+##   month = col_double(),
+##   day = col_double(),
+##   city = col_character(),
+##   state = col_character(),
+##   county = col_character(),
+##   cause_of_death = col_character(),
+##   criminal_charges = col_character(),
+##   symptoms_of_mental_illness = col_character(),
+##   lat = col_double(),
+##   lng = col_double()
+## )</code></pre>
+<pre class="r"><code>lat_long3 =
+  read_csv(&quot;./data/uscities.csv&quot;) %&gt;% 
+  mutate(state = state_id) %&gt;% 
+  select(city, lat, lng, state, state_name)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   city = col_character(),
+##   city_ascii = col_character(),
+##   state_id = col_character(),
+##   state_name = col_character(),
+##   county_fips = col_character(),
+##   county_name = col_character(),
+##   lat = col_double(),
+##   lng = col_double(),
+##   population = col_double(),
+##   density = col_double(),
+##   source = col_character(),
+##   military = col_logical(),
+##   incorporated = col_logical(),
+##   timezone = col_character(),
+##   ranking = col_double(),
+##   zips = col_character(),
+##   id = col_double()
+## )</code></pre>
+<pre class="r"><code>mpv_final3 = left_join(mpv_df3, lat_long3, by = c(&quot;city&quot; = &quot;city&quot;, &quot;state&quot; = &quot;state&quot;))
+
+#combines MPV data and non-tidy acs data
+mpv_demo_df = 
+  left_join(mpv_final3, income_df,
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state_name&quot; = &quot;state&quot;)) %&gt;% 
+  left_join(sex_df,
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state_name&quot; = &quot;state&quot;, &quot;id&quot; = &quot;id&quot;)) %&gt;% 
+  left_join(race_df,
+            by = c(&quot;county&quot; = &quot;county&quot;, &quot;state_name&quot; = &quot;state&quot;, &quot;id&quot; = &quot;id&quot;)) %&gt;% 
+  view()
+
+#MPV data and non-tidy acs data csv
+write_csv(mpv_demo_df, &quot;./data/mpv_demo_df.csv&quot;)</code></pre>
+</div>
+</div>
+
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

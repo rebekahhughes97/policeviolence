@@ -2,21 +2,24 @@ name: "P8105 Final Website"
 output_dir: "."
 navbar:
   title: "Home"
-  right:
-    - text: "Background"
-      href: background.html
-    - text: "Analysis"
+  left:
+    - text: "Exploratory Analyses"
       menu:
         - text: "Police Violence"
-          href: 
+          href: analysis_mpv.html
         - text: "Protests"
-          href: 
+          href: analysis_protests.html
+    - text: "Regression Analyses"
+      menu:
+        - text: "Police Violence"
+          href: regression_mpv.html
+        - text: "Protests"
+          href: regression_protest.html
     - text: "Interactive Maps"
-      menu:
-        - text: "Police Violence"
-          href: https://jinghanzhang.shinyapps.io/shiny/#section-police-killings-2013-2020
-        - text: "Protests"
-          href: https://jinghanzhang.shinyapps.io/shiny/#section-protests
+      href: https://rebekahhughes.shinyapps.io/shiny/
+  right:
+    - text: "Project Report"
+      href: proj_report.html
     - icon: fa-envelope fa-lg
       href:
     - icon: fa-github fa-lg
