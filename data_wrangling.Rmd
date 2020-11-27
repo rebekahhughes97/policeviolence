@@ -300,7 +300,7 @@ female_df =
   ) %>% 
   view()
 
-sex_df =
+sex_df2 =
   left_join(male_df, female_df, by = c("id", "county", "state")) %>%
   mutate(
     county = str_replace(county, " County", ""),
@@ -309,14 +309,14 @@ sex_df =
     county = str_trim(county, side = "right"),
     state = str_trim(state, side = "left")) %>% view()
 
-write_csv(sex_df, "./data/sex2.csv")
+write_csv(sex_df2, "./data/sex2.csv")
 ```
 
 
 Age dataset (not tidy for analysis potentially)
 
 ```{r, warning = FALSE, message = FALSE}
-age_df =
+age_df2 =
   read_csv("./data/acs_age_county.csv", skip = 1, na = "null") %>% 
   janitor::clean_names() %>% 
   select(-c(starts_with("margin_of_error"))) %>% 
@@ -402,7 +402,7 @@ age_df =
     county = str_trim(county, side = "right"),
     state = str_trim(state, side = "left"))
 
-write_csv(age_df, "./data/age2.csv")
+write_csv(age_df2, "./data/age2.csv")
 ```
 
 #### ACS Income
@@ -546,7 +546,7 @@ write_csv(race_df, "./data/race_tidy.csv")
 Race dataset (not tidy)
 
 ```{r}
-race_df =
+race_df2 =
   read_csv("./data/acs_race_county.csv", skip = 1, na = "null") %>% 
   janitor::clean_names() %>% 
   separate(geographic_area_name, 
@@ -582,9 +582,11 @@ race_df =
     county = str_trim(county, side = "right"),
     state = str_trim(state, side = "left"))
 
-write_csv(race_df, "./data/race2.csv")
+write_csv(race_df2, "./data/race2.csv")
 ```
 
+
+Joining all the ACS data with the protest data:
 
 ```{r}
 race_df =
@@ -610,6 +612,7 @@ income_df =
 usa_protest_df =
   read_csv("./data/usa_tidy.csv")
 
+# joining protest data with acs data (nontidy)
 protest_demo_df = 
   left_join(usa_protest_df, income_df,
             by = c("county" = "county", "state" = "state")) %>% 
@@ -619,9 +622,48 @@ protest_demo_df =
             by = c("county" = "county", "state" = "state", "id" = "id")) %>% 
   view()
 
+# export as csv
 write_csv(protest_demo_df, "./data/protest_demo_df.csv")
 ```
 
 
+```{r}
+race_df =
+  read_csv("./data/race2.csv")
 
+age_df =
+  read_csv("./data/age2.csv")
+
+sex_df =
+  read_csv("./data/sex2.csv")
+
+mpv_df3 = 
+  read_csv("./data/mpv_final.csv")
+
+lat_long3 =
+  read_csv("./data/uscities.csv") %>% 
+  mutate(state = state_id) %>% 
+  select(city, lat, lng, state, state_name)
+
+mpv_final3 = left_join(mpv_df3, lat_long3, by = c("city" = "city", "state" = "state"))
+
+#combines MPV data and non-tidy acs data
+mpv_demo_df = 
+  left_join(mpv_final3, race_df, 
+            by = c("county" = "county", "state_name" = "state")) %>% 
+  select(-c(lat.y, lng.y, prop_white, prop_black, prop_am_in_alask, prop_hawaii_pi, prop_other, prop_asian)) %>%
+  pivot_longer(
+    20:25,
+    names_to = "total_race",
+    values_to = "total"
+  ) %>% 
+  mutate(
+    prop = total / total_pop * 100
+    ) %>% 
+  view()
+
+#MPV data and non-tidy acs data csv
+write_csv(mpv_demo_df, "./data/mpv_race_df.csv")
+
+```
 

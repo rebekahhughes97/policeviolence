@@ -210,3 +210,61 @@ protest_income_df %>%
     popup = ~pop1
     )
 ```
+
+## Police Killings by Race
+```{r}
+mpv_race_df =
+  read_csv("./data/mpv_race_df.csv" )
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_race_df$prop)
+
+mpv_race_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop = str_c("Cause of Death: ", cause_of_death,
+              "<br>Police Dept: ", police_dept,
+              "<br>Age: ", age, 
+              "<br>Year: ", year,
+              "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = pal,
+            values = ~total_race,
+            title = "Race",
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~lng.x, ~lat.x,
+    color = ~factpal(prop),
+    radius = 0.5,
+    popup = ~pop
+    )
+
+
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_data$age)
+
+
+mpv_data %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("Age: ", age,
+                "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness,
+                "<br>Charges on the Police: ", criminal_charges)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = ~age,
+            title = "Age",
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~pal(age),
+    radius = 0.5,
+    popup = ~lab)
+```
+
+
