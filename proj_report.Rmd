@@ -66,7 +66,7 @@ The questions for this project are based on the 3 datasets we used that are list
 1. What is the spread of police violence over time and space, accounting for basic demographics?
 2. What were common characteristics of instances of police violence against individuals, including court rulings of the police involved?
 3. What is the geographic spread of Black Lives Matter demonstrations in the US during 2020?
-4. How does the spread of Black Lives Matter Protests relate to avergae income across states and cities in the US?
+4. How does the spread of Black Lives Matter Protests relate to average income across states and cities in the US?
 
 &nbsp;
 
@@ -101,6 +101,13 @@ The questions for this project are based on the 3 datasets we used that are list
 
 
 ##### **ACS Dataset**
+**Income**
+
+**Age by Sex**
+
+**Age Only**
+
+**Race**
 * 
 * 
 * 
@@ -110,9 +117,16 @@ The questions for this project are based on the 3 datasets we used that are list
 #### *Data Cleaning*
 The police violence and protest datasets were both similarly cleaned. The data was first imported into R. The variables were then renamed and selected based on if they were intuitive and if they were needed for this analysis. While the protest data already had a latitude and longitude included, an external source was joined with the police violence dataset so latitudes and longitudes of cities could be included in the dataset.
 
+For the ACS data we looked at Race, Income, and Age by Sex; for each of these categories there was a separate dataset. All datasets have a tidy and untidy version in order for different visualization and exploratory analysis needs. However, for both the tidy and untidy versions, variable names were shortened for convenience and only a subset of of the original datasets' categories were kept (for example, in all datasets 'margin of error estimates' were removed. Below are the specific data cleaning steps for each dataset:
+* **Race:** This dataset excludes data for those who identify as more than one race. Additionally, proportion was calculated for each race category.
+* **Age by Sex and Age Only:** The 'Age Only' dataset contains total estimate and percent estimate of each age group and the 'Age by Sex' contains the total and percent estimate for each age group by male or female.
+* **Income:** This dataset includes only the total estimates by household income. A variable for income class and disparity value were created.
+
 &nbsp;
 
 ## Exploratory Analysis
+*ACS Data*
+
 *Police Violence Data*
 The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape of the data.
 **Age Map with with symptoms of mental illness and whether the officer was charged included**
@@ -123,10 +137,6 @@ The following map shows the geographic distribution of individuals killed by pol
 **Number of individuals killed due to police violence by race**
 
 *Protest Data*
-
-
-*ACS Data*
-
 
 &nbsp;
 
