@@ -614,9 +614,9 @@ protest_demo_df =
   left_join(usa_protest_df, income_df,
             by = c("county" = "county", "state" = "state")) %>% 
   left_join(sex_df,
-            by = c("county" = "county", "state" = "state")) %>% 
+            by = c("county" = "county", "state" = "state", "id" = "id")) %>% 
   left_join(race_df,
-            by = c("county" = "county", "state" = "state")) %>% 
+            by = c("county" = "county", "state" = "state", "id" = "id")) %>% 
   view()
 
 write_csv(protest_demo_df, "./data/protest_demo_df.csv")
