@@ -291,6 +291,7 @@ income_data =
   read_csv("./data/income_tidy.csv")
 ```
 
+Age of US Population and Age By Sex
 ```{r}
 age_data %>% 
   mutate(
@@ -311,17 +312,38 @@ sex_data %>%
   geom_col(aes(fill = sex)) +
   scale_x_continuous(labels = abs) +
   labs(x = "", y = "", title = "Age by Sex of the US Population")
+```
 
+Total US Population by Race + State Breakdown by Race
+```{r}
 race_data %>% 
   ggplot(aes(x = race, y = total)) +
   geom_col(aes(fill = race)) +
   labs(x = "", y = "", title = "US Population by Race")
-  
+
+race_data %>% 
+  group_by(state, race) %>% 
+  plot_ly(
+      y = ~total, x = ~state, color = ~race,
+      type = "scatter",mode = "markers", colors = "viridis")
+
+```
+
+Total Income per Household in US and Mean Household Income by State
+```{r}  
 income_data %>% 
   ggplot(aes(x = total_income, y = estimate_households)) +
   geom_col(aes(fill = total_income)) +
   labs(x = "Total Income per Household", y = "", title = "Income in US") +
   theme(axis.text.x = element_text(angle = 45))
+
+income_data %>% 
+  mutate(
+    state = fct_reorder(state, mean_income)
+  ) %>% 
+  plot_ly(
+      y = ~mean_income, x = ~state, color = ~state,
+      type = "box", colors = "viridis")
 ```
 
 ```{r}
