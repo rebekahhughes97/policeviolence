@@ -39,7 +39,78 @@ mpv_df =
   read_csv("./data/mpv_final.csv")
 ```
 
-### Total Number of People Killed by Police by Department
+### Police Killings Over Time 2013-2019
+
+```{r, message = FALSE}
+year_plot = 
+  mpv_df %>% 
+  count(year) %>% 
+  rename(total_killed = n) %>% 
+  filter(year < 2020) %>% 
+  ggplot(aes(x = year, y = total_killed)) + geom_point() +
+  geom_smooth(method = lm, se = FALSE) +
+  scale_y_continuous(limit = c(0, 1400))
+
+year_plot
+```
+
+The plot below shows the total number police killings per year from 2013 through 2019, as we can see, the total number of killings has remained relatively unchanged the past 6 years despite increased public awareness of police brutality.
+
+```{r}
+anim_scatter =
+  mpv_df %>% 
+  mutate(
+    race = str_replace_all(race, "unknown race", "Unknown race")
+    ) %>% 
+  filter(year < 2020) %>% 
+  group_by(year, race) %>% 
+  count() %>% 
+  ggplot(aes(x = year, y = n, color = race)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Number of Police Killings Over Time by Race",
+       x = "Year",
+       y = "Number of Police Killings") +
+  transition_reveal(year)
+
+animate(anim_scatter, renderer = gifski_renderer())
+```
+
+This plot shows the number of people that were killed from 2013 through 2019 by race. From this graph,  White, Black, and Hispanic people are the victims of most police violence incidents and this holds relatively steady throughout this time period. However, these numbers must be compared with the overall US population by race in order to understand the risk of police use of force as a cause of death.
+
+### Police Killings by State
+
+```{r, warning = FALSE}
+mpv_df %>% 
+  count(state) %>% 
+  rename(total_killed_st = n) %>% 
+  arrange(desc(total_killed_st)) %>% 
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, total_killed_st)
+  ) %>% 
+ plot_ly(
+      y = ~total_killed_st, x = ~state, color = ~state,
+      type = "bar", colors = "viridis")
+
+mpv_df %>% 
+  count(state) %>% 
+  rename(total_killed_st = n) %>% 
+  arrange(desc(total_killed_st)) %>% 
+  filter(total_killed_st >= 230) %>% 
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, total_killed_st)
+  ) %>% 
+ plot_ly(
+      y = ~total_killed_st, x = ~state, color = ~state,
+      type = "bar", colors = "viridis")
+```
+
+These two graphs show us the total number people killed per state from 2013-2020. The first graph contains numbers for all 50 states and the second graph contains the top 10 states with the highest number of police killings. At the top is California which is almost double the next highest state, Texas. 
+
+### Police Killings by Department
+
 ```{r, warning = FALSE, message = FALSE}
 mpv_df %>% 
   count(police_dept) %>% 
@@ -54,55 +125,6 @@ mpv_df %>%
       type = "bar", colors = "viridis")
 ```
 This plot depicts the total number of people killed from 2013 through 2020 broken down by police department; only departments with a count higher than 49 are included to show the highest offenders. Based on this graph, we can see that Los Angeles has the highest count, especially once the LA County and LA city departments are combined together for a total that is double the city with the second highest count.   
-
-
-The plots below visualize police killings by state. One includes all states with data, the other includes the top 10 states. 
-
-```{r}
-state_plot = 
-  mpv_df %>% 
-  count(state) %>% 
-  rename(total_killed_st = n) %>% 
-  arrange(desc(total_killed_st)) %>% 
-  mutate(
-    state = factor(state),
-    state = fct_reorder(state, total_killed_st)
-  ) %>% 
-  ggplot(aes(x = state, y = total_killed_st, fill = state)) +
-  geom_col() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
-
-state_subset_plot = 
-  mpv_df %>% 
-  count(state) %>% 
-  rename(total_killed_st = n) %>% 
-  arrange(desc(total_killed_st)) %>% 
-  filter(total_killed_st >= 230) %>% 
-  mutate(
-    state = factor(state),
-    state = fct_reorder(state, total_killed_st)
-  ) %>% 
-  ggplot(aes(x = state, y = total_killed_st, fill = state)) +
-  geom_col() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
-
-state_plot + state_subset_plot
-```
-
-The plot below shows police killings over time until 2019 (I excluded 2020, because otherwise it looks like 2020 has a drop in police killings).
-
-```{r}
-year_plot = 
-  mpv_df %>% 
-  count(year) %>% 
-  rename(total_killed = n) %>% 
-  filter(year < 2020) %>% 
-  ggplot(aes(x = year, y = total_killed)) + geom_point() +
-  geom_smooth(method = lm, se = FALSE) +
-  scale_y_continuous(limit = c(0, 1400))
-
-year_plot
-```
 
 ### Breakdown of charges laid against police
 
@@ -125,27 +147,7 @@ mpv_case =
 
 mpv_case
 ```
-The above plot shows the breakdown of whether charges were pressed police after each case. In total, `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()`charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` cases where police were not charged. 
+The above plot shows the breakdown of whether charges were pressed police after each case. In total,`r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
 
-
-Scatter plot showing killings over time separated by race
-
-```{r}
-anim_scatter =
-  mpv_df %>% 
-  group_by(year, race) %>% 
-  count() %>% 
-  ggplot(aes(x = year, y = n, color = race)) +
-  geom_line() +
-  geom_point() +
-  labs(title = "Number of Police Killings Over Time by Race",
-       x = "Year",
-       y = "Number of Police Killings") +
-  transition_reveal(year)
-
-animate(anim_scatter, renderer = gifski_renderer())
-
-# might be worth excluding 2020 because of incomplete data, it makes it look like the shootings are trending down
-```
 
 
