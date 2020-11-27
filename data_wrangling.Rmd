@@ -269,6 +269,50 @@ sex_df =
 write_csv(sex_df, "./data/age_sex_tidy.csv")
 ```
 
+Sex dataset (not tidy)
+
+```{r}
+male_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with(c("estimate_male_total", "estimate_percent_male")))) %>% 
+  select(-c("estimate_total_total_population", "estimate_male_total_population", "estimate_percent_male_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
+  rename_at(
+    vars(starts_with("estimate_male_total_population")), funs(str_replace(., "estimate_male_total_population_age", "male")),
+    ) %>% 
+  rename_at(
+        vars(starts_with("estimate_percent_male_total_population")), funs(str_replace(., "estimate_percent_male_total_population_age", "male_percent"))
+  ) %>% 
+  view()
+
+female_df =
+  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
+  janitor::clean_names() %>% 
+  select(c(1:3, starts_with(c("estimate_female_total", "estimate_percent_female")))) %>% 
+  select(-c("estimate_total_total_population", "estimate_female_total_population", "estimate_percent_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
+  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
+  rename_at(
+    vars(starts_with("estimate_female_total_population")), funs(str_replace(., "estimate_female_total_population_age", "female")),
+    ) %>% 
+  rename_at(
+        vars(starts_with("estimate_percent_female_total_population")), funs(str_replace(., "estimate_percent_female_total_population_age", "female_percent"))
+  ) %>% 
+  view()
+
+sex_df =
+  left_join(male_df, female_df, by = c("id", "county", "state")) %>%
+  mutate(
+    county = str_replace(county, " County", ""),
+    county = str_replace(county, " Parish", ""),
+    county = str_replace(county, " Borough", ""),
+    county = str_trim(county, side = "right"),
+    state = str_trim(state, side = "left")) %>% view()
+
+write_csv(sex_df, "./data/sex2.csv")
+```
+
+
 Age dataset (not tidy for analysis potentially)
 
 ```{r, warning = FALSE, message = FALSE}
@@ -350,8 +394,15 @@ age_df =
          age_pct_75_79 = estimate_percent_total_population_age_75_to_79_years,
          age_pct_80_84 = estimate_percent_total_population_age_80_to_84_years,
          age_pct_85_over = estimate_percent_total_population_age_85_years_and_over
-  )
+  ) %>%
+  mutate(
+    county = str_replace(county, " County", ""),
+    county = str_replace(county, " Parish", ""),
+    county = str_replace(county, " Borough", ""),
+    county = str_trim(county, side = "right"),
+    state = str_trim(state, side = "left"))
 
+write_csv(age_df, "./data/age2.csv")
 ```
 
 #### ACS Income
@@ -523,10 +574,53 @@ race_df =
   select(
     id, county, state, total_pop, white, prop_white, black, prop_black, asian, prop_asian, am_in_alask, prop_am_in_alask, hawaii_pi,
     prop_hawaii_pi, other, prop_other
-  ) %>% view()
+  ) %>%
+  mutate(
+    county = str_replace(county, " County", ""),
+    county = str_replace(county, " Parish", ""),
+    county = str_replace(county, " Borough", ""),
+    county = str_trim(county, side = "right"),
+    state = str_trim(state, side = "left"))
+
+write_csv(race_df, "./data/race2.csv")
 ```
 
 
+```{r}
+race_df =
+  read_csv("./data/race2.csv")
+
+age_df =
+  read_csv("./data/age2.csv")
+
+sex_df =
+  read_csv("./data/sex2.csv")
+
+income_df =
+  read_csv("./data/income2.csv") %>% 
+  select(-estimate_households_total) %>% 
+  rename_at(
+    vars(starts_with("estimate_households_total")), funs(str_replace(., "estimate_households_total_", "")),
+    ) %>% 
+  rename_at(
+        vars(starts_with("estimate_households")), funs(str_replace(., "estimate_households_", ""))
+  ) %>% 
+  view()
+
+usa_protest_df =
+  read_csv("./data/usa_tidy.csv")
+
+protest_demo_df = 
+  left_join(usa_protest_df, income_df,
+            by = c("county" = "county", "state" = "state")) %>% 
+  left_join(sex_df,
+            by = c("county" = "county", "state" = "state")) %>% 
+  left_join(race_df,
+            by = c("county" = "county", "state" = "state")) %>% 
+  view()
+
+write_csv(protest_demo_df, "./data/protest_demo_df.csv")
+```
 
 
 
