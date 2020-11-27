@@ -189,6 +189,8 @@ protest_income_df =
     income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
   )
 
+quantile(protest_income_df$disparity_value, na.rm = TRUE)
+
 factpal2 <- colorFactor("BuGn", protest_income_df %>% pull(income_class))
 
 protest_income_df %>% 
@@ -211,3 +213,74 @@ protest_income_df %>%
     )
 ```
 
+## Police Killings by Disparity Score
+```{r}
+build_df =
+  read_csv("./data/build_df.csv")
+
+valpal <- colorNumeric("RdYlGn", build_df %>% pull(disparity_value))
+
+build_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop = str_c("Cause of Death: ", cause_of_death,
+              "<br>Police Dept: ", police_dept,
+              "<br>Age: ", age, 
+              "<br>Year: ", year,
+              "<br>Symptoms of Mental Illness: ", symptoms_of_mental_illness)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = valpal,
+            values = ~disparity_value,
+            title = "Income Disparity",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~valpal(disparity_value),
+    radius = 0.5,
+    popup = ~pop
+    )
+```
+
+
+## Protest Data by Disparity Score
+```{r}
+protest_income_df =
+  read_csv("./data/protest_income_df.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  ) %>% 
+  mutate(
+   disparity_level =
+    case_when(
+     disparity_value < 20000 ~ "Very Low",
+     disparity_value %in% 20000:24999 ~ "Low",
+     disparity_value %in% 25000:30000 ~ "Middle",
+     disparity_value %in% 30000:40000 ~ "High",
+     disparity_value > 40000 ~ "Very High"
+   ),
+   disparity_level = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
+  )
+
+factpal3 <- colorFactor("magma", protest_income_df %>% pull(disparity_level))
+
+protest_income_df %>% 
+  drop_na() %>% 
+  mutate(
+  pop2 = str_c("City: ", city, "<br>Event Type: ", 
+               sub_event_type, "<br>Year: ", year, "<br>Fatalities: ", fatalities)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal3,
+            values = ~disparity_level,
+            title = "Income Disparity",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~factpal3(disparity_level),
+    radius = 0.5,
+    popup = ~pop2
+    )
+```
