@@ -8,7 +8,37 @@ output:
 ---
 
 ```{r, include=FALSE}
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(readxl)
+library(patchwork)
+library(leaflet)
+library(rvest)
+#you'll need to install the packages below in order to run animated plots or knit
+library(gganimate)
+library(gifski)
+library(png)
 
+knitr::opts_chunk$set(
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+mpv_df =
+  read_csv("./data/mpv_final.csv")
+
+protest_data =
+  read_csv("./data/usa_tidy.csv")
 ```
 
 <style type="text/css">
@@ -31,7 +61,7 @@ This project is overall motivated by the killing of George Floyd in 2020 and the
 
 ## Questions
 
-The quesitons for this project are based on the 3 datasets we used that are listed in the next section:
+The questions for this project are based on the 3 datasets we used that are listed in the next section:
 
 1. What is the spread of police violence over time and space, accounting for basic demographics?
 2. What were common characteristics of instances of police violence against individuals, including court rulings of the police involved?
@@ -48,17 +78,54 @@ The quesitons for this project are based on the 3 datasets we used that are list
 
 &nbsp;
 
-#### *Variables Used*
+#### *Variables We Were Interested In*
+##### **Police Violence Dataset**
+* `age`
+* `gender`
+* `race`
+* `police_dept`: the police department responsible for the individual's death
+* `year`
+* `city`
+* `state`
+* `criminal_charges`: whether the police officers involved received criminal charges
+* `symptoms_of_mental_illness`: whether the individual killed had symptoms of mental illness
 
+
+##### **Protest Dataset**
+* `month`
+* `event_type`: the type of event, ranging from protests to riots
+* `sub_event_type`: the sub-type of event, including peaceful protests
+* `state`
+* `county`
+* `fatalities`: number of individuals killed at each event
+
+
+##### **ACS Dataset**
+* 
+* 
+* 
 
 &nbsp;
 
 #### *Data Cleaning*
-
+The police violence and protest datasets were both similarly cleaned. The data was first imported into R. The variables were then renamed and selected based on if they were intuitive and if they were needed for this analysis. While the protest data already had a latitude and longitude included, an external source was joined with the police violence dataset so latitudes and longitudes of cities could be included in the dataset.
 
 &nbsp;
 
 ## Exploratory Analysis
+*Police Violence Data*
+The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape of the data.
+**Age Map with with symptoms of mental illness and whether the officer was charged included**
+The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by age, with information on symptoms of mental illness and whether the officer was charged included.
+
+**Distribution of deaths due to police violence across states**
+
+**Number of individuals killed due to police violence by race**
+
+*Protest Data*
+
+
+*ACS Data*
 
 
 &nbsp;
@@ -68,11 +135,14 @@ The quesitons for this project are based on the 3 datasets we used that are list
 
 &nbsp;
 
-## Discussion
+## Conclusions
 
 
 &nbsp;
 
-## Conclusions
+## Discussion
+
+
+
 
 

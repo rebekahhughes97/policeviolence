@@ -438,7 +438,7 @@ h1 {color:slategray;}
 </div>
 <div id="questions" class="section level2">
 <h2>Questions</h2>
-<p>The quesitons for this project are based on the 3 datasets we used that are listed in the next section:</p>
+<p>The questions for this project are based on the 3 datasets we used that are listed in the next section:</p>
 <ol style="list-style-type: decimal">
 <li>What is the spread of police violence over time and space, accounting for basic demographics?</li>
 <li>What were common characteristics of instances of police violence against individuals, including court rulings of the police involved?</li>
@@ -458,29 +458,68 @@ h1 {color:slategray;}
 </ul>
 <p> </p>
 </div>
-<div id="variables-used" class="section level4">
-<h4><em>Variables Used</em></h4>
+<div id="variables-we-were-interested-in" class="section level4">
+<h4><em>Variables We Were Interested In</em></h4>
+<div id="police-violence-dataset" class="section level5">
+<h5><strong>Police Violence Dataset</strong></h5>
+<ul>
+<li><code>age</code></li>
+<li><code>gender</code></li>
+<li><code>race</code></li>
+<li><code>police_dept</code>: the police department responsible for the individual’s death</li>
+<li><code>year</code></li>
+<li><code>city</code></li>
+<li><code>state</code></li>
+<li><code>criminal_charges</code>: whether the police officers involved received criminal charges</li>
+<li><code>symptoms_of_mental_illness</code>: whether the individual killed had symptoms of mental illness</li>
+</ul>
+</div>
+<div id="protest-dataset" class="section level5">
+<h5><strong>Protest Dataset</strong></h5>
+<ul>
+<li><code>month</code></li>
+<li><code>event_type</code>: the type of event, ranging from protests to riots</li>
+<li><code>sub_event_type</code>: the sub-type of event, including peaceful protests</li>
+<li><code>state</code></li>
+<li><code>county</code></li>
+<li><code>fatalities</code>: number of individuals killed at each event</li>
+</ul>
+</div>
+<div id="acs-dataset" class="section level5">
+<h5><strong>ACS Dataset</strong></h5>
+<ul>
+<li></li>
+<li></li>
+<li></li>
+</ul>
 <p> </p>
+</div>
 </div>
 <div id="data-cleaning" class="section level4">
 <h4><em>Data Cleaning</em></h4>
+<p>The police violence and protest datasets were both similarly cleaned. The data was first imported into R. The variables were then renamed and selected based on if they were intuitive and if they were needed for this analysis. While the protest data already had a latitude and longitude included, an external source was joined with the police violence dataset so latitudes and longitudes of cities could be included in the dataset.</p>
 <p> </p>
 </div>
 </div>
 <div id="exploratory-analysis" class="section level2">
 <h2>Exploratory Analysis</h2>
+<p><em>Police Violence Data</em> The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape of the data. <strong>Age Map with with symptoms of mental illness and whether the officer was charged included</strong> The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by age, with information on symptoms of mental illness and whether the officer was charged included.</p>
+<p><strong>Distribution of deaths due to police violence across states</strong></p>
+<p><strong>Number of individuals killed due to police violence by race</strong></p>
+<p><em>Protest Data</em></p>
+<p><em>ACS Data</em></p>
 <p> </p>
 </div>
 <div id="regression-analysis" class="section level2">
 <h2>Regression Analysis</h2>
 <p> </p>
 </div>
-<div id="discussion" class="section level2">
-<h2>Discussion</h2>
-<p> </p>
-</div>
 <div id="conclusions" class="section level2">
 <h2>Conclusions</h2>
+<p> </p>
+</div>
+<div id="discussion" class="section level2">
+<h2>Discussion</h2>
 </div>
 
 
