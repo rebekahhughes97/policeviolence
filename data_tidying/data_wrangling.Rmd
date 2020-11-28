@@ -69,7 +69,6 @@ mpv_final = left_join(mpv_df, lat_long, by = c("city" = "city", "state" = "state
 write_csv(mpv_final, "./data/mpv_final.csv")
 ```
 
-
 ## USA October 2020 Dataset
 
 ```{r usa, warning=FALSE}
