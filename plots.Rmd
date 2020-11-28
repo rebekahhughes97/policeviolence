@@ -13,6 +13,7 @@ library(ggplot2)
 library(readr)
 library(readxl)
 library(patchwork)
+library(plotly)
 #you'll need to install the packages below in order to run animated plots or knit
 library(gganimate)
 library(gifski)
@@ -418,7 +419,6 @@ mpv_demo_df =
 
 Income and MPV plots
 ```{r}
-
 build_plot = 
   build_df %>% 
   ggplot(aes(x = race, y = estimate_households_median_income_dollars)) + 
@@ -428,6 +428,48 @@ build_plot2 =
   build_df %>% 
   ggplot(aes(x = symptoms_of_mental_illness, y = estimate_households_median_income_dollars)) + 
   geom_violin()
+
+build_plot
+build_plot2
+```
+
+```{r}
+total_race =
+  mpv_demo_df %>% 
+  select(-c(17:106, 109, 111, 113, 115, 117, 119)) %>% 
+  pivot_longer(
+    18:23,
+    names_to = "total_race",
+    values_to = "total_estimate"
+  ) %>%
+  mutate(
+    prop = total_estimate / total_pop * 100
+  ) %>%
+  ggplot(
+    aes(x = total_race, y = total_estimate, color = total_race, fill = total_race)
+  ) +
+  geom_bar(stat = "identity") +
+  theme(
+      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1)
+  )
+
+race_mpv =
+  mpv_demo_df %>%
+  mutate(
+    race = str_replace_all(race, "unknown race", "Unknown race"),
+    race = str_replace_all(race, "NA", "Unknown race")
+    ) %>%
+  ggplot(aes(x = race, y = race, color = race, fill = race)) +
+  geom_bar(stat = "identity") +
+  theme(
+    axis.text.y = element_blank(),
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1)
+  ) +
+  labs(
+    x = ""
+  )
+
+total_race + race_mpv
 ```
 
 # Protest and ACS Joint Dataset
