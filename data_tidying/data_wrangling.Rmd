@@ -637,6 +637,31 @@ protest_demo_df =
 write_csv(protest_demo_df, "./data/protest_demo_df.csv")
 ```
 
+Joining non-tidy ACS income data and total population for regression analysis
+```{r}
+protest_demo_df2 =
+read_csv("./data/protest_demo_df.csv") %>% view()
+
+protest_demo_df2 =
+  protest_demo_df2 %>%
+  select(
+    -c(13:22, 27:98, 100:111)
+  ) %>% 
+  mutate(
+    county_pop = total_pop
+  ) %>% 
+  select(
+    -total_pop
+  ) %>% 
+  relocate(
+    1:12, county_pop
+  ) %>% view()
+
+write_csv(protest_demo_df2, "./data/protest_demo_df2.csv")
+```
+
+
+
 ### Joining MPV data and non-tidy ACS data
 ```{r}
 race_df =
