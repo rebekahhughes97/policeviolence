@@ -35,19 +35,68 @@ protest_df =
   drop_na(income_class, median_income_dollars) %>% 
   filter(event_type == "Protests") %>%
   select(-id) %>% 
-  group_by(county, state, event_type, income_class, median_income_dollars) %>% 
+  mutate(
+    income_class = as.factor(income_class),
+    income_class = relevel(income_class, "Very Low", "Low", "Medium", "High", "Very High")
+  ) %>% 
+  group_by(county, state, event_type, income_class, median_income_dollars, county_pop) %>% 
   count(event_type)
 ```
 
 The ACS data is county-level, so we have built our models at the county-level. We pooled protest numbers to include a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression. We are not using an offset in this case, as we are trying to model counts.
 
+### Crude Model
+
+Upon running the Poisson regression model with a log link function, we found odds of protest occurrence to increase with increasing income class. Using the "very low" income class as the referent, we found increasing odds of protest numbers, with the greatest occurring among the "very high" income class **(OR: 2.13; 95% CI: 2.02, 2.24)**. 
+
 ```{r}
 glm(n ~ income_class, data = protest_df, family = poisson(link = "log")) %>% 
-  broom::tidy()
-
-glm(n ~ median_income_dollars, data = protest_df, family = poisson(link = "log")) %>% 
-  broom::tidy()
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "income_class", "Income Class: ")) %>% 
+    knitr::kable(digits = 3)
 ```
 
+### Confounder Selection
+
+Though crude analyses demonstrated that odds of greater protest counts increased with income class, we hypothesized this was a function of population size in urban cities and income class in larger cities. Therefore, we opted to explore whether county population size was impacting this relationship.
+
+Based on the results below, and using the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypothesis, we county population size as a confounder.
+
+```{r}
+glm(n ~ county_pop, data = protest_df, family = poisson(link = "log")) %>% 
+  broom::tidy() %>% 
+  mutate(
+    term = str_replace(term, "county_pop", "County Population")
+  ) %>% 
+  knitr::kable(digits = 3)
+```
+
+## Adjusted Analysis
+
+After adjustment for county population size, the "very high" income class remained positively associated with protest count **(aOR: 1.71; 95% CI: 1.62, 1.80)** in comparison to the "very low" income class. The "low" **(aOR: 1.30; 95% CI: 1.22, 1.38)** and "middle" **(aOR: 1.11; 95% CI: 1.05, 1.19)** income classes were both positively associated with increased protest count; however, the "high" income class was no longer significantly associated with increased protest count.
+
+Analyses demonstrate that counties classified as having a "very high" income are those counties with the greatest number of protests, in comparison to counties with a "very low" income.
+
+```{r}
+glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = "log")) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "income_class", "Income Class: "),
+    term = str_replace(term, "county_pop", "County Population")) %>% 
+    knitr::kable(digits = 3)
+```
 
 
