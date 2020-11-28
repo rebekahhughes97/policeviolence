@@ -1,5 +1,5 @@
 ---
-title: "Regression Analysis of Police Violence Data"
+title: "Regression Analyses of Police Violence Data"
 output: 
   html_document:
     code_folding: hide
@@ -7,3 +7,210 @@ output:
     toc_float: true
 ---
 
+```{r setup, include=FALSE, message=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+set.seed(1)
+```
+
+```{r import, include=FALSE, message=FALSE, warning=FALSE}
+mpv_df_charges =
+  read_csv("./data/mpv_final.csv", na = c("", "NA", "Unknown")) %>% 
+  drop_na(race, symptoms_of_mental_illness, gender, criminal_charges) %>% 
+  mutate(
+    charges = case_when(
+      startsWith(criminal_charges, "Charged") ~ 1,
+      startsWith(criminal_charges, "No") ~ 0),
+    resolved = 
+           ifelse(startsWith(disposition, "Pending"), 
+                  {resolved = 0}, 
+                  {resolved = 1}),
+    race_rec = case_when(
+      race == "Native American" ~ "Other",
+      race == "Pacific Islander" ~ "Other",
+      race == "Black" ~ "Black",
+      race == "Hispanic" ~ "Other",
+      race == "White" ~ "White",
+      race == "Asian" ~ "Other"),
+    race_rec = fct_infreq(race_rec),
+    age_rec = 
+      cut(age, breaks = c(0,20,40,60,100), right = FALSE),
+    age_rec = fct_infreq(age_rec),
+    MI = case_when(
+      symptoms_of_mental_illness == "Yes" ~ 1,
+      symptoms_of_mental_illness == "No" ~ 0,
+      symptoms_of_mental_illness == "Drug or alcohol use" ~ 0)
+    ) %>% 
+  filter(race_rec != "Other", gender != "Transgender") %>% 
+  select(MI, age_rec, race_rec, charges, gender, year, resolved)
+```
+
+## Model 1: Outcome as Charges Laid
+
+We opted to investigate whether race of the victim of police violence was associated with the odds of the police officer having charges laid against them. Charges in this case specifically relate to legal ramifications, and do not include discipline or civil suits against the police officer without charges. Due to small cell counts, race was operationalized to include only white and Black individuals.
+
+### Crude Analysis
+
+Crude analyses show that, in instances where the victim of police violence is Black, the odds of charges being laid is increased by **133% (95% CI: 1.59, 3.42)**.
+
+```{r, warning=FALSE, message=FALSE}
+glm(charges ~ race_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+### Confounder Selection
+
+We considered year during which the event occurred as a potential confounder, due to a hypothesized association between time since incident and charges administered. We also considered gender and age of the individual killed by police as potential confounders.
+
+Based on the results in the tables below, and using the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypothesis, we included gender and symptoms of mental illness as confounders.
+
+```{r}
+#Year - Not significant, not further explored
+glm(charges ~ year, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  knitr::kable(digits = 3)
+
+#Gender - Significant, further explored
+glm(charges ~ gender, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+    mutate(
+    term = str_replace(term, "gender", "Gender: ")) %>% 
+  knitr::kable(digits = 3)
+
+#Symptoms of MI - Significant, further explored
+glm(charges ~ MI, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  knitr::kable(digits = 3)
+
+#Age - Not significant, not further explored
+glm(charges ~ age_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    term = str_replace(term, "age_rec", "Age: ")) %>% 
+  knitr::kable(digits = 3)
+```
+
+### Adjusted Analysis
+
+After adjustment for gender and symptoms of mental illness, among victims of police violence who are Black, the odds of charges being laid against the police officer increase by **142% (95% CI: 1.63, 3.60)**. While the direction of association is opposite than we were anticipating, it is possible that the odds of charges being laid are higher when the victim is Black because the reasons behind carrying out these violent actions are not well justified. Ideally, we would be able to further investigate this with data regarding the reason for police stops or police intervention, but we were not able to do so.
+
+```{r}
+glm(charges ~ race_rec + gender + MI, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: "),
+    term = str_replace(term, "gender", "Gender: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+## Sensitivity Analysis: Model 1
+
+Given the concerns regarding our adjusted model, we opted to carry out a sensitivity analysis investigating whether this association changed when excluding pending cases. We aimed to explore whether a pending investigation was the cause for what seems like a spuriously inflated OR. However, adjusted analyses show that in instances where the victim of police violence is Black, the odds of charges being laid is increased by **128% (95% CI: 1.52, 3.32)**, adjusting for gender and symptoms of mental illness. Restricting to solved cases did not change this association.
+
+```{r}
+mpv_solved = 
+  mpv_df_charges %>% 
+  filter(resolved == "1")
+
+glm(charges ~ race_rec + gender + MI, data = mpv_solved, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "race_rec", "Race: "),
+    term = str_replace(term, "gender", "Gender: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+## Model 2: Outcome as Symptoms of Mental Illness
+
+### Crude Analysis
+
+Given that we found symptoms of mental illness to be negatively associated with charges laid against police, we opted to investigate this variable more. We set out to explore whether there was an association between gender and recording a victim as having symptoms of mental illness. Crude analyses show that being male was protective against recorded symptoms of mental illness **(OR: 0.60, 95% CI: 0.46, 0.78)**.
+
+```{r}
+glm(MI ~ gender, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "gender", "Gender: ")) %>% 
+    knitr::kable(digits = 3)
+```
+
+### Confounder Selection
+
+We considered age and race as potential confounders of the relationship between gender and symptoms of mental illness. Similar to the model above, we used the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypotheses. We included both age and race in the final adjusted model.
+
+```{r}
+#Age - Significant, further explored
+glm(MI ~ age_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    term = str_replace(term, "age_rec", "Age: ")) %>% 
+  knitr::kable(digits = 3)
+
+#Race - Significant, further explored
+glm(MI ~ race_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+    mutate(
+    term = str_replace(term, "race_rec", "Race: ")) %>% 
+  knitr::kable(digits = 3)
+```
+
+### Adjusted Analysis
+
+After adjustment for age and race, we found no association between gender and recorded symptoms of mental illness (aOR: 0.68, 95% CI: 0.52, 0.89). While we should avoid interpreting covariates other than the exposure of interest due to the Table 2 fallacy, they are presented here for completeness.
+
+```{r}
+glm(MI ~ gender + race_rec + age_rec, data = mpv_df_charges, family = binomial()) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "gender", "Gender: "),
+    term = str_replace(term, "race_rec", "Race: "),
+    term = str_replace(term, "age_rec", "Age: ")) %>% 
+    knitr::kable(digits = 3)
+```
