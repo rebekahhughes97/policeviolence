@@ -15,7 +15,7 @@
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -108,33 +108,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 60px;
+  padding-top: 54px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h2 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h3 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h4 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h5 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h6 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .dropdown-submenu {
   position: relative;
@@ -393,7 +393,7 @@ div.tocify {
 </li>
 <li>
   <a>
-    <span class="fa fa-envelope fa-lg"></span>
+    <span class="fa fa-youtube"></span>
      
   </a>
 </li>
@@ -425,7 +425,27 @@ div.tocify {
 </div>
 
 
-
+<div id="model-1-outcome-as-number-of-protests" class="section level2">
+<h2>Model 1: Outcome as Number of Protests</h2>
+<p>The ACS data is county-level, so we have built our models at the county-level. We pooled protest numbers to include a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression. We are not using an offset in this case, as we are trying to model counts.</p>
+<pre class="r"><code>glm(n ~ income_class, data = protest_df, family = poisson(link = &quot;log&quot;)) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code>## # A tibble: 5 x 5
+##   term                  estimate std.error statistic  p.value
+##   &lt;chr&gt;                    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+## 1 (Intercept)              2.92     0.0201    145.   0.      
+## 2 income_classLow         -0.217    0.0316     -6.86 7.11e-12
+## 3 income_classMiddle      -0.307    0.0318     -9.68 3.85e-22
+## 4 income_classVery High    0.194    0.0257      7.53 4.89e-14
+## 5 income_classVery Low    -0.560    0.0290    -19.3  5.97e-83</code></pre>
+<pre class="r"><code>glm(n ~ median_income_dollars, data = protest_df, family = poisson(link = &quot;log&quot;)) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code>## # A tibble: 2 x 5
+##   term                   estimate   std.error statistic   p.value
+##   &lt;chr&gt;                     &lt;dbl&gt;       &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+## 1 (Intercept)           1.81      0.0334           54.3 0.       
+## 2 median_income_dollars 0.0000140 0.000000457      30.6 8.49e-206</code></pre>
+</div>
 
 
 

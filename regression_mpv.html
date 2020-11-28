@@ -11,11 +11,11 @@
 
 
 
-<title>Regression Analysis of Police Violence Data</title>
+<title>Regression Analyses of Police Violence Data</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<link href="site_libs/bootstrap-3.3.5/css/flatly.min.css" rel="stylesheet" />
+<link href="site_libs/bootstrap-3.3.5/css/lumen.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
@@ -108,33 +108,33 @@ summary {
 <style type="text/css">
 /* padding for bootstrap navbar */
 body {
-  padding-top: 60px;
+  padding-top: 54px;
   padding-bottom: 40px;
 }
 /* offset scroll position for anchor links (for fixed navbar)  */
 .section h1 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h2 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h3 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h4 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h5 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .section h6 {
-  padding-top: 65px;
-  margin-top: -65px;
+  padding-top: 59px;
+  margin-top: -59px;
 }
 .dropdown-submenu {
   position: relative;
@@ -393,7 +393,7 @@ div.tocify {
 </li>
 <li>
   <a>
-    <span class="fa fa-envelope fa-lg"></span>
+    <span class="fa fa-youtube"></span>
      
   </a>
 </li>
@@ -420,12 +420,500 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Regression Analysis of Police Violence Data</h1>
+<h1 class="title toc-ignore">Regression Analyses of Police Violence Data</h1>
 
 </div>
 
 
+<div id="model-1-outcome-as-charges-laid" class="section level2">
+<h2>Model 1: Outcome as Charges Laid</h2>
+<p>We opted to investigate whether race of the victim of police violence was associated with the odds of the police officer having charges laid against them. Charges in this case specifically relate to legal ramifications, and do not include discipline or civil suits against the police officer without charges. Due to small cell counts, race was operationalized to include only white and Black individuals.</p>
+<div id="crude-analysis" class="section level3">
+<h3>Crude Analysis</h3>
+<p>Crude analyses show that, in instances where the victim of police violence is Black, the odds of charges being laid is increased by <strong>133% (95% CI: 1.59, 3.42)</strong>.</p>
+<pre class="r"><code>glm(charges ~ race_rec, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;race_rec&quot;, &quot;Race: &quot;)) %&gt;% 
+    knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.015</td>
+<td align="right">0.011</td>
+<td align="right">0.020</td>
+</tr>
+<tr class="even">
+<td align="left">Race: Black</td>
+<td align="right">2.331</td>
+<td align="right">1.591</td>
+<td align="right">3.417</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="confounder-selection" class="section level3">
+<h3>Confounder Selection</h3>
+<p>We considered year during which the event occurred as a potential confounder, due to a hypothesized association between time since incident and charges administered. We also considered gender and age of the individual killed by police as potential confounders.</p>
+<p>Based on the results in the tables below, and using the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypothesis, we included gender and symptoms of mental illness as confounders.</p>
+<pre class="r"><code>#Year - Not significant, not further explored
+glm(charges ~ year, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">77.937</td>
+<td align="right">88.553</td>
+<td align="right">0.880</td>
+<td align="right">0.379</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="right">-0.041</td>
+<td align="right">0.044</td>
+<td align="right">-0.923</td>
+<td align="right">0.356</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#Gender - Significant, further explored
+glm(charges ~ gender, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+    mutate(
+    term = str_replace(term, &quot;gender&quot;, &quot;Gender: &quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-2.434</td>
+<td align="right">0.222</td>
+<td align="right">-10.949</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Gender: Male</td>
+<td align="right">-1.543</td>
+<td align="right">0.247</td>
+<td align="right">-6.248</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#Symptoms of MI - Significant, further explored
+glm(charges ~ MI, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-3.631</td>
+<td align="right">0.101</td>
+<td align="right">-35.838</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">MI</td>
+<td align="right">-1.135</td>
+<td align="right">0.333</td>
+<td align="right">-3.404</td>
+<td align="right">0.001</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#Age - Not significant, not further explored
+glm(charges ~ age_rec, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;age_rec&quot;, &quot;Age: &quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-3.758</td>
+<td align="right">0.125</td>
+<td align="right">-30.178</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Age: [40,60)</td>
+<td align="right">-0.156</td>
+<td align="right">0.222</td>
+<td align="right">-0.703</td>
+<td align="right">0.482</td>
+</tr>
+<tr class="odd">
+<td align="left">Age: [60,100)</td>
+<td align="right">-0.164</td>
+<td align="right">0.431</td>
+<td align="right">-0.382</td>
+<td align="right">0.703</td>
+</tr>
+<tr class="even">
+<td align="left">Age: [0,20)</td>
+<td align="right">0.242</td>
+<td align="right">0.380</td>
+<td align="right">0.638</td>
+<td align="right">0.523</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="adjusted-analysis" class="section level3">
+<h3>Adjusted Analysis</h3>
+<p>After adjustment for gender and symptoms of mental illness, among victims of police violence who are Black, the odds of charges being laid against the police officer increase by <strong>142% (95% CI: 1.63, 3.60)</strong>. While the direction of association is opposite than we were anticipating, it is possible that the odds of charges being laid are higher when the victim is Black because the reasons behind carrying out these violent actions are not well justified. Ideally, we would be able to further investigate this with data regarding the reason for police stops or police intervention, but we were not able to do so.</p>
+<pre class="r"><code>glm(charges ~ race_rec + gender + MI, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;race_rec&quot;, &quot;Race: &quot;),
+    term = str_replace(term, &quot;gender&quot;, &quot;Gender: &quot;)) %&gt;% 
+    knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.088</td>
+<td align="right">0.054</td>
+<td align="right">0.142</td>
+</tr>
+<tr class="even">
+<td align="left">Race: Black</td>
+<td align="right">2.424</td>
+<td align="right">1.633</td>
+<td align="right">3.597</td>
+</tr>
+<tr class="odd">
+<td align="left">Gender: Male</td>
+<td align="right">0.160</td>
+<td align="right">0.097</td>
+<td align="right">0.265</td>
+</tr>
+<tr class="even">
+<td align="left">MI</td>
+<td align="right">0.336</td>
+<td align="right">0.173</td>
+<td align="right">0.653</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="sensitivity-analysis-model-1" class="section level2">
+<h2>Sensitivity Analysis: Model 1</h2>
+<p>Given the concerns regarding our adjusted model, we opted to carry out a sensitivity analysis investigating whether this association changed when excluding pending cases. We aimed to explore whether a pending investigation was the cause for what seems like a spuriously inflated OR. However, adjusted analyses show that in instances where the victim of police violence is Black, the odds of charges being laid is increased by <strong>128% (95% CI: 1.52, 3.32)</strong>, adjusting for gender and symptoms of mental illness. Restricting to solved cases did not change this association.</p>
+<pre class="r"><code>mpv_solved = 
+  mpv_df_charges %&gt;% 
+  filter(resolved == &quot;1&quot;)
 
+glm(charges ~ race_rec + gender + MI, data = mpv_solved, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;race_rec&quot;, &quot;Race: &quot;),
+    term = str_replace(term, &quot;gender&quot;, &quot;Gender: &quot;)) %&gt;% 
+    knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.239</td>
+<td align="right">0.144</td>
+<td align="right">0.397</td>
+</tr>
+<tr class="even">
+<td align="left">Race: Black</td>
+<td align="right">2.284</td>
+<td align="right">1.516</td>
+<td align="right">3.442</td>
+</tr>
+<tr class="odd">
+<td align="left">Gender: Male</td>
+<td align="right">0.188</td>
+<td align="right">0.110</td>
+<td align="right">0.323</td>
+</tr>
+<tr class="even">
+<td align="left">MI</td>
+<td align="right">0.326</td>
+<td align="right">0.166</td>
+<td align="right">0.638</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="model-2-outcome-as-symptoms-of-mental-illness" class="section level2">
+<h2>Model 2: Outcome as Symptoms of Mental Illness</h2>
+<div id="crude-analysis-1" class="section level3">
+<h3>Crude Analysis</h3>
+<p>Given that we found symptoms of mental illness to be negatively associated with charges laid against police, we opted to investigate this variable more. We set out to explore whether there was an association between gender and recording a victim as having symptoms of mental illness. Crude analyses show that being male was protective against recorded symptoms of mental illness <strong>(OR: 0.60, 95% CI: 0.46, 0.78)</strong>.</p>
+<pre class="r"><code>glm(MI ~ gender, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;gender&quot;, &quot;Gender: &quot;)) %&gt;% 
+    knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.492</td>
+<td align="right">0.382</td>
+<td align="right">0.633</td>
+</tr>
+<tr class="even">
+<td align="left">Gender: Male</td>
+<td align="right">0.603</td>
+<td align="right">0.464</td>
+<td align="right">0.782</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="confounder-selection-1" class="section level3">
+<h3>Confounder Selection</h3>
+<p>We considered age and race as potential confounders of the relationship between gender and symptoms of mental illness. Similar to the model above, we used the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypotheses. We included both age and race in the final adjusted model.</p>
+<pre class="r"><code>#Age - Significant, further explored
+glm(MI ~ age_rec, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;age_rec&quot;, &quot;Age: &quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-1.331</td>
+<td align="right">0.046</td>
+<td align="right">-29.108</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Age: [40,60)</td>
+<td align="right">0.331</td>
+<td align="right">0.074</td>
+<td align="right">4.495</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">Age: [60,100)</td>
+<td align="right">0.808</td>
+<td align="right">0.126</td>
+<td align="right">6.398</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">Age: [0,20)</td>
+<td align="right">-0.420</td>
+<td align="right">0.175</td>
+<td align="right">-2.394</td>
+<td align="right">0.017</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>#Race - Significant, further explored
+glm(MI ~ race_rec, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+    mutate(
+    term = str_replace(term, &quot;race_rec&quot;, &quot;Race: &quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-0.898</td>
+<td align="right">0.039</td>
+<td align="right">-23.001</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Race: Black</td>
+<td align="right">-0.921</td>
+<td align="right">0.077</td>
+<td align="right">-11.908</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="adjusted-analysis-1" class="section level3">
+<h3>Adjusted Analysis</h3>
+<p>After adjustment for age and race, we found no association between gender and recorded symptoms of mental illness (aOR: 0.68, 95% CI: 0.52, 0.89). While we should avoid interpreting covariates other than the exposure of interest due to the Table 2 fallacy, they are presented here for completeness.</p>
+<pre class="r"><code>glm(MI ~ gender + race_rec + age_rec, data = mpv_df_charges, family = binomial()) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;gender&quot;, &quot;Gender: &quot;),
+    term = str_replace(term, &quot;race_rec&quot;, &quot;Race: &quot;),
+    term = str_replace(term, &quot;age_rec&quot;, &quot;Age: &quot;)) %&gt;% 
+    knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.519</td>
+<td align="right">0.397</td>
+<td align="right">0.678</td>
+</tr>
+<tr class="even">
+<td align="left">Gender: Male</td>
+<td align="right">0.682</td>
+<td align="right">0.522</td>
+<td align="right">0.890</td>
+</tr>
+<tr class="odd">
+<td align="left">Race: Black</td>
+<td align="right">0.435</td>
+<td align="right">0.372</td>
+<td align="right">0.509</td>
+</tr>
+<tr class="even">
+<td align="left">Age: [40,60)</td>
+<td align="right">1.191</td>
+<td align="right">1.027</td>
+<td align="right">1.381</td>
+</tr>
+<tr class="odd">
+<td align="left">Age: [60,100)</td>
+<td align="right">1.886</td>
+<td align="right">1.466</td>
+<td align="right">2.426</td>
+</tr>
+<tr class="even">
+<td align="left">Age: [0,20)</td>
+<td align="right">0.760</td>
+<td align="right">0.536</td>
+<td align="right">1.078</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 
 
 

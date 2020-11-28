@@ -106,6 +106,7 @@ The questions for this project are based on the 3 datasets we used that are list
 * `state`
 
 **Income**
+
 * `total_income`
 * `estimate_households`: percent estimate for each county by total household income
 * `mean_income`: the mean income in each county
@@ -114,12 +115,14 @@ The questions for this project are based on the 3 datasets we used that are list
 * `income_class`: ranges from "Very Low" to "Very High" based on `median_income` value for each county 
 
 **Age by Sex**
+
 * `age`
 * `sex`
 * `total`: total estimate for each county by age and sex
 * `percent`: percent estimate for each county by age and sex
 
 **Race**
+
 * `race`
 * `total`: total estimate for each county for each race category
 * `prop`: percent estimate for each county for each race category
@@ -130,6 +133,7 @@ The questions for this project are based on the 3 datasets we used that are list
 The police violence and protest datasets were both similarly cleaned. The data was first imported into R. The variables were then renamed and selected based on if they were intuitive and if they were needed for this analysis. While the protest data already had a latitude and longitude included, an external source was joined with the police violence dataset so latitudes and longitudes of cities could be included in the dataset.
 
 For the ACS data we looked at Race, Income, and Age by Sex; each category had their own separate dataset. All datasets have a tidy and non-tidy version; tidy datasets were used for visualization and exploratory analyses and the non-tidy datasets were joined with the Police Violence Dataset and Protest Dataset separately in order to conduct further statistical analyses and plotting. However, for both the tidy and non-tidy versions, variable names were shortened for convenience and only a subset of of the original datasets' categories were kept (for example, in all datasets 'margin of error estimates' were removed). Below are the specific data cleaning steps for each dataset:
+
 * **Race:** This dataset excludes data for those who identify as more than one race. Additionally, proportion was calculated for each race category.
 * **Age by Sex and Age Only:** The 'Age Only' dataset contains total estimate and percent estimate of each age group and the 'Age by Sex' contains the total and percent estimate for each age group by male or female. *might just remove 'age only' datasets because the 'age by sex' is sufficient*
 * **Income:** This dataset includes only the total percent estimates by household income. Variables for income class and disparity value were created from the mean and median income of each county.

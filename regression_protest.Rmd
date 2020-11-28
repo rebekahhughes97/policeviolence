@@ -7,3 +7,47 @@ output:
     toc_float: true
 ---
 
+```{r setup, include=FALSE, message=FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+set.seed(1)
+```
+
+## Model 1: Outcome as Number of Protests
+
+```{r import, include=FALSE, message=FALSE, warning=FALSE}
+protest_df =
+  read_csv("./data/protest_demo_df.csv", na = c("", "NA", "Unknown")) %>% 
+  drop_na(income_class, median_income_dollars) %>% 
+  filter(event_type == "Protests") %>%
+  select(-id) %>% 
+  group_by(county, state, event_type, income_class, median_income_dollars) %>% 
+  count(event_type)
+```
+
+The ACS data is county-level, so we have built our models at the county-level. We pooled protest numbers to include a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression. We are not using an offset in this case, as we are trying to model counts.
+
+```{r}
+glm(n ~ income_class, data = protest_df, family = poisson(link = "log")) %>% 
+  broom::tidy()
+
+glm(n ~ median_income_dollars, data = protest_df, family = poisson(link = "log")) %>% 
+  broom::tidy()
+```
+
+
+
