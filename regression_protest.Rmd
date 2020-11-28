@@ -31,7 +31,7 @@ set.seed(1)
 
 ```{r import, include=FALSE, message=FALSE, warning=FALSE}
 protest_df =
-  read_csv("./data/protest_demo_df.csv", na = c("", "NA", "Unknown")) %>% 
+  read_csv("./data/protest_demo_df2.csv", na = c("", "NA", "Unknown")) %>% 
   drop_na(income_class, median_income_dollars) %>% 
   filter(event_type == "Protests") %>%
   select(-id) %>% 
