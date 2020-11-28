@@ -37,6 +37,10 @@ scale_fill_discrete = scale_fill_viridis_d
 
 mpv_df =
   read_csv("./data/mpv_final.csv")
+
+mpv_demo_df =
+  read_csv("./data/mpv_demo_df.csv")
+
 ```
 
 ### Police Killings Over Time 2013-2019
@@ -76,7 +80,57 @@ anim_scatter =
 animate(anim_scatter, renderer = gifski_renderer())
 ```
 
-This plot shows the number of people that were killed from 2013 through 2019 by race. From this graph,  White, Black, and Hispanic people are the victims of most police violence incidents and this holds relatively steady throughout this time period. However, these numbers must be compared with the overall US population by race in order to understand the risk of police use of force as a cause of death.
+This plot shows the number of people that were killed from 2013 through 2019 by race. From this graph,  White, Black, and Hispanic people are the victims of most police violence incidents and this holds relatively steady throughout this time period. However, these numbers must be compared with the overall US population by race in order to understand the risk of police use of force as a cause of death (below).
+
+```{r, warning = FALSE}
+total_race =
+  mpv_demo_df %>% 
+  select(-c(17:106, 109, 111, 113, 115, 117, 119)) %>% 
+  pivot_longer(
+    18:23,
+    names_to = "total_race",
+    values_to = "total_estimate"
+  ) %>%
+  mutate(
+    total_race = str_replace(total_race, "am_in_alask", "Native American"),
+    total_race = str_replace(total_race, "hawaii_pi", "Pacific Islander")
+  )  %>% 
+  ggplot(
+    aes(x = total_race, y = total_estimate, color = total_race, fill = total_race)
+  ) +
+  geom_bar(stat = "identity") +
+  theme(
+      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+      legend.position = "none") +
+  labs(
+    x = "",
+    y = "Total",
+    Title = "Total US Population Estimates by Race"
+  )
+
+race_mpv =
+  mpv_demo_df %>%
+  mutate(
+    race = str_replace_all(race, "unknown race", "Unknown race"),
+    race = str_replace(race, "NA", "Unknown race")
+    ) %>%
+  group_by(race) %>% 
+  count() %>% 
+  ggplot(aes(x = race, y = n, color = race, fill = race)) +
+  geom_bar(stat = "identity") +
+  theme(
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
+  labs(
+    x = "",
+    y = "Total",
+    Title = "Number of Police Killed by Race"
+  )
+
+total_race + race_mpv
+```
+
+The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (race). As we can see, a much higher proportion of those who are killed by police are black when compared to the total population. 
 
 ### Police Killings by State
 

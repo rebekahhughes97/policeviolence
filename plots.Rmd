@@ -421,8 +421,19 @@ Income and MPV plots
 ```{r}
 build_plot = 
   build_df %>% 
+  mutate(
+    race = str_replace_all(race, "unknown race", "Unknown race"),
+    race = str_replace(race, "NA", "Unknown race")
+    ) %>%
   ggplot(aes(x = race, y = estimate_households_median_income_dollars)) + 
-  geom_violin()
+  geom_violin(aes(fill = race)) +
+  theme(
+      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+      legend.position = "none") +
+  labs(
+    x = "",
+    y = "Household Median Income"
+  )
 
 build_plot2 = 
   build_df %>% 
@@ -443,44 +454,38 @@ total_race =
     values_to = "total_estimate"
   ) %>%
   mutate(
-    prop = total_estimate / total_pop * 100
-  ) %>%
+    total_race = str_replace(total_race, "am_in_alask", "American Indian"),
+    total_race = str_replace(total_race, "hawaii_pi", "Pacific Islander")
+  )  %>% 
   ggplot(
     aes(x = total_race, y = total_estimate, color = total_race, fill = total_race)
   ) +
   geom_bar(stat = "identity") +
   theme(
-      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1)
+      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+      legend.position = "none") +
+  labs(
+    x = "",
+    y = "Total"
   )
 
 race_mpv =
   mpv_demo_df %>%
   mutate(
     race = str_replace_all(race, "unknown race", "Unknown race"),
-    race = str_replace_all(race, "NA", "Unknown race")
+    race = str_replace(race, "NA", "Unknown race")
     ) %>%
-  ggplot(aes(x = race, y = race, color = race, fill = race)) +
+  group_by(race) %>% 
+  count() %>% 
+  ggplot(aes(x = race, y = n, color = race, fill = race)) +
   geom_bar(stat = "identity") +
   theme(
-    axis.text.y = element_blank(),
-    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1)
-  ) +
+    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+    legend.position = "none") +
   labs(
-    x = ""
+    x = "",
+    y = "Total"
   )
 
 total_race + race_mpv
 ```
-
-# Protest and ACS Joint Dataset
-
-Read in Protest and ACS datasets
-```{r}
-protest_income_df =
-  mpv_demo_df =
-    read_csv("./data/protest_income_df.csv")
-protest_demo_df =
-  mpv_demo_df =
-    read_csv("./data/protest_demo_df.csv")
-```
-
