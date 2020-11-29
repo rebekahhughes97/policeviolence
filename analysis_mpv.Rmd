@@ -69,7 +69,7 @@ year_plot =
 year_plot
 ```
 
-The plot above shows the total number police killings per year from 2013 through 2019. As displayed in the plot, the total number of killings has remained relatively unchanged the past 6 years despite increased public awareness of police brutality.
+The plot above shows the total number police killings per year from 2013 through 2019. As displayed in the plot, the total number of killings has remained relatively unchanged the past 6 years despite increased public awareness of police brutality. We should also consider the possibility of error in classification due to cause of death, and potential for cases to not be classified as police violence.
 
 &nbsp;
 
@@ -127,9 +127,9 @@ total_race =
       legend.position = "none") +
   labs(
     x = "",
-    y = "Total",
-    Title = "Total US Population Estimates by Race"
-  )
+    y = "Total"
+  ) +
+  ggtitle("Total US Population Estimates by Race")
 
 race_mpv =
   mpv_demo_df %>%
@@ -137,7 +137,8 @@ race_mpv =
     race = str_replace_all(race, "unknown race", "Unknown race"),
     race = str_replace(race, "NA", "Unknown race")
     ) %>%
-  filter(race != "NA") %>% 
+  filter(race != "NA",
+         race != "Unknown") %>% 
   group_by(race) %>% 
   count() %>% 
   ggplot(aes(x = race, y = n, color = race, fill = race)) +
@@ -147,14 +148,14 @@ race_mpv =
     legend.position = "none") +
   labs(
     x = "",
-    y = "Total",
-    Title = "Number of Police Killed by Race"
-  )
+    y = "Total"
+  ) +
+  ggtitle("Number of Police Killed by Race")
 
 total_race + race_mpv
 ```
 
-The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are black when compared to the total US population. 
+The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are black when compared to the total US population. When analyzing these estimates as proportions, we find that white people are underrepresented in police killings and Black people are overrepresented.
 
 &nbsp;
 
@@ -171,7 +172,11 @@ mpv_df %>%
   ) %>% 
  plot_ly(
       y = ~total_killed_st, x = ~state, color = ~state,
-      type = "bar", colors = "viridis")
+      type = "bar", colors = "viridis") %>% 
+  layout(
+    xaxis = list(title = "State"),
+    yaxis = list(title = "Number Killed")
+)
 
 mpv_df %>% 
   count(state) %>% 
@@ -184,7 +189,11 @@ mpv_df %>%
   ) %>% 
  plot_ly(
       y = ~total_killed_st, x = ~state, color = ~state,
-      type = "bar", colors = "viridis")
+      type = "bar", colors = "viridis") %>% 
+  layout(
+    xaxis = list(title = "State"),
+    yaxis = list(title = "Number Killed")
+)
 ```
 
 These two graphs show us the total number people killed per state from 2013-2020. The first graph contains numbers for all 50 states and the second graph contains the top 10 states with the highest number of police killings. At the top is California which is almost double the next highest state, Texas. 
@@ -204,7 +213,11 @@ mpv_df %>%
   ) %>% 
    plot_ly(
       y = ~total_killed_pd, x = ~police_dept, color = ~police_dept,
-      type = "bar", colors = "viridis")
+      type = "bar", colors = "viridis") %>% 
+  layout(
+    xaxis = list(title = "Police Department"),
+    yaxis = list(title = "Number Killed")
+)
 ```
 This plot depicts the total number of people killed from 2013 through 2020 broken down by police department; only departments with a count higher than 49 are included to show the highest offenders. Based on this graph, we can see that Los Angeles has the highest count, especially once the LA County and LA city departments are combined together for a total that is double the city with the second highest count.   
 
