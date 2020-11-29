@@ -123,12 +123,12 @@ The questions for this project are based on the 3 datasets we used that are list
 * `estimate_households`: percent estimate for each county by total household income
 * `mean_income`: the mean income in each county
 * `median_income`: the median income in each county
-* `disparity_value`: mean income - median income in each county
-* `income_class`: ranges from "Very Low" to "Very High" based on `median_income` value for each county 
+* `disparity_value`: mean income - median income in each county, which was constructed in this analysis
+* `income_class`: ranges from "Very Low" to "Very High" based on `median_income` value for each county, recoded in this analysis
 
 **Race**
 
-* `race`
+* `race` : classified as white, Black, Asian, Native American, Pacific Islander, and other
 * `total`: total estimate for each county for each race category
 * `prop`: percent estimate for each county for each race category
 
@@ -196,7 +196,7 @@ race_data %>%
 
 ```{r}  
 # mean household income by state
-income_data %>% 
+income_df_tidy %>% 
   mutate(
     state = fct_reorder(state, mean_income)
   ) %>% 
@@ -204,7 +204,7 @@ income_data %>%
       y = ~mean_income, x = ~state, color = ~state,
       type = "box", colors = "viridis")
 
-income_data %>% 
+income_df_tidy %>% 
     plot_ly(
       x = ~disparity_value, color = ~disparity_value,
       type = "histogram", histnorm = "probability", colors = "viridis")
@@ -340,6 +340,19 @@ protest_data %>%
 
 ## Regression Analysis
 
+*Police Violence Data*
+
+**Overview**
+
+We opted to investigate two separate outcomes, using this data. The primary model explored whether race was associated with charges laid against police as a result of police violence. Logistic regression was used to investigate this association, as the outcome was binary. We included confounders in the model based on both a priori hypotheses and a >10% change in the estimate. Using these criteria, we adjusted for gender and recorded symptoms of mental illness. We then conducted a sensitivity analysis, excluding pending investigations which would have acted to produce misclassification of the outcome. Once we omitted pending cases, a similar association was observed between race and charges laid against police.
+
+The second model assessed the relationship between gender and reported symptoms of mental illness as an outcome. Using the same criteria as outlined above for confounder selection. After adjustment for age and race, we found no significant association between gender and reported symptoms of mental illness.
+
+*Protest Data*
+
+**Overview**
+
+We investigated protest information at the county-level, using count data which grouped the number of protests by county. Using the dataset linked with census data, we explored whether income class at the county level was associated with number of protests. Since we are interested in modeling count data, we employed Poisson regression with a log link function and no offset term. This model adjusted for population size at the county-level. Upon investigating model fit using overdispersion testing, we found that overdispersion was a concern for this model. Therefore, we ultimately fit a negative binomial model quantifying the association between income class and protest count, adjusted for county population size.
 
 &nbsp;
 
@@ -350,7 +363,11 @@ protest_data %>%
 
 ## Discussion
 
+What were your findings? Are they what you expect? What insights into the data can you make?
 
 
+**Limitations**
+
+Both datasets contained limited information, which prevented us from being able to adjust for variables we believed could be confounding the associations. In the case of the police violence dataset, the association between race and charges laid was the opposite from what we were expecting. We hypothesized that this could be due to motivation/reason for the initial police stop being less justified when the victim of police violence is Black. Ideally, we would have been able to analyze this relationship by reason for initial police contact. Additionally, we had small cell sizes for people of races other than white or Black, and thus restricted to individuals reporting race as white or Black. In terms of the model assessing income class and protest count, we were limited by the number of covariates available to include. 
 
 
