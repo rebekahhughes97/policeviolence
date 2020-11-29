@@ -63,7 +63,7 @@ This project is overall motivated by the killing of George Floyd in 2020 and the
 
 &nbsp;
 
-#### **Motivating Sources**
+### *Motivating Sources*
 
 * "A crisis that began with an image of police violence keeps providing more" from NY Times. [Link](https://www.nytimes.com/2020/06/05/us/police-violence-george-floyd.html)
 * "Protests about police brutality are met with wave of police brutality in US" from NY Times. [Link](https://www.theguardian.com/us-news/2020/jun/06/police-violence-protests-us-george-floyd)
@@ -83,14 +83,14 @@ The questions for this project are based on the 3 datasets we used that are list
 &nbsp;
 
 ## Data
-#### *Data Sources*
+### *Data Sources*
 * Mapping Police Violence in the US -- [Link](https://mappingpoliceviolence.org/)
 * ACLED US Crisis Monitor -- [Link](https://acleddata.com/special-projects/us-crisis-monitor/)
 * American Community Survey -- [Link](https://www.census.gov/programs-surveys/acs/data.html)
 
 &nbsp;
 
-#### *Variables We Were Interested In*
+#### *Variables of Interest*
 ##### **Police Violence Dataset**
 * `age`
 * `gender`
@@ -112,7 +112,10 @@ The questions for this project are based on the 3 datasets we used that are list
 * `fatalities`: number of individuals killed at each event
 
 
-##### ** American Community Survey (ACS) Datasets**
+##### ** American Community Survey (ACS) Datasets**  
+
+**General**
+
 * `id`
 * `county`
 * `state`
@@ -134,7 +137,7 @@ The questions for this project are based on the 3 datasets we used that are list
 
 &nbsp;
 
-#### *Data Cleaning*
+### *Data Cleaning*
 The police violence and protest datasets were both similarly cleaned. The data was first imported into R. The variables were then renamed and selected based on if they were intuitive and if they were needed for this analysis. While the protest data already had a latitude and longitude included, an external source was joined with the police violence dataset so latitudes and longitudes of cities could be included in the dataset.
 
 For the ACS data we looked at race and income; each category had their own separate datasets with a tidy and non-tidy version. Tidy datasets were used for visualization and exploratory analyses and the non-tidy datasets were joined with the Police Violence Dataset and Protest Dataset separately in order to conduct further statistical analyses and plotting. However, for both the tidy and non-tidy datasets: variable names were shortened for convenience and only a subset of of the original datasets' categories were kept (for example, in all datasets 'margin of error estimates' were removed). Below are the specific data cleaning steps for each dataset:
@@ -145,12 +148,13 @@ For the ACS data we looked at race and income; each category had their own separ
 &nbsp;
 
 ## Exploratory Analysis
-*ACS Data*
+
+### *ACS Data*
 <br>The exploratory analysis for ACS data was used to provide preliminary context for current country demographics and supplement our analysis of police violence and protests throughout the country.
 
 &nbsp;
 
-**US Population by Race**
+#### **US Population by Race**
 <br> The two plots below show the total population of each racial group in the US in total (top) and by state (bottom). This breakdown contextualizes the police violence data. Comparing the police killings by race to the total population by race shows us that proportionally, black people have a higher likelihood to be a victim of police brutality.
 
 ```{r, warning = FALSE}
@@ -185,7 +189,7 @@ mpv_demo_df %>%
 
 &nbsp;
 
-**Household Income in the US**
+#### **Household Income in the US**
 <br> These plots show the mean household income in the US by state (top) and distribution of disparity in income throughout the US (bottom). As mentioned, the disparity value was taken from subtracting median income from mean income. This visualization supplements our understanding of the distribution and disparity of wealth across the US and provides some background for our regression analyses.
 
 ```{r, warning=FALSE}  
@@ -201,12 +205,12 @@ income_df_tidy %>%
 
 &nbsp;
 
-*Police Violence Data*
+### *Police Violence Data*
 <br>The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape and geographic spread of the data.
 
 &nbsp;
 
-**Year Map with symptoms of mental illness and whether the officer was charged**
+#### **Symptoms of mental illness charges against police (2013-2020)**
 <br>The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by year, with information on symptoms of mental illness and whether the officer was charged included in the label. This map was used to determine the geographic spread of those killed by police each year from 2013 to 2020, and shows the small number of officers that were charged, regardless of killing individuals with symptoms of mental illness.
 
 ```{r}
@@ -239,7 +243,7 @@ This informed the regression analysis we performed using the police violence dat
 
 &nbsp;
 
-**Number of individuals killed due to police violence by race**
+#### **People killed due to police violence by race**
 <br>The following plot displays the number of individuals killed by police over time by race. According to the data displayed in the plot below, the most killings have occurred among white people, followed by black and Hispanic individuals, according to record. This is inconsistent with many findings, which could point to inadequate record of individuals killed by police. This plot along with the map above were used in informing what the regression analysis would examine for this project.
 
 ```{r}
@@ -264,8 +268,9 @@ animate(anim_scatter, renderer = gifski_renderer())
 
 &nbsp;
 
-*Protest Data*
-<br>**Demonstrations by State**
+### *Protest Data*
+
+#### **Demonstrations by State**
 <br>According to the plot below, California by far held the most demonstrations, followed by New York state and Florida. This informed the regression analysis we performed using the protest data, and gave us the idea to examine this data along with ACS income data on the county level across the US.
 
 ```{r}
@@ -292,17 +297,13 @@ protest_data %>%
 
 ## Regression Analysis
 
-*Police Violence Data*
+### *Police Violence Data*
 
-**Overview**
-
-We opted to investigate two separate outcomes, using this data. The primary model explored whether race was associated with charges laid against police as a result of police violence. Logistic regression was used to investigate this association, as the outcome was binary. We included confounders in the model based on both a priori hypotheses and a >10% change in the estimate. Using these criteria, we adjusted for gender and recorded symptoms of mental illness. We then conducted a sensitivity analysis, excluding pending investigations which would have acted to produce misclassification of the outcome. Once we omitted pending cases, a similar association was observed between race and charges laid against police.
+We opted to investigate two separate outcomes, using this data. The primary model explored whether race was associated with charges laid against police as a result of police violence. Logistic regression was used to investigate this association, as the outcome was binary. We included confounders in the model based on both *a priori* hypotheses and a >10% change in the estimate. Using these criteria, we adjusted for gender and recorded symptoms of mental illness. We then conducted a sensitivity analysis, excluding pending investigations which would have acted to produce misclassification of the outcome. Once we omitted pending cases, a similar association was observed between race and charges laid against police.
 
 The second model assessed the relationship between gender and reported symptoms of mental illness as an outcome. Using the same criteria as outlined above for confounder selection. After adjustment for age and race, we found no significant association between gender and reported symptoms of mental illness.
 
-*Protest Data*
-
-**Overview**
+### *Protest Data*
 
 We investigated protest information at the county-level, using count data which grouped the number of protests by county. Using the dataset linked with census data, we explored whether income class at the county level was associated with number of protests. Since we are interested in modeling count data, we employed Poisson regression with a log link function and no offset term. This model adjusted for population size at the county-level. Upon investigating model fit using overdispersion testing, we found that overdispersion was a concern for this model. Therefore, we ultimately fit a negative binomial model quantifying the association between income class and protest count, adjusted for county population size.
 
@@ -310,13 +311,21 @@ We investigated protest information at the county-level, using count data which 
 
 ## Discussion
 
-Overall, the findings for the police violence data were not all consistent with what we had expected. While we did find that most of the cases did not result in criminal charges to the officer involved in the exploratory analysis, the regression analysis model 1 revealed that officers involved in the killing of Black individuals were more likely to be charged. This could have been for reasons outside of what the data offered though, such as the killing being unjustified in more cases of Black individual deaths than in White individual deaths.
-<br>We also found that White individuals had higher numbers of deaths recorded than any other race. However, we were not able to find if this is a result of lack of recorded cases of Black individual deaths due to police. The regression analysis for model 2 further revealed that there was no association between gender and mental illness, which had been introduced in the first regression model.
+Overall, the findings for the police violence data were not all consistent with what we had originally hypothesized. Descriptively, we found that the vast majority (98.3%) of police violence cases resulted in no criminal charges, which we had expected. Surprisingly, among people who had recorded symptoms of mental illness, only 0.8% of cases resulted in criminal charges. 
+
+While we did find that most of the cases did not result in criminal charges to the officer involved in the exploratory analysis, the analysis investigating the relationship between race and criminal charges revealed that officers involved in the killing of Black people were more likely to be charged. This could have been for reasons outside of what the data offered, such as these incidents being more frequently unjustified in cases involving Black individuals in comparison to white people. We also found that white individuals had higher numbers of deaths recorded than any other race. However, we were unable to determine whether this is a complication of reporting and classification of cause of death; it is feasible that misclassification as a result of cause of death and recording police deaths may be related to race. Ascertainment of misclassification was not possible with the data available. 
+
+The second model built investigated whether there exists a relationship between gender and recorded symptoms of mental illness. After adjustment for age and race, we did not find a relationship between gender and mental illness.
 
 &nbsp;
 
-There were similarly unexpected but interesting findings in the protest data analysis as well. In the exploratory analysis we found that states with larger populations and large cities, including California, New York, and Florida, overall held the highest numbers of demonstrations which was consistent with what was expected. However, the regression analysis found that the "very high" income group was much more likely to hold protests than other income groups. We thought that this could have potentially been due to the cities holding more protests and therefore having the higher income class, which would be consistent with the finding from the exploratory analysis. However, once adjusting for the overdispersion that was found in the original regression model for the protest data, it was determined that the income classes were not really significantly different from each other.
-<br>Overall we had expected that lower income classes would be more likely to hold demonstrations, which did not hold true here. We do not have the exact reasons for the protests that are in the data so that could potentially be helpful in determining why the higher income was initially recorded as holding significantly more protests.
+There were similarly unexpected but interesting findings in the protest data analysis as well. In the exploratory analysis we found that states with larger populations and large cities, including California, New York, and Florida, held the highest numbers of demonstrations which was consistent with what was expected. However, the Poisson regression analysis found that the "very high" income group was more likely to hold protests than other income groups. We thought that this could have potentially been due to the cities holding more protests in conjunction with having higher income classes, which would be consistent with the finding from the exploratory analysis. After adjustment for population size at the county-level in the original model, we found an association between higher income class and likelihood of holding protests. 
+
+However, after investigating model fit, we found that overdispersion was a concern in the original Poisson regression model. We then fit a negative binomial model to account for overdispersion, and adjusted for county-level population. Once doing so, we found that the only income class significantly associated with a greater protest count was the "low" income class in comparison to the "very low" income class.
+
+Overall, we believe that our results speak to the impact of available resources (in terms of both time and )
+
+we had expected that lower income classes would be more likely to hold demonstrations, which did not hold true here. We do not have the exact reasons for the protests that are in the data so that could potentially be helpful in determining why the higher income was initially recorded as holding significantly more protests.
 
 &nbsp;
 
