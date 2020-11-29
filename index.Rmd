@@ -50,17 +50,16 @@ The interactive maps tab will lead you to a dashboard including interactive maps
 &nbsp;
 
 # Additional Information
-1. Visit the [Project Report](proj_report.html) tab in the upper right of the website for a full page on what was done from start to finish in this project.
-<br>and
+1. Visit the [Project Report](proj_report.html) tab in the upper right of the website for a full page on what was done from start to finish in this project; and
 2. Visit our project Youtube video, linked in the upper right corner of the website, for a brief introduction and overview of the project.
 
 &nbsp;
 
-Collaborators:
+**Collaborators:**
 <ul>
-<li>Rebekah Hughes</li>
-<li>Megan Marziali</li>
-<li>Leighanne Wang</li>
-<li>Jinghan Zhang</li>
-<li>Adam Rosenfeld</li>
+<li>[Rebekah Hughes](https://rebekahhughes97.github.io/)</li>
+<li>[Megan Marziali](https://meganmarziali.github.io)</li>
+<li>[Leighanne Wang](https://leighannewang.github.io)</li>
+<li>[Jinghan Zhang]()</li>
+<li>[Adam Rosenfeld]()</li>
 </ul>

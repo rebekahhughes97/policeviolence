@@ -425,9 +425,18 @@ div.tocify {
 </div>
 
 
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+<p> </p>
 <div id="model-1-outcome-as-charges-laid" class="section level2">
 <h2>Model 1: Outcome as Charges Laid</h2>
 <p>We opted to investigate whether race of the victim of police violence was associated with the odds of the police officer having charges laid against them. Charges in this case specifically relate to legal ramifications, and do not include discipline or civil suits against the police officer without charges. Due to small cell counts, race was operationalized to include only white and Black individuals.</p>
+<p> </p>
 <div id="crude-analysis" class="section level3">
 <h3>Crude Analysis</h3>
 <p>Crude analyses show that, in instances where the victim of police violence is Black, the odds of charges being laid is increased by <strong>133% (95% CI: 1.59, 3.42)</strong>.</p>
@@ -466,6 +475,7 @@ div.tocify {
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="confounder-selection" class="section level3">
 <h3>Confounder Selection</h3>
@@ -613,6 +623,7 @@ glm(charges ~ age_rec, data = mpv_df_charges, family = binomial()) %&gt;%
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="adjusted-analysis" class="section level3">
 <h3>Adjusted Analysis</h3>
@@ -665,6 +676,7 @@ glm(charges ~ age_rec, data = mpv_df_charges, family = binomial()) %&gt;%
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 </div>
 <div id="sensitivity-analysis-model-1" class="section level2">
@@ -722,6 +734,7 @@ glm(charges ~ race_rec + gender + MI, data = mpv_solved, family = binomial()) %&
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="model-2-outcome-as-symptoms-of-mental-illness" class="section level2">
 <h2>Model 2: Outcome as Symptoms of Mental Illness</h2>
@@ -763,6 +776,7 @@ glm(charges ~ race_rec + gender + MI, data = mpv_solved, family = binomial()) %&
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="confounder-selection-1" class="section level3">
 <h3>Confounder Selection</h3>
@@ -847,6 +861,7 @@ glm(MI ~ race_rec, data = mpv_df_charges, family = binomial()) %&gt;%
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="adjusted-analysis-1" class="section level3">
 <h3>Adjusted Analysis</h3>

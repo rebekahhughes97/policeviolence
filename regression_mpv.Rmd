@@ -59,9 +59,21 @@ mpv_df_charges =
   select(MI, age_rec, race_rec, charges, gender, year, resolved)
 ```
 
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
+&nbsp;
+
 ## Model 1: Outcome as Charges Laid
 
 We opted to investigate whether race of the victim of police violence was associated with the odds of the police officer having charges laid against them. Charges in this case specifically relate to legal ramifications, and do not include discipline or civil suits against the police officer without charges. Due to small cell counts, race was operationalized to include only white and Black individuals.
+
+&nbsp;
 
 ### Crude Analysis
 
@@ -80,6 +92,8 @@ glm(charges ~ race_rec, data = mpv_df_charges, family = binomial()) %>%
     term = str_replace(term, "race_rec", "Race: ")) %>% 
     knitr::kable(digits = 3)
 ```
+
+&nbsp;
 
 ### Confounder Selection
 
@@ -113,6 +127,8 @@ glm(charges ~ age_rec, data = mpv_df_charges, family = binomial()) %>%
   knitr::kable(digits = 3)
 ```
 
+&nbsp;
+
 ### Adjusted Analysis
 
 After adjustment for gender and symptoms of mental illness, among victims of police violence who are Black, the odds of charges being laid against the police officer increase by **142% (95% CI: 1.63, 3.60)**. While the direction of association is opposite than we were anticipating, it is possible that the odds of charges being laid are higher when the victim is Black because the reasons behind carrying out these violent actions are not well justified. Ideally, we would be able to further investigate this with data regarding the reason for police stops or police intervention, but we were not able to do so.
@@ -131,6 +147,8 @@ glm(charges ~ race_rec + gender + MI, data = mpv_df_charges, family = binomial()
     term = str_replace(term, "gender", "Gender: ")) %>% 
     knitr::kable(digits = 3)
 ```
+
+&nbsp;
 
 ## Sensitivity Analysis: Model 1
 
@@ -155,6 +173,8 @@ glm(charges ~ race_rec + gender + MI, data = mpv_solved, family = binomial()) %>
     knitr::kable(digits = 3)
 ```
 
+&nbsp;
+
 ## Model 2: Outcome as Symptoms of Mental Illness
 
 ### Crude Analysis
@@ -175,6 +195,8 @@ glm(MI ~ gender, data = mpv_df_charges, family = binomial()) %>%
     knitr::kable(digits = 3)
 ```
 
+&nbsp;
+
 ### Confounder Selection
 
 We considered age and race as potential confounders of the relationship between gender and symptoms of mental illness. Similar to the model above, we used the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypotheses. We included both age and race in the final adjusted model.
@@ -194,6 +216,8 @@ glm(MI ~ race_rec, data = mpv_df_charges, family = binomial()) %>%
     term = str_replace(term, "race_rec", "Race: ")) %>% 
   knitr::kable(digits = 3)
 ```
+
+&nbsp;
 
 ### Adjusted Analysis
 

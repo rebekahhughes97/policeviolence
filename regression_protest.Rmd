@@ -1,5 +1,5 @@
 ---
-title: "Regression Analysis of Protest Data"
+title: "Regression Analyses of Protest Data"
 output: 
   html_document:
     code_folding: hide
@@ -29,6 +29,16 @@ scale_fill_discrete = scale_fill_viridis_d
 set.seed(1)
 ```
 
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
+&nbsp;
+
 ## Outcome: Protest Count
 
 ```{r import, include=FALSE, message=FALSE, warning=FALSE}
@@ -46,6 +56,8 @@ protest_df =
 ```
 
 The ACS data is county-level, so we built models at the county-level. The outcome of interest is pooled protests to analyze a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression with a log link function. We are not using an offset term in this case, as we are modeling count data.
+
+&nbsp;
 
 ### Crude Model
 
@@ -65,6 +77,8 @@ glm(n ~ income_class, data = protest_df, family = poisson(link = "log")) %>%
     knitr::kable(digits = 3)
 ```
 
+&nbsp;
+
 ### Confounder Selection
 
 Though crude analyses demonstrated that odds of greater protest counts increased with income class, we hypothesized this was a function of population size in urban cities and income class in larger cities. Therefore, we opted to explore whether county population size was impacting this relationship.
@@ -79,6 +93,8 @@ glm(n ~ county_pop, data = protest_df, family = poisson(link = "log")) %>%
   ) %>% 
   knitr::kable(digits = 3)
 ```
+
+&nbsp;
 
 ### Adjusted Analysis
 
@@ -101,6 +117,8 @@ glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = "l
     knitr::kable(digits = 3)
 ```
 
+&nbsp;
+
 ### Model Fit
 
 We opted to investigate model fit through analyzing overdispersion. We found overdispersion to be a concern, given the below results suggesting that alpha = 15.05 with a p-value < 0.05. Therefore, the model built did not have appropriate fit and we concluded different model types should be explored.
@@ -112,6 +130,8 @@ glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = "l
   dplyr::select(estimate, p.value) %>% 
   knitr::kable(digits = 3)
 ```
+
+&nbsp;
 
 ### Negative Binomial Model
 

@@ -11,7 +11,7 @@
 
 
 
-<title>Regression Analysis of Protest Data</title>
+<title>Regression Analyses of Protest Data</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -420,14 +420,23 @@ div.tocify {
 
 
 
-<h1 class="title toc-ignore">Regression Analysis of Protest Data</h1>
+<h1 class="title toc-ignore">Regression Analyses of Protest Data</h1>
 
 </div>
 
 
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+<p> </p>
 <div id="outcome-protest-count" class="section level2">
 <h2>Outcome: Protest Count</h2>
 <p>The ACS data is county-level, so we built models at the county-level. The outcome of interest is pooled protests to analyze a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression with a log link function. We are not using an offset term in this case, as we are modeling count data.</p>
+<p> </p>
 <div id="crude-model" class="section level3">
 <h3>Crude Model</h3>
 <p>Upon running the Poisson regression model with a log link function, we found odds of protest occurrence to increase with increasing income class. Using the “very low” income class as the referent, we found increasing odds of protest numbers, with the greatest occurring among the “very high” income class <strong>(OR: 2.13; 95% CI: 2.02, 2.24)</strong>.</p>
@@ -484,6 +493,7 @@ div.tocify {
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="confounder-selection" class="section level3">
 <h3>Confounder Selection</h3>
@@ -522,6 +532,7 @@ div.tocify {
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="adjusted-analysis" class="section level3">
 <h3>Adjusted Analysis</h3>
@@ -587,34 +598,31 @@ div.tocify {
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="model-fit" class="section level3">
 <h3>Model Fit</h3>
-<p>We opted to investigate model fit through analyzing overdispersion. We found overdispersion to be a concern, given the below results suggesting that alpha = 15.05 with a p-value &lt; 0.05. Therefore, the model built did not have appropriate fit.</p>
+<p>We opted to investigate model fit through analyzing overdispersion. We found overdispersion to be a concern, given the below results suggesting that alpha = 15.05 with a p-value &lt; 0.05. Therefore, the model built did not have appropriate fit and we concluded different model types should be explored.</p>
 <pre class="r"><code>glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = &quot;log&quot;)) %&gt;%
   dispersiontest(trafo = 1) %&gt;% 
   broom::tidy() %&gt;% 
-  knitr::kable()</code></pre>
+  dplyr::select(estimate, p.value) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
 <table>
 <thead>
 <tr class="header">
 <th align="right">estimate</th>
-<th align="right">statistic</th>
 <th align="right">p.value</th>
-<th align="left">method</th>
-<th align="left">alternative</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">15.05269</td>
-<td align="right">8.820707</td>
+<td align="right">15.053</td>
 <td align="right">0</td>
-<td align="left">Overdispersion test</td>
-<td align="left">greater</td>
 </tr>
 </tbody>
 </table>
+<p> </p>
 </div>
 <div id="negative-binomial-model" class="section level3">
 <h3>Negative Binomial Model</h3>

@@ -15,6 +15,7 @@ library(readxl)
 library(patchwork)
 library(leaflet)
 library(rvest)
+library(plotly)
 #you'll need to install the packages below in order to run animated plots or knit
 library(gganimate)
 library(gifski)
@@ -42,7 +43,6 @@ protest_data =
 ```
 
 <style type="text/css">
-h1 {color:slategray;}
 </style>
 
 ## Motivation
@@ -141,18 +141,129 @@ For the ACS data we looked at Race, Income, and Age by Sex; each category had th
 &nbsp;
 
 ## Exploratory Analysis
-*ACS Data*
-
 *Police Violence Data*
-The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape of the data.
-**Age Map with with symptoms of mental illness and whether the officer was charged included**
-The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by age, with information on symptoms of mental illness and whether the officer was charged included.
+<br>The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape and geographic spread of the data.
+
+&nbsp;
+
+**Year Map with symptoms of mental illness and whether the officer was charged**
+<br>The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by year, with information on symptoms of mental illness and whether the officer was charged included in the label. This map is used to determine the geographic spread of those killed by police each year from 2013 to 2020, and shows the small number of officers that were charged, regardless of killing individuals with symptoms of mental illness.
+
+```{r}
+pal <- colorNumeric(
+  palette = "viridis",
+  domain = mpv_df$year)
+
+
+mpv_df %>% 
+  drop_na() %>% 
+  mutate(
+    lab = str_c("City: ", city, "<br>Police Department: ", police_dept)) %>%
+  leaflet() %>% 
+  addTiles() %>% 
+  setView(-98.483330, 38.712046, zoom = 4) %>% 
+  addLegend("bottomright", pal = pal,
+            values = ~year,
+            title = "Year",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>% 
+  addCircleMarkers(
+    ~lng, ~lat,
+    color = ~pal(year),
+    radius = 0.5,
+    popup = ~lab)
+```
+
+&nbsp;
 
 **Distribution of deaths due to police violence across states**
+<br>The following plot shows the distribution of police killings by state between 2013 and 2020. This plot shows that over time, California had the most deaths from police, followed by Texas and Florida. This is consistent with the above map.
+
+```{r}
+mpv_df %>% 
+  count(state) %>% 
+  rename(total_killed_st = n) %>% 
+  arrange(desc(total_killed_st)) %>% 
+  mutate(
+    state = factor(state),
+    state = fct_reorder(state, total_killed_st)
+  ) %>% 
+ plot_ly(
+      y = ~total_killed_st, x = ~state, color = ~state,
+      type = "bar", colors = "viridis")
+```
+
+&nbsp;
 
 **Number of individuals killed due to police violence by race**
+<br>The following plot displays the number of individuals killed by police over time by race. According to the data displayed in the plot below, the most killings have occurred among white people, followed by black and Hispanic individuals, according to record. This is inconsistent with many findings, which could point to inadequate record of individuals killed by police.
+
+```{r}
+anim_scatter =
+  mpv_df %>% 
+  mutate(
+    race = str_replace_all(race, "unknown race", "Unknown race")
+    ) %>% 
+  filter(year < 2020) %>% 
+  group_by(year, race) %>% 
+  count() %>% 
+  ggplot(aes(x = year, y = n, color = race)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Number of Police Killings Over Time by Race",
+       x = "Year",
+       y = "Number of Police Killings") +
+  transition_reveal(year)
+
+animate(anim_scatter, renderer = gifski_renderer())
+```
+
+&nbsp;
 
 *Protest Data*
+<br>**Number and Type of Demonstrations**
+<br>The following plot shows the number by type of demonstration. Contrary to what is often depicted in the news, protests are much more common than violent demonstrations like riots.
+
+```{r}
+protest_data %>% 
+  group_by(event_type) %>% 
+  count() %>% 
+  filter(n >= 10) %>% 
+  plot_ly(
+      x = ~reorder(event_type, n),
+      y = ~n, 
+      color = ~event_type,
+      type = "bar", colors = "viridis") %>% 
+  layout(
+    xaxis = list(title = "Demonstration Type"),
+    yaxis = list(title = "Number of Demonstrations")
+)
+```
+
+&nbsp;
+
+**Demonstrations by State**
+<br>According to the below plot, California by far held the most demonstrations, followed by New York state and Florida.
+
+```{r}
+protest_data %>% 
+  mutate(
+    state = as.factor(state)
+  ) %>% 
+  filter(event_type == "Protests") %>% 
+  count(state) %>% 
+  mutate(
+    state = fct_reorder(state, n, .desc = FALSE)
+  ) %>% 
+   plot_ly(
+      x = ~state,
+      y = ~n, 
+      color = ~state,
+      type = "bar", colors = "viridis") %>% 
+    layout(
+    xaxis = list(title = "State"),
+    yaxis = list(title = "Number of Protests"))
+```
 
 &nbsp;
 

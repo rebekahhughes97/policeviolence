@@ -1,5 +1,5 @@
 ---
-title: "Analysis of Police Violence in the US"
+title: "Exploratory Analysis of Police Violence in the US"
 output: 
   html_document:
     code_folding: hide
@@ -42,6 +42,16 @@ mpv_demo_df =
   read_csv("./data/mpv_demo_df.csv")
 ```
 
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
+&nbsp;
+
 ### Police Killings Over Time 2013-2019
 
 ```{r, message = FALSE}
@@ -59,7 +69,11 @@ year_plot =
 year_plot
 ```
 
-The plot below shows the total number police killings per year from 2013 through 2019, as we can see, the total number of killings has remained relatively unchanged the past 6 years despite increased public awareness of police brutality.
+The plot above shows the total number police killings per year from 2013 through 2019. As displayed in the plot, the total number of killings has remained relatively unchanged the past 6 years despite increased public awareness of police brutality.
+
+&nbsp;
+
+### Police Killings over Time by Race
 
 ```{r}
 anim_scatter =
@@ -82,6 +96,10 @@ animate(anim_scatter, renderer = gifski_renderer())
 ```
 
 This plot shows the number of people that were killed from 2013 through 2019 by race. From this graph,  White, Black, and Hispanic people are the victims of most police violence incidents and this holds relatively steady throughout this time period. However, these numbers must be compared with the overall US population by race in order to understand the risk of police use of force as a cause of death (below).
+
+&nbsp;
+
+### US Population by Race vs. Persons Killed by Police by Race
 
 ```{r, warning = FALSE}
 total_race =
@@ -136,7 +154,9 @@ race_mpv =
 total_race + race_mpv
 ```
 
-The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As we can see, a much higher proportion of those who are killed by police are black when compared to the total population. 
+The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are black when compared to the total population. 
+
+&nbsp;
 
 ### Police Killings by State
 
@@ -169,6 +189,8 @@ mpv_df %>%
 
 These two graphs show us the total number people killed per state from 2013-2020. The first graph contains numbers for all 50 states and the second graph contains the top 10 states with the highest number of police killings. At the top is California which is almost double the next highest state, Texas. 
 
+&nbsp;
+
 ### Police Killings by Department
 
 ```{r, warning = FALSE, message = FALSE}
@@ -185,6 +207,8 @@ mpv_df %>%
       type = "bar", colors = "viridis")
 ```
 This plot depicts the total number of people killed from 2013 through 2020 broken down by police department; only departments with a count higher than 49 are included to show the highest offenders. Based on this graph, we can see that Los Angeles has the highest count, especially once the LA County and LA city departments are combined together for a total that is double the city with the second highest count.   
+
+&nbsp;
 
 ### Breakdown of charges laid against police
 
@@ -208,6 +232,3 @@ mpv_case =
 mpv_case
 ```
 The above plot shows the breakdown of whether charges were pressed police after each case. In total,`r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
-
-
-

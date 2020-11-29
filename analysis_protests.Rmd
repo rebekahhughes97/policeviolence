@@ -38,7 +38,19 @@ protest_data =
   read_csv("./data/usa_tidy.csv")
 ```
 
+<style type="text/css">
+
+h1.title {
+  text-align: center;
+}
+
+</style>
+
+&nbsp;
+
 Since early 2020, there has been a lot of media coverage of the Black Lives Matter protests in the United States. While there were peaceful protests occurring, it seemed that riots and events that turned violent were getting more media coverage, and therefore would appear to be occurring more than peaceful protests. The following plots show various ways to view the amount of protests that occurred in the United States between May and October 2020, and give perspective in the matter.
+
+&nbsp;
 
 ### Protests vs. Riots
 
@@ -67,6 +79,8 @@ animate(anim_plot, renderer = gifski_renderer())
 ```
 
 As shown in the plot above, the proportion of peaceful protests is consistently greater than the proportion of riots each month. While the proportions seem to converge in October, this is because the overall number of demonstrations decreased, while the peak was in June. This graph can work to emphasize the number of protests in relation to riots or other developments.
+
+&nbsp;
 
 ### Number and Type of Demonstrations
 
@@ -103,6 +117,7 @@ protest_data %>%
 
 The first bar plot reiterates what was shown in the scatterplot above: there were far more protests recorded than any other type of event, contrary to what is often depicted. The second bar plot further shows the events in the first bar plot as subtypes and shows that peaceful protests were the most prevalent event type, with **88.7%** of protest types classified as a peaceful protest.
 
+&nbsp;
 
 ### Protests by State
 
