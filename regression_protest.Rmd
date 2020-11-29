@@ -11,6 +11,7 @@ output:
 library(tidyverse)
 library(AER)
 library(MASS)
+library(kableExtra)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -61,20 +62,21 @@ The ACS data is county-level, so we built models at the county-level. The outcom
 
 ### Crude Model
 
-Upon running the Poisson regression model with a log link function, we found odds of protest occurrence to increase with increasing income class. Using the "very low" income class as the referent, we found increasing odds of protest numbers, with the greatest occurring among the "very high" income class **(OR: 2.13; 95% CI: 2.02, 2.24)**. 
+Upon running the Poisson regression model with a log link function, we found protest occurrence to increase with increasing income class. Using the "very low" income class as the referent, we found increased protest count, with the greatest occurring among the "very high" income class **(RR: 2.13; 95% CI: 2.02, 2.24)**. 
 
 ```{r}
 glm(n ~ income_class, data = protest_df, family = poisson(link = "log")) %>% 
   broom::tidy() %>% 
   mutate(
-    OR = exp(estimate),
+    RR = exp(estimate),
     CI_lower = exp(estimate - 1.96 * std.error),
     CI_upper = exp(estimate + 1.96 * std.error)
   ) %>% 
-  dplyr::select(term, OR, starts_with("CI")) %>% 
+  dplyr::select(term, RR, starts_with("CI")) %>% 
   mutate(
     term = str_replace(term, "income_class", "Income Class: ")) %>% 
-    knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 &nbsp;
@@ -91,14 +93,15 @@ glm(n ~ county_pop, data = protest_df, family = poisson(link = "log")) %>%
   mutate(
     term = str_replace(term, "county_pop", "County Population")
   ) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 &nbsp;
 
 ### Adjusted Analysis
 
-After adjustment for county population size, the "very high" income class remained positively associated with protest count **(aOR: 1.71; 95% CI: 1.62, 1.80)** in comparison to the "very low" income class. The "low" **(aOR: 1.30; 95% CI: 1.22, 1.38)** and "middle" **(aOR: 1.11; 95% CI: 1.05, 1.19)** income classes were both positively associated with increased protest count; however, the "high" income class was no longer significantly associated with increased protest count.
+After adjustment for county population size, the "very high" income class remained positively associated with protest count **(aRR: 1.71; 95% CI: 1.62, 1.80)** in comparison to the "very low" income class. The "low" **(aRR: 1.30; 95% CI: 1.22, 1.38)** and "middle" **(aRR: 1.11; 95% CI: 1.05, 1.19)** income classes were both positively associated with increased protest count; however, the "high" income class was no longer significantly associated with increased protest count.
 
 Analyses demonstrate that counties classified as having a "very high" income are those counties with the greatest number of protests, in comparison to counties with a "very low" income.
 
@@ -114,7 +117,8 @@ glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = "l
   mutate(
     term = str_replace(term, "income_class", "Income Class: "),
     term = str_replace(term, "county_pop", "County Population")) %>% 
-    knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 &nbsp;
@@ -128,7 +132,8 @@ glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = "l
   dispersiontest(trafo = 1) %>% 
   broom::tidy() %>% 
   dplyr::select(estimate, p.value) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 &nbsp;
@@ -149,7 +154,8 @@ glm.nb(n ~ income_class, data = protest_df) %>%
   mutate(
     term = str_replace(term, "income_class", "Income Class: "),
     term = str_replace(term, "county_pop", "County Population")) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 After adjustment for county population size, the "high" **(aRR: 1.02; 95% CI: 0.84, 1.23)**, "middle" **(aRR: 0.97; 95% CI: 0.80, 1.18)**, and "very high" **(aRR: 1.18; 95% CI: 0.99, 1.40)** counties were not significantly different from the "very low" counties in terms of increased protests. The "low" income class was significantly more likely to have protests in comparison to the "very low" income class **(aRR: 1.27; 95% CI: 1.04, 1.54)**.
@@ -166,5 +172,6 @@ glm.nb(n ~ income_class + county_pop, data = protest_df) %>%
   mutate(
     term = str_replace(term, "income_class", "Income Class: "),
     term = str_replace(term, "county_pop", "County Population")) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```

@@ -9,6 +9,7 @@ output:
 
 ```{r setup, include=FALSE, message=FALSE}
 library(tidyverse)
+library(kableExtra)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -90,8 +91,11 @@ glm(charges ~ race_rec, data = mpv_df_charges, family = binomial()) %>%
   select(term, OR, starts_with("CI")) %>% 
   mutate(
     term = str_replace(term, "race_rec", "Race: ")) %>% 
-    knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+OR = Odds Ratio, CI = Confidence Interval
 
 &nbsp;
 
@@ -105,26 +109,30 @@ Based on the results in the tables below, and using the 10% change rule in the b
 #Year - Not significant, not further explored
 glm(charges ~ year, data = mpv_df_charges, family = binomial()) %>% 
   broom::tidy() %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 #Gender - Significant, further explored
 glm(charges ~ gender, data = mpv_df_charges, family = binomial()) %>% 
   broom::tidy() %>% 
     mutate(
     term = str_replace(term, "gender", "Gender: ")) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 #Symptoms of MI - Significant, further explored
 glm(charges ~ MI, data = mpv_df_charges, family = binomial()) %>% 
   broom::tidy() %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 #Age - Not significant, not further explored
 glm(charges ~ age_rec, data = mpv_df_charges, family = binomial()) %>% 
   broom::tidy() %>% 
   mutate(
     term = str_replace(term, "age_rec", "Age: ")) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 &nbsp;
@@ -137,16 +145,19 @@ After adjustment for gender and symptoms of mental illness, among victims of pol
 glm(charges ~ race_rec + gender + MI, data = mpv_df_charges, family = binomial()) %>% 
   broom::tidy() %>% 
   mutate(
-    OR = exp(estimate),
+    aOR = exp(estimate),
     CI_lower = exp(estimate - 1.96 * std.error),
     CI_upper = exp(estimate + 1.96 * std.error)
   ) %>% 
-  select(term, OR, starts_with("CI")) %>% 
+  select(term, aOR, starts_with("CI")) %>% 
   mutate(
     term = str_replace(term, "race_rec", "Race: "),
     term = str_replace(term, "gender", "Gender: ")) %>% 
-    knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+MI = Symptoms of mental illness; aOR = Adjusted Odds Ratio, CI = Confidence Interval
 
 &nbsp;
 
@@ -162,16 +173,19 @@ mpv_solved =
 glm(charges ~ race_rec + gender + MI, data = mpv_solved, family = binomial()) %>% 
   broom::tidy() %>% 
   mutate(
-    OR = exp(estimate),
+    aOR = exp(estimate),
     CI_lower = exp(estimate - 1.96 * std.error),
     CI_upper = exp(estimate + 1.96 * std.error)
   ) %>% 
-  select(term, OR, starts_with("CI")) %>% 
+  select(term, aOR, starts_with("CI")) %>% 
   mutate(
     term = str_replace(term, "race_rec", "Race: "),
     term = str_replace(term, "gender", "Gender: ")) %>% 
-    knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+MI = Symptoms of mental illness; aOR = Adjusted Odds Ratio, CI = Confidence Interval
 
 &nbsp;
 
@@ -192,8 +206,11 @@ glm(MI ~ gender, data = mpv_df_charges, family = binomial()) %>%
   select(term, OR, starts_with("CI")) %>% 
   mutate(
     term = str_replace(term, "gender", "Gender: ")) %>% 
-    knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+OR = Odds Ratio, CI = Confidence Interval
 
 &nbsp;
 
@@ -207,14 +224,16 @@ glm(MI ~ age_rec, data = mpv_df_charges, family = binomial()) %>%
   broom::tidy() %>% 
   mutate(
     term = str_replace(term, "age_rec", "Age: ")) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 
 #Race - Significant, further explored
 glm(MI ~ race_rec, data = mpv_df_charges, family = binomial()) %>% 
   broom::tidy() %>% 
     mutate(
     term = str_replace(term, "race_rec", "Race: ")) %>% 
-  knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
 
 &nbsp;
@@ -236,5 +255,8 @@ glm(MI ~ gender + race_rec + age_rec, data = mpv_df_charges, family = binomial()
     term = str_replace(term, "gender", "Gender: "),
     term = str_replace(term, "race_rec", "Race: "),
     term = str_replace(term, "age_rec", "Age: ")) %>% 
-    knitr::kable(digits = 3)
+  kable(digits = 3) %>% 
+  kable_styling(bootstrap_options = c("striped", "hover"))
 ```
+
+MI = Symptoms of mental illness; aOR = Adjusted Odds Ratio, CI = Confidence Interval
