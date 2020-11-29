@@ -425,9 +425,9 @@ div.tocify {
 </div>
 
 
-<div id="model-1-outcome-as-number-of-protests" class="section level2">
-<h2>Model 1: Outcome as Number of Protests</h2>
-<p>The ACS data is county-level, so we have built our models at the county-level. We pooled protest numbers to include a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression. We are not using an offset in this case, as we are trying to model counts.</p>
+<div id="outcome-protest-count" class="section level2">
+<h2>Outcome: Protest Count</h2>
+<p>The ACS data is county-level, so we built models at the county-level. The outcome of interest is pooled protests to analyze a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression with a log link function. We are not using an offset term in this case, as we are modeling count data.</p>
 <div id="crude-model" class="section level3">
 <h3>Crude Model</h3>
 <p>Upon running the Poisson regression model with a log link function, we found odds of protest occurrence to increase with increasing income class. Using the “very low” income class as the referent, we found increasing odds of protest numbers, with the greatest occurring among the “very high” income class <strong>(OR: 2.13; 95% CI: 2.02, 2.24)</strong>.</p>
@@ -438,7 +438,7 @@ div.tocify {
     CI_lower = exp(estimate - 1.96 * std.error),
     CI_upper = exp(estimate + 1.96 * std.error)
   ) %&gt;% 
-  select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
+  dplyr::select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
   mutate(
     term = str_replace(term, &quot;income_class&quot;, &quot;Income Class: &quot;)) %&gt;% 
     knitr::kable(digits = 3)</code></pre>
@@ -523,19 +523,18 @@ div.tocify {
 </tbody>
 </table>
 </div>
-</div>
-<div id="adjusted-analysis" class="section level2">
-<h2>Adjusted Analysis</h2>
+<div id="adjusted-analysis" class="section level3">
+<h3>Adjusted Analysis</h3>
 <p>After adjustment for county population size, the “very high” income class remained positively associated with protest count <strong>(aOR: 1.71; 95% CI: 1.62, 1.80)</strong> in comparison to the “very low” income class. The “low” <strong>(aOR: 1.30; 95% CI: 1.22, 1.38)</strong> and “middle” <strong>(aOR: 1.11; 95% CI: 1.05, 1.19)</strong> income classes were both positively associated with increased protest count; however, the “high” income class was no longer significantly associated with increased protest count.</p>
 <p>Analyses demonstrate that counties classified as having a “very high” income are those counties with the greatest number of protests, in comparison to counties with a “very low” income.</p>
 <pre class="r"><code>glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = &quot;log&quot;)) %&gt;% 
   broom::tidy() %&gt;% 
   mutate(
-    OR = exp(estimate),
+    RR = exp(estimate),
     CI_lower = exp(estimate - 1.96 * std.error),
     CI_upper = exp(estimate + 1.96 * std.error)
   ) %&gt;% 
-  select(term, OR, starts_with(&quot;CI&quot;)) %&gt;% 
+  dplyr::select(term, RR, starts_with(&quot;CI&quot;)) %&gt;% 
   mutate(
     term = str_replace(term, &quot;income_class&quot;, &quot;Income Class: &quot;),
     term = str_replace(term, &quot;county_pop&quot;, &quot;County Population&quot;)) %&gt;% 
@@ -544,7 +543,7 @@ div.tocify {
 <thead>
 <tr class="header">
 <th align="left">term</th>
-<th align="right">OR</th>
+<th align="right">RR</th>
 <th align="right">CI_lower</th>
 <th align="right">CI_upper</th>
 </tr>
@@ -588,6 +587,154 @@ div.tocify {
 </tr>
 </tbody>
 </table>
+</div>
+<div id="model-fit" class="section level3">
+<h3>Model Fit</h3>
+<p>We opted to investigate model fit through analyzing overdispersion. We found overdispersion to be a concern, given the below results suggesting that alpha = 15.05 with a p-value &lt; 0.05. Therefore, the model built did not have appropriate fit.</p>
+<pre class="r"><code>glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = &quot;log&quot;)) %&gt;%
+  dispersiontest(trafo = 1) %&gt;% 
+  broom::tidy() %&gt;% 
+  knitr::kable()</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="right">estimate</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="left">method</th>
+<th align="left">alternative</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">15.05269</td>
+<td align="right">8.820707</td>
+<td align="right">0</td>
+<td align="left">Overdispersion test</td>
+<td align="left">greater</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="negative-binomial-model" class="section level3">
+<h3>Negative Binomial Model</h3>
+<p>Given the results from the overdispersion test, we opted to fit a negative binomial model, which allows for overdispersion. We first built the crude model, where we found a similar association as observed in the Poisson model: the “very high” income class counties reported the greatest increase of protests <strong>(RR: 2.13; 95% CI: 1.72, 2.63)</strong>.</p>
+<pre class="r"><code>glm.nb(n ~ income_class, data = protest_df) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    RR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  dplyr::select(term, RR, starts_with(&quot;CI&quot;)) %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;income_class&quot;, &quot;Income Class: &quot;),
+    term = str_replace(term, &quot;county_pop&quot;, &quot;County Population&quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">RR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">10.537</td>
+<td align="right">9.124</td>
+<td align="right">12.169</td>
+</tr>
+<tr class="even">
+<td align="left">Income Class: High</td>
+<td align="right">1.751</td>
+<td align="right">1.391</td>
+<td align="right">2.205</td>
+</tr>
+<tr class="odd">
+<td align="left">Income Class: Low</td>
+<td align="right">1.410</td>
+<td align="right">1.105</td>
+<td align="right">1.799</td>
+</tr>
+<tr class="even">
+<td align="left">Income Class: Middle</td>
+<td align="right">1.288</td>
+<td align="right">1.015</td>
+<td align="right">1.635</td>
+</tr>
+<tr class="odd">
+<td align="left">Income Class: Very High</td>
+<td align="right">2.126</td>
+<td align="right">1.718</td>
+<td align="right">2.632</td>
+</tr>
+</tbody>
+</table>
+<p>After adjustment for county population size, the “high” <strong>(aRR: 1.02; 95% CI: 0.84, 1.23)</strong>, “middle” <strong>(aRR: 0.97; 95% CI: 0.80, 1.18)</strong>, and “very high” <strong>(aRR: 1.18; 95% CI: 0.99, 1.40)</strong> counties were not significantly different from the “very low” counties in terms of increased protests. The “low” income class was significantly more likely to have protests in comparison to the “very low” income class <strong>(aRR: 1.27; 95% CI: 1.04, 1.54)</strong>.</p>
+<pre class="r"><code>glm.nb(n ~ income_class + county_pop, data = protest_df) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    RR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  dplyr::select(term, RR, starts_with(&quot;CI&quot;)) %&gt;% 
+  mutate(
+    term = str_replace(term, &quot;income_class&quot;, &quot;Income Class: &quot;),
+    term = str_replace(term, &quot;county_pop&quot;, &quot;County Population&quot;)) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">RR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">6.755</td>
+<td align="right">5.989</td>
+<td align="right">7.619</td>
+</tr>
+<tr class="even">
+<td align="left">Income Class: High</td>
+<td align="right">1.015</td>
+<td align="right">0.841</td>
+<td align="right">1.226</td>
+</tr>
+<tr class="odd">
+<td align="left">Income Class: Low</td>
+<td align="right">1.265</td>
+<td align="right">1.040</td>
+<td align="right">1.537</td>
+</tr>
+<tr class="even">
+<td align="left">Income Class: Middle</td>
+<td align="right">0.969</td>
+<td align="right">0.799</td>
+<td align="right">1.175</td>
+</tr>
+<tr class="odd">
+<td align="left">Income Class: Very High</td>
+<td align="right">1.175</td>
+<td align="right">0.989</td>
+<td align="right">1.396</td>
+</tr>
+<tr class="even">
+<td align="left">County Population</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
