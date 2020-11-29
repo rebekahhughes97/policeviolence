@@ -18,6 +18,10 @@ library(plotly)
 library(gganimate)
 library(gifski)
 library(png)
+library(leaflet)
+library(rvest)
+library(shiny)
+library(RColorBrewer)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -143,3 +147,35 @@ protest_data %>%
 
 The above plot depicts the number of protest events that occurred in each state between May and October 2020. Overall, there were more protests in California than in any other state. Florida, Illinois, New York, Pennsylvania, and Texas also had larger numbers of protests during the data coverage period. This is not surprising given that these states have large populations and have highly populated cities; however, among states with urban areas, the number of protests per state is salient.
 
+&nbsp;
+
+### Protests Across the US by Income Class
+```{r, message = FALSE}
+protest_demo_df2 =
+  read_csv("./data/protest_demo_df2.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
+
+factpal3 <- colorFactor("magma", protest_demo_df2 %>% pull(income_class))
+protest_demo_df2 %>% 
+  drop_na() %>% 
+  mutate(
+  pop1 = str_c("City: ", city, "<br>Event Type: ", 
+               sub_event_type, "<br>Year: ", year, "<br>Fatalities: ", fatalities)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal3,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~factpal3(income_class),
+    radius = 0.5,
+    popup = ~pop1
+    )
+```
+
+This map shows the protests that have taken place across the US with the different colored dots representing the income class of that county, ranging from very low to very high income class. This map informed the basis of our regression analysis on the protest data. Similar to previous plots, predictably, areas in the US that are more populated have more protests. At first glance it seems that there is an even spread of protests in low and high incomes.

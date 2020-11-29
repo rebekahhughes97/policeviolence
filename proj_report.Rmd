@@ -270,6 +270,8 @@ animate(anim_scatter, renderer = gifski_renderer())
 
 ### *Protest Data*
 
+&nbsp;
+
 #### **Demonstrations by State**
 <br>According to the plot below, California by far held the most demonstrations, followed by New York state and Florida. This informed the regression analysis we performed using the protest data, and gave us the idea to examine this data along with ACS income data on the county level across the US.
 
@@ -294,6 +296,37 @@ protest_data %>%
 ```
 
 &nbsp;
+
+#### **Demonstrations Across the US by Income Class**
+<br> This map shows the income level of the county where each protest occurred and provided useful visualization for the regression analysis conducted on the protest data.
+
+```{r, message = FALSE}
+protest_demo_df2 =
+  read_csv("./data/protest_demo_df2.csv") %>% 
+  mutate(
+    income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
+  )
+
+factpal3 <- colorFactor("magma", protest_demo_df2 %>% pull(income_class))
+protest_demo_df2 %>% 
+  drop_na() %>% 
+  mutate(
+  pop1 = str_c("City: ", city, "<br>Event Type: ", 
+               sub_event_type, "<br>Year: ", year, "<br>Fatalities: ", fatalities)) %>%
+  leaflet() %>% 
+  addProviderTiles(providers$CartoDB.Positron) %>% 
+  addLegend("bottomright", pal = factpal3,
+            values = ~as.factor(income_class),
+            title = "Income Class",
+            labFormat = labelFormat(big.mark = ""),
+            opacity = 1) %>%
+  addCircleMarkers(
+    ~longitude, ~latitude,
+    color = ~factpal3(income_class),
+    radius = 0.5,
+    popup = ~pop1
+    )
+```
 
 ## Regression Analysis
 
