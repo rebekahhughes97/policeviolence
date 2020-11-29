@@ -104,9 +104,9 @@ This plot shows the number of people that were killed from 2013 through 2019 by 
 ```{r, warning = FALSE}
 total_race =
   mpv_demo_df %>% 
-  select(-c(17:106, 109, 111, 113, 115, 117, 119)) %>% 
+  select(-c(17:18, 21:35, 38, 40, 42, 44, 46, 48)) %>% 
   pivot_longer(
-    18:23,
+    20:25,
     names_to = "total_race",
     values_to = "total_estimate"
   ) %>%
@@ -154,7 +154,7 @@ race_mpv =
 total_race + race_mpv
 ```
 
-The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are black when compared to the total population. 
+The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are black when compared to the total US population. 
 
 &nbsp;
 
@@ -231,4 +231,4 @@ mpv_case =
 
 mpv_case
 ```
-The above plot shows the breakdown of whether charges were pressed police after each case. In total,`r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
+The above plot shows the breakdown of whether charges were pressed against police after each case. In total,`r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
