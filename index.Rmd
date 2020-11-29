@@ -36,7 +36,6 @@ In the Exploratory Analysis tab, you will find:
 <ul>
 <li>Analyses of mapping police violence data, through visualizations,</li>
 <li>Analyses of protest data, through visualizations; and,</li>
-<li>ACS visualizations combined with the protest and police violence data.</li>
 </ul>
 
 In the Regression Analyses tab, you will find:
