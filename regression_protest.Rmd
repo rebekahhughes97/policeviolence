@@ -9,6 +9,8 @@ output:
 
 ```{r setup, include=FALSE, message=FALSE}
 library(tidyverse)
+library(AER)
+library(MASS)
 
 knitr::opts_chunk$set(
   out.width = "90%"
@@ -27,7 +29,7 @@ scale_fill_discrete = scale_fill_viridis_d
 set.seed(1)
 ```
 
-## Model 1: Outcome as Number of Protests
+## Outcome: Protest Count
 
 ```{r import, include=FALSE, message=FALSE, warning=FALSE}
 protest_df =
@@ -43,7 +45,7 @@ protest_df =
   count(event_type)
 ```
 
-The ACS data is county-level, so we have built our models at the county-level. We pooled protest numbers to include a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression. We are not using an offset in this case, as we are trying to model counts.
+The ACS data is county-level, so we built models at the county-level. The outcome of interest is pooled protests to analyze a count of the number of protests at the county-level. Because we are using count data, we opted to run Poisson regression with a log link function. We are not using an offset term in this case, as we are modeling count data.
 
 ### Crude Model
 
@@ -78,7 +80,7 @@ glm(n ~ county_pop, data = protest_df, family = poisson(link = "log")) %>%
   knitr::kable(digits = 3)
 ```
 
-## Adjusted Analysis
+### Adjusted Analysis
 
 After adjustment for county population size, the "very high" income class remained positively associated with protest count **(aOR: 1.71; 95% CI: 1.62, 1.80)** in comparison to the "very low" income class. The "low" **(aOR: 1.30; 95% CI: 1.22, 1.38)** and "middle" **(aOR: 1.11; 95% CI: 1.05, 1.19)** income classes were both positively associated with increased protest count; however, the "high" income class was no longer significantly associated with increased protest count.
 
@@ -99,4 +101,38 @@ glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = "l
     knitr::kable(digits = 3)
 ```
 
+### Model Fit
 
+We opted to investigate model fit through analyzing overdispersion. We found overdispersion to be a concern, given the below results suggesting that alpha = 15.05 with a p-value < 0.05. Therefore, the model built did not have appropriate fit.
+
+```{r}
+glm(n ~ income_class + county_pop, data = protest_df, family = poisson(link = "log")) %>%
+  dispersiontest(trafo = 1) %>% 
+  broom::tidy() %>% 
+  knitr::kable()
+```
+
+### Negative Binomial Model
+
+Given the results from the overdispersion test, we opted to fit a negative binomial model, which allows for overdispersion. We first built the crude model, where we found a similar association as observed in the Poisson model: 
+
+```{r}
+glm.nb(n ~ income_class, data = protest_df) %>% 
+  broom::tidy() %>% 
+  mutate(
+    RR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, RR, starts_with("CI")) %>% 
+  mutate(
+    term = str_replace(term, "income_class", "Income Class: "),
+    term = str_replace(term, "county_pop", "County Population")) %>% 
+  knitr::kable(digits = 3)
+```
+
+```{r}
+glm.nb(n ~ income_class + county_pop, data = protest_df) %>% 
+  broom::tidy() %>% 
+  knitr::kable(digits = 3)
+```
