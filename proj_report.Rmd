@@ -40,6 +40,18 @@ mpv_df =
 
 protest_data =
   read_csv("./data/usa_tidy.csv")
+
+race_data =
+  read_csv("./data/race_tidy.csv")
+
+income_df_tidy =
+  read_csv("./data/income_tidy.csv")
+
+income_df =
+  read_csv("./data/income2.csv")
+
+mpv_demo_df =
+  read_csv("./data/mpv_demo_df.csv")
 ```
 
 <style type="text/css">
@@ -100,7 +112,7 @@ The questions for this project are based on the 3 datasets we used that are list
 * `fatalities`: number of individuals killed at each event
 
 
-##### **ACS Dataset**
+##### ** American Community Survey (ACS) Datasets**
 * `id`
 * `county`
 * `state`
@@ -114,13 +126,6 @@ The questions for this project are based on the 3 datasets we used that are list
 * `disparity_value`: mean income - median income in each county
 * `income_class`: ranges from "Very Low" to "Very High" based on `median_income` value for each county 
 
-**Age by Sex**
-
-* `age`
-* `sex`
-* `total`: total estimate for each county by age and sex
-* `percent`: percent estimate for each county by age and sex
-
 **Race**
 
 * `race`
@@ -132,15 +137,81 @@ The questions for this project are based on the 3 datasets we used that are list
 #### *Data Cleaning*
 The police violence and protest datasets were both similarly cleaned. The data was first imported into R. The variables were then renamed and selected based on if they were intuitive and if they were needed for this analysis. While the protest data already had a latitude and longitude included, an external source was joined with the police violence dataset so latitudes and longitudes of cities could be included in the dataset.
 
-For the ACS data we looked at Race, Income, and Age by Sex; each category had their own separate dataset. All datasets have a tidy and non-tidy version; tidy datasets were used for visualization and exploratory analyses and the non-tidy datasets were joined with the Police Violence Dataset and Protest Dataset separately in order to conduct further statistical analyses and plotting. However, for both the tidy and non-tidy versions, variable names were shortened for convenience and only a subset of of the original datasets' categories were kept (for example, in all datasets 'margin of error estimates' were removed). Below are the specific data cleaning steps for each dataset:
+For the ACS data we looked at race and income; each category had their own separate datasets with a tidy and non-tidy version. Tidy datasets were used for visualization and exploratory analyses and the non-tidy datasets were joined with the Police Violence Dataset and Protest Dataset separately in order to conduct further statistical analyses and plotting. However, for both the tidy and non-tidy datasets: variable names were shortened for convenience and only a subset of of the original datasets' categories were kept (for example, in all datasets 'margin of error estimates' were removed). Below are the specific data cleaning steps for each dataset:
 
 * **Race:** This dataset excludes data for those who identify as more than one race. Additionally, proportion was calculated for each race category.
-* **Age by Sex and Age Only:** The 'Age Only' dataset contains total estimate and percent estimate of each age group and the 'Age by Sex' contains the total and percent estimate for each age group by male or female. *might just remove 'age only' datasets because the 'age by sex' is sufficient*
 * **Income:** This dataset includes only the total percent estimates by household income. Variables for income class and disparity value were created from the mean and median income of each county.
 
 &nbsp;
 
 ## Exploratory Analysis
+*ACS Data*
+<br>The exploratory analysis for ACS data was used to provide preliminary context for current country demographics and supplement our analysis of police violence and protests throughout the country.
+
+&nbsp;
+
+**US Population by Race**
+<br> The two plots below show the total population of each racial group in the US in total (top) and by state (bottom). This breakdown contextualizes the police violence data. Comparing the police killings by race to the total population by race shows us that proportionally, black people have a higher likelihood to be a victim of police brutality.
+
+```{r, warning = FALSE}
+mpv_demo_df %>% 
+  select(-c(17:18, 21:35, 38, 40, 42, 44, 46, 48)) %>% 
+  pivot_longer(
+    20:25,
+    names_to = "total_race",
+    values_to = "total_estimate"
+  ) %>%
+  mutate(
+    total_race = str_replace(total_race, "am_in_alask", "Native American"),
+    total_race = str_replace(total_race, "hawaii_pi", "Pacific Islander"),
+    total_race = str_replace(total_race, "asian", "Asian"),
+    total_race = str_replace(total_race, "black", "Black"),
+    total_race = str_replace(total_race, "other", "Other"),
+    total_race = str_replace(total_race, "white", "White"),
+  )  %>% 
+  ggplot(
+    aes(x = total_race, y = total_estimate, color = total_race, fill = total_race)
+  ) +
+  geom_bar(stat = "identity") +
+  theme(
+      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
+      legend.position = "none") +
+  labs(
+    x = "",
+    y = "Total",
+    Title = "Total US Population Estimates by Race"
+  )
+
+race_data %>% 
+  group_by(state, race) %>% 
+  plot_ly(
+      y = ~total, x = ~state, color = ~race,
+      type = "scatter",mode = "markers", colors = "viridis")
+```
+
+&nbsp;
+
+**Household Income in the US**
+<br> These plots show the mean household income in the US by state (top) and distribution of disparity in income throughout the US (bottom). As mentioned, the disparity value was taken from subtracting median income from mean income. This visualization supplements our understanding of the distribution and disparity of wealth across the US and provides some background for our regression analyses.
+
+```{r}  
+# mean household income by state
+income_data %>% 
+  mutate(
+    state = fct_reorder(state, mean_income)
+  ) %>% 
+  plot_ly(
+      y = ~mean_income, x = ~state, color = ~state,
+      type = "box", colors = "viridis")
+
+income_data %>% 
+    plot_ly(
+      x = ~disparity_value, color = ~disparity_value,
+      type = "histogram", histnorm = "probability", colors = "viridis")
+```
+
+&nbsp;
+
 *Police Violence Data*
 <br>The exploratory analysis for this dataset was primarily used to visualize the data and help in understanding the shape and geographic spread of the data.
 

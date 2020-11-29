@@ -83,7 +83,7 @@ glm(n ~ income_class, data = protest_df, family = poisson(link = "log")) %>%
 
 Though crude analyses demonstrated that odds of greater protest counts increased with income class, we hypothesized this was a function of population size in urban cities and income class in larger cities. Therefore, we opted to explore whether county population size was impacting this relationship.
 
-Based on the results below, and using the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypothesis, we county population size as a confounder.
+Based on the results below, and using the 10% change rule in the beta estimate as a requirement for confounding along with a priori hypothesis, we used county population size as a confounder.
 
 ```{r}
 glm(n ~ county_pop, data = protest_df, family = poisson(link = "log")) %>% 
