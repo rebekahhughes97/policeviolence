@@ -16,7 +16,6 @@ library(patchwork)
 library(leaflet)
 library(rvest)
 library(plotly)
-#you'll need to install the packages below in order to run animated plots or knit
 library(gganimate)
 library(gifski)
 library(png)
