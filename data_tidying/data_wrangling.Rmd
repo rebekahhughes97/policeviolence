@@ -94,318 +94,6 @@ write_csv(usa_df, "./data/usa_tidy.csv")
 
 ## ACS Datasets
 
-#### Age and Sex
-
-Using the ACS age/sex dataset to create an age only dataset:
-```{r}
-
-# getting the total ages by county and tidying
-
-age_total_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with("estimate_total_total"))) %>% 
-  select(-c("estimate_total_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
-  pivot_longer(
-    4:21,
-    names_to = "age",
-    values_to = "total",
-    names_prefix = "estimate_total_total_population_age_"
-  ) %>%
-  mutate(
-    age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", ""),
-    age = str_replace_all(age, "under 5", "0-5"),
-    age = str_replace_all(age, "85  and over", "85+"),
-    age = as.factor(age)
-  ) %>% view()
-
-# getting the percentage of ages by county and tidying
-
-age_percent_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with("estimate_percent_total"))) %>% 
-  select(-c("estimate_total_total_population", "estimate_percent_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
-  pivot_longer(
-    4:21,
-    names_to = "age",
-    values_to = "percent",
-    names_prefix = "estimate_percent_total_population_age_"
-  ) %>%
-  mutate(
-    age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", ""),
-    age = str_replace_all(age, "under 5", "0-5"),
-    age = str_replace_all(age, "85  and over", "85+"),
-    age = as.factor(age)
-  ) %>% view()
-
-# joining the total and percentages together into one dataset
-
-age_df = 
-  left_join(age_total_df, age_percent_df, by = c("id", "county", "state", "age")) %>% view()
-  
-# export tidy age dataset
-
-write_csv(age_df, "./data/age_tidy.csv")
-```
-
-Using the ACS age/sex dataset to create an age by sex dataset:
-```{r}
-# read in total for males by age
-
-male_total_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with("estimate_male_total"))) %>% 
-  select(-c("estimate_total_total_population", "estimate_male_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
-  pivot_longer(
-    4:21,
-    names_to = "age",
-    values_to = "total",
-    names_prefix = "estimate_male_total_population_age_"
-  ) %>%
-  mutate(
-    age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", ""),
-    age = str_replace_all(age, "under 5", "0-5"),
-    age = str_replace_all(age, "85  and over", "85+"),
-    age = as.factor(age),
-    sex = "male"
-  ) %>% view()
-
-# read in total for females by age
-
-female_total_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with("estimate_female_total"))) %>% 
-  select(-c("estimate_total_total_population", "estimate_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
-  pivot_longer(
-    4:21,
-    names_to = "age",
-    values_to = "total",
-    names_prefix = "estimate_female_total_population_age_"
-  ) %>%
-  mutate(
-    age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", ""),
-    age = str_replace_all(age, "under 5", "0-5"),
-    age = str_replace_all(age, "85  and over", "85+"),
-    age = as.factor(age),
-    sex = "female"
-  ) %>% view()
-
-# bind male/female total dfs together
-
-sex_total_df =
-  bind_rows(male_total_df, female_total_df) %>% 
-  relocate(id, county, state, age, sex) %>% 
-  view()
-
-# read in percent for males by age
-
-male_percent_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with("estimate_percent_male"))) %>% 
-  select(-c("estimate_total_total_population", "estimate_percent_male_total_population", contains(c("selected_age_categories", "summary_indicators", "allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
-  pivot_longer(
-    4:21,
-    names_to = "age",
-    values_to = "percent",
-    names_prefix = "estimate_percent_male_total_population_age_"
-  ) %>%
-  mutate(
-    age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", ""),
-    age = str_replace_all(age, "under 5", "0-5"),
-    age = str_replace_all(age, "85  and over", "85+"),
-    age = as.factor(age),
-    sex = "male"
-  ) %>% view()
-
-# read in percent for females by age
-
-female_percent_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with("estimate_percent_female"))) %>% 
-  select(-c("estimate_total_total_population", "estimate_percent_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
-  pivot_longer(
-    4:21,
-    names_to = "age",
-    values_to = "percent",
-    names_prefix = "estimate_percent_female_total_population_age_"
-  ) %>%
-  mutate(
-    age = str_replace_all(age, "_", " "),
-    age = str_replace(age, "years", ""),
-    age = str_replace_all(age, "under 5", "0-5"),
-    age = str_replace_all(age, "85  and over", "85+"),
-    age = as.factor(age),
-    sex = "female"
-  ) %>% view()
-
-# bind male/female percent dfs together
-
-sex_percent_df =
-  bind_rows(male_percent_df, female_percent_df) %>% 
-  relocate(id, county, state, age, sex) %>% 
-  view()
-
-# join percent and total dfs together
-
-sex_df = 
-  left_join(sex_total_df, sex_percent_df, by = c("id", "county", "state", "age", "sex")) %>% view()
-  
-# export sex by age dataset
-write_csv(sex_df, "./data/age_sex_tidy.csv")
-```
-
-Age by Sex dataset (not tidy)
-
-```{r}
-male_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with(c("estimate_male_total", "estimate_percent_male")))) %>% 
-  select(-c("estimate_total_total_population", "estimate_male_total_population", "estimate_percent_male_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
-  rename_at(
-    vars(starts_with("estimate_male_total_population")), funs(str_replace(., "estimate_male_total_population_age", "male")),
-    ) %>% 
-  rename_at(
-        vars(starts_with("estimate_percent_male_total_population")), funs(str_replace(., "estimate_percent_male_total_population_age", "male_percent"))
-  ) %>% 
-  view()
-
-female_df =
-  read_csv("./data/acs_age_county.csv", skip = 1) %>% 
-  janitor::clean_names() %>% 
-  select(c(1:3, starts_with(c("estimate_female_total", "estimate_percent_female")))) %>% 
-  select(-c("estimate_total_total_population", "estimate_female_total_population", "estimate_percent_female_total_population", contains(c("selected_age_categories", "summary_indicators", "percent_allocated")))) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>%
-  rename_at(
-    vars(starts_with("estimate_female_total_population")), funs(str_replace(., "estimate_female_total_population_age", "female")),
-    ) %>% 
-  rename_at(
-        vars(starts_with("estimate_percent_female_total_population")), funs(str_replace(., "estimate_percent_female_total_population_age", "female_percent"))
-  ) %>% 
-  view()
-
-sex_df2 =
-  left_join(male_df, female_df, by = c("id", "county", "state")) %>%
-  mutate(
-    county = str_replace(county, " County", ""),
-    county = str_replace(county, " Parish", ""),
-    county = str_replace(county, " Borough", ""),
-    county = str_trim(county, side = "right"),
-    state = str_trim(state, side = "left")) %>% view()
-
-write_csv(sex_df2, "./data/sex2.csv")
-```
-
-
-Age dataset (not tidy)
-
-```{r, warning = FALSE, message = FALSE}
-age_df2 =
-  read_csv("./data/acs_age_county.csv", skip = 1, na = "null") %>% 
-  janitor::clean_names() %>% 
-  select(-c(starts_with("margin_of_error"))) %>% 
-  select(geographic_area_name,
-         estimate_total_total_population_age_under_5_years,
-         estimate_total_total_population_age_5_to_9_years,
-         estimate_total_total_population_age_10_to_14_years,
-         estimate_total_total_population_age_15_to_19_years,
-         estimate_total_total_population_age_20_to_24_years,
-         estimate_total_total_population_age_25_to_29_years,
-         estimate_total_total_population_age_30_to_34_years,
-         estimate_total_total_population_age_35_to_39_years,
-         estimate_total_total_population_age_40_to_44_years,
-         estimate_total_total_population_age_45_to_49_years,
-         estimate_total_total_population_age_50_to_54_years,
-         estimate_total_total_population_age_55_to_59_years,
-         estimate_total_total_population_age_60_to_64_years,
-         estimate_total_total_population_age_65_to_69_years,
-         estimate_total_total_population_age_70_to_74_years,
-         estimate_total_total_population_age_75_to_79_years,
-         estimate_total_total_population_age_80_to_84_years,
-         estimate_total_total_population_age_85_years_and_over,
-         estimate_percent_total_population_age_under_5_years,
-         estimate_percent_total_population_age_5_to_9_years,
-         estimate_percent_total_population_age_10_to_14_years,
-         estimate_percent_total_population_age_15_to_19_years,
-         estimate_percent_total_population_age_20_to_24_years,
-         estimate_percent_total_population_age_25_to_29_years,
-         estimate_percent_total_population_age_30_to_34_years,
-         estimate_percent_total_population_age_35_to_39_years,
-         estimate_percent_total_population_age_40_to_44_years,
-         estimate_percent_total_population_age_45_to_49_years,
-         estimate_percent_total_population_age_50_to_54_years,
-         estimate_percent_total_population_age_55_to_59_years,
-         estimate_percent_total_population_age_60_to_64_years,
-         estimate_percent_total_population_age_65_to_69_years,
-         estimate_percent_total_population_age_70_to_74_years,
-         estimate_percent_total_population_age_75_to_79_years,
-         estimate_percent_total_population_age_80_to_84_years,
-         estimate_percent_total_population_age_85_years_and_over) %>% 
-  separate(geographic_area_name, c("county", "state"), sep = ",") %>% 
-  rename(age_under_5 = estimate_total_total_population_age_under_5_years,
-         age_5_9 = estimate_total_total_population_age_5_to_9_years,
-         age_10_14 = estimate_total_total_population_age_10_to_14_years,
-         age_15_19 = estimate_total_total_population_age_15_to_19_years,
-         age_20_24 = estimate_total_total_population_age_20_to_24_years,
-         age_25_29 = estimate_total_total_population_age_25_to_29_years,
-         age_30_34 = estimate_total_total_population_age_30_to_34_years,
-         age_35_39 = estimate_total_total_population_age_35_to_39_years,
-         age_40_44 = estimate_total_total_population_age_40_to_44_years,
-         age_45_49 = estimate_total_total_population_age_45_to_49_years,
-         age_50_54 = estimate_total_total_population_age_50_to_54_years,
-         age_55_59 = estimate_total_total_population_age_55_to_59_years,
-         age_60_64 = estimate_total_total_population_age_60_to_64_years,
-         age_65_69 = estimate_total_total_population_age_65_to_69_years,
-         age_70_74 = estimate_total_total_population_age_70_to_74_years,
-         age_75_79 = estimate_total_total_population_age_75_to_79_years,
-         age_80_84 = estimate_total_total_population_age_80_to_84_years,
-         age_85_over = estimate_total_total_population_age_85_years_and_over,
-         age_pct_under_5 = estimate_percent_total_population_age_under_5_years,
-         age_pct_5_9 = estimate_percent_total_population_age_5_to_9_years,
-         age_pct_10_14 = estimate_percent_total_population_age_10_to_14_years,
-         age_pct_15_19 = estimate_percent_total_population_age_15_to_19_years,
-         age_pct_20_24 = estimate_percent_total_population_age_20_to_24_years,
-         age_pct_25_29 = estimate_percent_total_population_age_25_to_29_years,
-         age_pct_30_34 = estimate_percent_total_population_age_30_to_34_years,
-         age_pct_35_39 = estimate_percent_total_population_age_35_to_39_years,
-         age_pct_40_44 = estimate_percent_total_population_age_40_to_44_years,
-         age_pct_45_49 = estimate_percent_total_population_age_45_to_49_years,
-         age_pct_50_54 = estimate_percent_total_population_age_50_to_54_years,
-         age_pct_55_59 = estimate_percent_total_population_age_55_to_59_years,
-         age_pct_60_64 = estimate_percent_total_population_age_60_to_64_years,
-         age_pct_65_69 = estimate_percent_total_population_age_65_to_69_years,
-         age_pct_70_74 = estimate_percent_total_population_age_70_to_74_years,
-         age_pct_75_79 = estimate_percent_total_population_age_75_to_79_years,
-         age_pct_80_84 = estimate_percent_total_population_age_80_to_84_years,
-         age_pct_85_over = estimate_percent_total_population_age_85_years_and_over
-  ) %>%
-  mutate(
-    county = str_replace(county, " County", ""),
-    county = str_replace(county, " Parish", ""),
-    county = str_replace(county, " Borough", ""),
-    county = str_trim(county, side = "right"),
-    state = str_trim(state, side = "left"))
-
-write_csv(age_df2, "./data/age2.csv")
-```
-
 #### ACS Income
 
 Tidy income dataset:
@@ -460,7 +148,7 @@ income_df =
 write_csv(income_df, "./data/income_tidy.csv")
 ```
 
-Income dataset (not tidy)
+Income dataset (not tidy):
 ```{r}
 income_df =
   read_csv("./data/acs_income_county.csv", skip = 1) %>% 
@@ -509,17 +197,11 @@ build_df =
 #MPV data and non-tidy income data csv
 write_csv(build_df, "./data/build_df.csv")
 
-#combine non-tidy income data and protest data
-protest_income_df = 
-  left_join(usa_df, income_df, 
-            by = c("county" = "county", "state" = "state"))
-
-write_csv(protest_income_df, "./data/protest_income_df.csv")
 ```
 
 #### ACS Race
 
-Tidy race dataset
+Tidy race dataset:
 
 ```{r}
 race_df =
@@ -555,7 +237,7 @@ write_csv(race_df, "./data/race_tidy.csv")
 ```
 
 
-Race dataset (not tidy)
+Race dataset (not tidy):
 
 ```{r}
 race_df2 =
@@ -597,17 +279,11 @@ race_df2 =
 write_csv(race_df2, "./data/race2.csv")
 ```
 
-### Joining non-tidy ACS data with the protest data:
+## Joining (Non-tidy) ACS data with protest data:
 
 ```{r}
 race_df =
   read_csv("./data/race2.csv")
-
-age_df =
-  read_csv("./data/age2.csv")
-
-sex_df =
-  read_csv("./data/sex2.csv")
 
 income_df =
   read_csv("./data/income2.csv") %>% 
@@ -627,17 +303,13 @@ usa_protest_df =
 protest_demo_df = 
   left_join(usa_protest_df, income_df,
             by = c("county" = "county", "state" = "state")) %>% 
-  left_join(sex_df,
-            by = c("county" = "county", "state" = "state", "id" = "id")) %>% 
-  left_join(race_df,
-            by = c("county" = "county", "state" = "state", "id" = "id")) %>% 
   view()
 
 # export as csv
 write_csv(protest_demo_df, "./data/protest_demo_df.csv")
 ```
 
-Joining non-tidy ACS income data and total population for regression analysis
+Retrieving non-tidy ACS income data and total population for regression analysis:
 ```{r}
 protest_demo_df2 =
 read_csv("./data/protest_demo_df.csv") %>% view()
@@ -658,42 +330,4 @@ protest_demo_df2 =
   ) %>% view()
 
 write_csv(protest_demo_df2, "./data/protest_demo_df2.csv")
-```
-
-
-
-### Joining MPV data and non-tidy ACS data
-```{r}
-race_df =
-  read_csv("./data/race2.csv")
-
-age_df =
-  read_csv("./data/age2.csv")
-
-sex_df =
-  read_csv("./data/sex2.csv")
-
-mpv_df3 = 
-  read_csv("./data/mpv_final.csv")
-
-lat_long3 =
-  read_csv("./data/uscities.csv") %>% 
-  mutate(state = state_id) %>% 
-  select(city, lat, lng, state, state_name)
-
-mpv_final3 = left_join(mpv_df3, lat_long3, by = c("city" = "city", "state" = "state"))
-
-#combines MPV data and non-tidy acs data
-mpv_demo_df = 
-  left_join(mpv_final3, income_df,
-            by = c("county" = "county", "state_name" = "state")) %>% 
-  left_join(sex_df,
-            by = c("county" = "county", "state_name" = "state", "id" = "id")) %>% 
-  left_join(race_df,
-            by = c("county" = "county", "state_name" = "state", "id" = "id")) %>% 
-  view()
-
-#MPV data and non-tidy acs data csv
-write_csv(mpv_demo_df, "./data/mpv_demo_df.csv")
-
 ```
