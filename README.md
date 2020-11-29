@@ -1,3 +1,3 @@
 # p8105_final_proj.github.io
 
-This project contains the final project for P8105.
+This repository contains the final project for P8105.
