@@ -185,17 +185,17 @@ build_df %>%
 
 ## Protest Data by Income Class
 ```{r}
-protest_income_df =
-  read_csv("./data/protest_income_df.csv") %>% 
+protest_demo_df2 =
+  read_csv("./data/protest_demo_df2.csv") %>% 
   mutate(
     income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
   )
 
-quantile(protest_income_df$disparity_value, na.rm = TRUE)
+quantile(protest_demo_df2$disparity_value, na.rm = TRUE)
 
-factpal2 <- colorFactor("BuGn", protest_income_df %>% pull(income_class))
+factpal2 <- colorFactor("BuGn", protest_demo_df2 %>% pull(income_class))
 
-protest_income_df %>% 
+protest_demo_df2 %>% 
   drop_na() %>% 
   mutate(
   pop1 = str_c("City: ", city, "<br>Event Type: ", 
@@ -248,8 +248,8 @@ build_df %>%
 
 ## Protest Data by Disparity Score
 ```{r}
-protest_income_df =
-  read_csv("./data/protest_income_df.csv") %>% 
+protest_demo_df2 =
+  read_csv("./data/protest_demo_df2.csv") %>% 
   mutate(
     income_class = fct_relevel(income_class, "Very High", "High", "Middle", "Low", "Very Low")
   ) %>% 
@@ -265,9 +265,9 @@ protest_income_df =
    disparity_level = fct_relevel(income_class, "Very Low", "Low", "Middle", "High", "Very High")
   )
 
-factpal3 <- colorFactor("magma", protest_income_df %>% pull(disparity_level))
+factpal3 <- colorFactor("magma", protest_demo_df2 %>% pull(disparity_level))
 
-protest_income_df %>% 
+protest_demo_df2 %>% 
   drop_na() %>% 
   mutate(
   pop2 = str_c("City: ", city, "<br>Event Type: ", 
