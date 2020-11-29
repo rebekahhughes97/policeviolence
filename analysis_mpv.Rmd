@@ -40,7 +40,6 @@ mpv_df =
 
 mpv_demo_df =
   read_csv("./data/mpv_demo_df.csv")
-
 ```
 
 ### Police Killings Over Time 2013-2019
@@ -53,7 +52,9 @@ year_plot =
   filter(year < 2020) %>% 
   ggplot(aes(x = year, y = total_killed)) + geom_point() +
   geom_smooth(method = lm, se = FALSE) +
-  scale_y_continuous(limit = c(0, 1400))
+  scale_y_continuous(limit = c(0, 1400)) +
+  labs(y = "Total People Killed",
+       x = "Year")
 
 year_plot
 ```
@@ -93,7 +94,11 @@ total_race =
   ) %>%
   mutate(
     total_race = str_replace(total_race, "am_in_alask", "Native American"),
-    total_race = str_replace(total_race, "hawaii_pi", "Pacific Islander")
+    total_race = str_replace(total_race, "hawaii_pi", "Pacific Islander"),
+    total_race = str_replace(total_race, "asian", "Asian"),
+    total_race = str_replace(total_race, "black", "Black"),
+    total_race = str_replace(total_race, "other", "Other"),
+    total_race = str_replace(total_race, "white", "White"),
   )  %>% 
   ggplot(
     aes(x = total_race, y = total_estimate, color = total_race, fill = total_race)
@@ -114,6 +119,7 @@ race_mpv =
     race = str_replace_all(race, "unknown race", "Unknown race"),
     race = str_replace(race, "NA", "Unknown race")
     ) %>%
+  filter(race != "NA") %>% 
   group_by(race) %>% 
   count() %>% 
   ggplot(aes(x = race, y = n, color = race, fill = race)) +
