@@ -181,12 +181,6 @@ mpv_demo_df %>%
     y = "Total",
     Title = "Total US Population Estimates by Race"
   )
-
-race_data %>% 
-  group_by(state, race) %>% 
-  plot_ly(
-      y = ~total, x = ~state, color = ~race,
-      type = "scatter",mode = "markers", colors = "viridis")
 ```
 
 &nbsp;
@@ -194,7 +188,7 @@ race_data %>%
 **Household Income in the US**
 <br> These plots show the mean household income in the US by state (top) and distribution of disparity in income throughout the US (bottom). As mentioned, the disparity value was taken from subtracting median income from mean income. This visualization supplements our understanding of the distribution and disparity of wealth across the US and provides some background for our regression analyses.
 
-```{r}  
+```{r, warning=FALSE}  
 # mean household income by state
 income_df_tidy %>% 
   mutate(
@@ -203,11 +197,6 @@ income_df_tidy %>%
   plot_ly(
       y = ~mean_income, x = ~state, color = ~state,
       type = "box", colors = "viridis")
-
-income_df_tidy %>% 
-    plot_ly(
-      x = ~disparity_value, color = ~disparity_value,
-      type = "histogram", histnorm = "probability", colors = "viridis")
 ```
 
 &nbsp;
@@ -218,7 +207,7 @@ income_df_tidy %>%
 &nbsp;
 
 **Year Map with symptoms of mental illness and whether the officer was charged**
-<br>The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by year, with information on symptoms of mental illness and whether the officer was charged included in the label. This map is used to determine the geographic spread of those killed by police each year from 2013 to 2020, and shows the small number of officers that were charged, regardless of killing individuals with symptoms of mental illness.
+<br>The following map shows the geographic distribution of individuals killed by police between 2013 and 2020 by year, with information on symptoms of mental illness and whether the officer was charged included in the label. This map was used to determine the geographic spread of those killed by police each year from 2013 to 2020, and shows the small number of officers that were charged, regardless of killing individuals with symptoms of mental illness.
 
 ```{r}
 pal <- colorNumeric(
@@ -229,7 +218,8 @@ pal <- colorNumeric(
 mpv_df %>% 
   drop_na() %>% 
   mutate(
-    lab = str_c("City: ", city, "<br>Police Department: ", police_dept)) %>%
+    lab = str_c("Symptoms of Mental Illness: ", symptoms_of_mental_illness,
+                "<br>Charges on the Police: ", criminal_charges)) %>%
   leaflet() %>% 
   addTiles() %>% 
   setView(-98.483330, 38.712046, zoom = 4) %>% 
@@ -245,29 +235,12 @@ mpv_df %>%
     popup = ~lab)
 ```
 
-&nbsp;
-
-**Distribution of deaths due to police violence across states**
-<br>The following plot shows the distribution of police killings by state between 2013 and 2020. This plot shows that over time, California had the most deaths from police, followed by Texas and Florida. This is consistent with the above map.
-
-```{r}
-mpv_df %>% 
-  count(state) %>% 
-  rename(total_killed_st = n) %>% 
-  arrange(desc(total_killed_st)) %>% 
-  mutate(
-    state = factor(state),
-    state = fct_reorder(state, total_killed_st)
-  ) %>% 
- plot_ly(
-      y = ~total_killed_st, x = ~state, color = ~state,
-      type = "bar", colors = "viridis")
-```
+This informed the regression analysis we performed using the police violence data in the regression section below, along with the plot outlined below.
 
 &nbsp;
 
 **Number of individuals killed due to police violence by race**
-<br>The following plot displays the number of individuals killed by police over time by race. According to the data displayed in the plot below, the most killings have occurred among white people, followed by black and Hispanic individuals, according to record. This is inconsistent with many findings, which could point to inadequate record of individuals killed by police.
+<br>The following plot displays the number of individuals killed by police over time by race. According to the data displayed in the plot below, the most killings have occurred among white people, followed by black and Hispanic individuals, according to record. This is inconsistent with many findings, which could point to inadequate record of individuals killed by police. This plot along with the map above were used in informing what the regression analysis would examine for this project.
 
 ```{r}
 anim_scatter =
@@ -292,29 +265,8 @@ animate(anim_scatter, renderer = gifski_renderer())
 &nbsp;
 
 *Protest Data*
-<br>**Number and Type of Demonstrations**
-<br>The following plot shows the number by type of demonstration. Contrary to what is often depicted in the news, protests are much more common than violent demonstrations like riots.
-
-```{r}
-protest_data %>% 
-  group_by(event_type) %>% 
-  count() %>% 
-  filter(n >= 10) %>% 
-  plot_ly(
-      x = ~reorder(event_type, n),
-      y = ~n, 
-      color = ~event_type,
-      type = "bar", colors = "viridis") %>% 
-  layout(
-    xaxis = list(title = "Demonstration Type"),
-    yaxis = list(title = "Number of Demonstrations")
-)
-```
-
-&nbsp;
-
-**Demonstrations by State**
-<br>According to the below plot, California by far held the most demonstrations, followed by New York state and Florida.
+<br>**Demonstrations by State**
+<br>According to the plot below, California by far held the most demonstrations, followed by New York state and Florida. This informed the regression analysis we performed using the protest data, and gave us the idea to examine this data along with ACS income data on the county level across the US.
 
 ```{r}
 protest_data %>% 
@@ -356,18 +308,24 @@ We investigated protest information at the county-level, using count data which 
 
 &nbsp;
 
-## Conclusions
+## Discussion
 
+Overall, the findings for the police violence data were not all consistent with what we had expected. While we did find that most of the cases did not result in criminal charges to the officer involved in the exploratory analysis, the regression analysis model 1 revealed that officers involved in the killing of Black individuals were more likely to be charged. This could have been for reasons outside of what the data offered though, such as the killing being unjustified in more cases of Black individual deaths than in White individual deaths.
+<br>We also found that White individuals had higher numbers of deaths recorded than any other race. However, we were not able to find if this is a result of lack of recorded cases of Black individual deaths due to police. The regression analysis for model 2 further revealed that there was no association between gender and mental illness, which had been introduced in the first regression model.
 
 &nbsp;
 
-## Discussion
+There were similarly unexpected but interesting findings in the protest data analysis as well. In the exploratory analysis we found that states with larger populations and large cities, including California, New York, and Florida, overall held the highest numbers of demonstrations which was consistent with what was expected. However, the regression analysis found that the "very high" income group was much more likely to hold protests than other income groups. We thought that this could have potentially been due to the cities holding more protests and therefore having the higher income class, which would be consistent with the finding from the exploratory analysis. However, once adjusting for the overdispersion that was found in the original regression model for the protest data, it was determined that the income classes were not really significantly different from each other.
+<br>Overall we had expected that lower income classes would be more likely to hold demonstrations, which did not hold true here. We do not have the exact reasons for the protests that are in the data so that could potentially be helpful in determining why the higher income was initially recorded as holding significantly more protests.
 
-What were your findings? Are they what you expect? What insights into the data can you make?
-
+&nbsp;
 
 **Limitations**
 
 Both datasets contained limited information, which prevented us from being able to adjust for variables we believed could be confounding the associations. In the case of the police violence dataset, the association between race and charges laid was the opposite from what we were expecting. We hypothesized that this could be due to motivation/reason for the initial police stop being less justified when the victim of police violence is Black. Ideally, we would have been able to analyze this relationship by reason for initial police contact. Additionally, we had small cell sizes for people of races other than white or Black, and thus restricted to individuals reporting race as white or Black. In terms of the model assessing income class and protest count, we were limited by the number of covariates available to include. 
 
+&nbsp;
 
+## Conclusions
+
+Overall, our findings were not completely consistent with what we had expected. Our expectations were drawn from what is discussed by the government and by the news, as that is information that is circulated widely. However, there were many inconsistencies we found through our analyses. We also found that given the limitations in our datasets, we may have been missing information that could have benefited our analyses. Police violence data in the past has been somewhat inconsistent and therefore not always trusted, given potential for lack of record of individuals killed by police. However, given the events of 2020, we feel that overall the data was for the most part as complete as the organizations that provided it could have made it.

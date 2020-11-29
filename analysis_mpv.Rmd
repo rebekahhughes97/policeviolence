@@ -231,4 +231,4 @@ mpv_case =
 
 mpv_case
 ```
-The above plot shows the breakdown of whether charges were pressed against police after each case. In total,`r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
+<br>The above plot shows the breakdown of whether charges were pressed against police after each case. In total,`r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
