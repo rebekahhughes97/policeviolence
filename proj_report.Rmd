@@ -139,6 +139,11 @@ The questions for this project are based on the 3 datasets we used that are list
 * `total`: total estimate for each county for each race category
 * `prop`: percent estimate for each county for each race category
 
+##### **Census Data**
+* `Year`
+* `race`: classified as white, Black, Asian, Native American, and Pacific Islander
+* `population`: Total population by race in millions. 
+
 &nbsp;
 
 ### *Data Cleaning*
@@ -147,7 +152,7 @@ The police violence and protest datasets were both similarly cleaned. The data w
 For the ACS data we looked at race and income; each category had their own separate datasets with a tidy and non-tidy version. Tidy datasets were used for visualization and exploratory analyses and the non-tidy datasets were joined with the Police Violence Dataset and Protest Dataset separately in order to conduct further statistical analyses and plotting. However, for both the tidy and non-tidy datasets: variable names were shortened for convenience and only a subset of of the original datasets' categories were kept (for example, in all datasets 'margin of error estimates' were removed). Below are the specific data cleaning steps for each dataset:
 
 * **Race:** This dataset excludes data for those who identify as more than one race. Additionally, proportion was calculated for each race category.
-* **Income:** This dataset includes only the total percent estimates by household income. Variables for income class and disparity value were created from the mean and median income of each county.
+* **Income:** This dataset includes only the total percent estimates by household income. Variables for income class and a proxy disparity value were created from the mean and median income of each county.
 
 &nbsp;
 
@@ -251,26 +256,38 @@ This informed the regression analysis we performed using the police violence dat
 &nbsp;
 
 #### **People killed due to police violence by race**
-<br>The following plot displays the number of individuals killed by police over time by race. According to the data displayed in the plot below, the most killings have occurred among white people, followed by Black and Hispanic individuals, according to record. This is inconsistent with many findings, which could point to inadequate record of individuals killed by police. This plot along with the map above were used in informing what the regression analysis would examine for this project.
+<br>The following plot displays the proportion of individuals killed by police from 2013-2020 by race. According to the data displayed in the plot below, the most killings have occurred among those identifying as Black, Native American, and Pacific Islander. This finding is consistent with recent findings showing the Black Americans are disproportionately affected by police violence. While the original MPV dataset contains information about those identifying as Hispanic, census data did not capture total population, thus making proportions not possible for this plot. This plot along with the map above were used in informing what the regression analysis would examine for this project.
 
-```{r}
-anim_scatter =
+```{r , message = FALSE}
+race_pop_df =
+  read_csv("./data/race_pop_df.csv")
+
+scatter_df =
   mpv_df %>% 
   mutate(
     race = str_replace_all(race, "unknown race", "Unknown race")
     ) %>% 
   filter(year < 2020) %>% 
   group_by(year, race) %>% 
-  count() %>% 
-  ggplot(aes(x = year, y = n, color = race)) +
+  count() 
+
+anim_scatter2 = left_join(scatter_df, race_pop_df, by = c("year" = "year", "race" = "race"))
+
+anim_scatter2 = 
+anim_scatter2 %>% 
+  mutate(
+    proportion = (n/population)*100000
+  ) %>% 
+  drop_na() %>% 
+  ggplot(aes(x = year, y = proportion, color = race)) +
   geom_line() +
   geom_point() +
-  labs(title = "Number of Police Killings Over Time by Race",
+  labs(title = "Proportion of Police Killings by Race (2013-2019)",
        x = "Year",
-       y = "Number of Police Killings") +
+       y = "Deaths per 100,000") +
   transition_reveal(year)
 
-animate(anim_scatter, renderer = gifski_renderer())
+animate(anim_scatter2, renderer = gifski_renderer())
 ```
 
 &nbsp;
@@ -305,7 +322,7 @@ protest_data %>%
 &nbsp;
 
 #### **Demonstrations Across the US by Income Class**
-<br> This map shows the income level of the county where each protest occurred and provided useful visualization for the regression analysis conducted on the protest data.
+<br> This map shows the income level of the county where each protest occurred and provided useful visualization for the regression analysis conducted on the protest data. Note: some data was lost when combining income and protest datasets, as some counties present in the protest dataset were not present in the ACS income dataset. 
 
 ```{r, message = FALSE}
 protest_demo_df2 =
@@ -351,9 +368,9 @@ We investigated protest information at the county-level, using count data which 
 
 ## Discussion
 
-Overall, the findings for the police violence data were not all consistent with what we had originally hypothesized. Descriptively, we found that the vast majority (98.3%) of police violence cases resulted in no criminal charges, which we had expected. Surprisingly, among people who had recorded symptoms of mental illness, only 0.8% of cases resulted in criminal charges. 
+Overall, the findings for the police violence data were not all consistent with what we had originally hypothesized. Descriptively, we found that the vast majority (98.3%) of police violence cases resulted in no criminal charges, which we had expected. Surprisingly, among people who had recorded symptoms of mental illness, only 0.8% of cases resulted in criminal charges to the officer. 
 
-While we did find that most of the cases did not result in criminal charges to the officer involved in the exploratory analysis, the analysis investigating the relationship between race and criminal charges revealed that officers involved in the killing of Black people were more likely to be charged. This could have been for reasons outside of what the data offered, such as these incidents being more frequently unjustified in cases involving Black individuals in comparison to white people. We also found that white individuals had higher numbers of deaths recorded than any other race. However, we were unable to determine whether this is a complication of reporting and classification of cause of death; it is feasible that misclassification as a result of cause of death and recording police deaths may be related to race. Ascertainment of misclassification was not possible with the data available. 
+While we did find that most of the cases did not result in criminal charges to the officer involved in the exploratory analysis, the analysis investigating the relationship between race and criminal charges revealed that officers involved in the killing of Black people were more likely to be charged. This could have been for reasons outside of what the data offered, such as these incidents being more frequently unjustified in cases involving Black individuals in comparison to white individuals. We also found that while white individuals had higher total numbers of deaths recorded than any other race, those identifying as Black were disproportionately killed by police. This is in line with many current findings showing. Ascertainment of misclassification was not possible with the data available.
 
 The second model built investigated whether there exists a relationship between gender and recorded symptoms of mental illness. After adjustment for age and race, we did not find a relationship between gender and mental illness.
 
@@ -373,4 +390,4 @@ Both datasets contained limited information, which prevented us from being able 
 
 ## Conclusions
 
-Overall, our findings were not completely consistent with what we had expected. Our expectations were drawn from what is discussed by the government and by the news, as that is information that is circulated widely. However, there were many inconsistencies we found through our analyses. We also found that given the limitations in our datasets, we may have been missing information that could have benefited our analyses. Police violence data in the past has been somewhat inconsistent and therefore not always trusted, given potential for lack of record of individuals killed by police. However, given the events of 2020, we feel that overall the data was for the most part was as complete as possible.
+Overall, our findings were not completely consistent with what we had expected. Our expectations were drawn from what is discussed by the government and by the news, as that is information that is circulated widely. However, there were some inconsistencies we found through our analyses. We also found that given the limitations in our datasets, we may have been missing information that could have benefited our analyses. Police violence data in the past has been somewhat inconsistent and therefore not always trusted, given potential for lack of record of individuals killed by police. However, given the events of 2020, we feel that overall the data was for the most part was as complete as possible.
