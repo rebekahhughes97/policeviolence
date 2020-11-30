@@ -59,6 +59,6 @@ The interactive maps tab will lead you to a dashboard that includes interactive 
 <li>[Rebekah Hughes](https://rebekahhughes97.github.io/)</li>
 <li>[Megan Marziali](https://meganmarziali.github.io)</li>
 <li>[Leighanne Wang](https://leighannewang.github.io)</li>
-<li>[Jinghan Zhang]()</li>
-<li>[Adam Rosenfeld]()</li>
+<li>[Jinghan Zhang](http://jinghan-zhang16.github.io/)</li>
+<li>[Adam Rosenfeld](https://adm-ra.github.io/)</li>
 </ul>

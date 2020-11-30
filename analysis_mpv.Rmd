@@ -69,6 +69,41 @@ year_plot =
 year_plot
 ```
 
+### Police Killings over Time by Race animated plot using proportion of police killing by race instead of total 
+
+```{r}
+race_pop_df =
+  read_csv("./data/race_pop_df.csv")
+
+scatter_df =
+  mpv_df %>% 
+  mutate(
+    race = str_replace_all(race, "unknown race", "Unknown race")
+    ) %>% 
+  filter(year < 2020) %>% 
+  group_by(year, race) %>% 
+  count() 
+
+anim_scatter2 = left_join(scatter_df, race_pop_df, by = c("year" = "year", "race" = "race"))
+
+anim_scatter2 = 
+anim_scatter2 %>% 
+  mutate(
+    proportion = (n/population)*1000000
+  ) %>% 
+  drop_na() %>% 
+  ggplot(aes(x = year, y = proportion, color = race)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Number of Police Killings Over Time by Race",
+       x = "Year",
+       y = "Number of Police Killings per 1,000,000") +
+  transition_reveal(year)
+
+animate(anim_scatter2, renderer = gifski_renderer())
+```
+
+
 The plot above shows the total number police killings per year from 2013 through 2019. As displayed in the plot, the total number of killings has remained relatively unchanged the past 6 years despite increased public awareness of police brutality. We should also consider the possibility of error in classification due to cause of death, and potential for cases to not be classified as police violence.
 
 &nbsp;

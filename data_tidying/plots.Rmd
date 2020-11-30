@@ -5,6 +5,8 @@ output:
     code_folding: hide
     toc: true
     toc_float: true
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -415,48 +417,64 @@ build_plot
 build_plot2
 ```
 
-```{r}
-total_race =
-  mpv_demo_df %>% 
-  select(-c(17:106, 109, 111, 113, 115, 117, 119)) %>% 
+
+## Adding population by race by year
+
+```{r, message = FALSE}
+race_pop_df =
+  read_xlsx("./data/pop_race.xlsx") %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    white = white*1000000,
+    black = black*1000000,
+    native_american = native_american*1000000,
+    asian = asian*1000000,
+    pacific_islander = pacific_islander*1000000
+  ) %>% 
   pivot_longer(
-    18:23,
-    names_to = "total_race",
-    values_to = "total_estimate"
-  ) %>%
+    white:pacific_islander,
+    names_to = "race",
+    values_to = "population"
+  ) %>% 
   mutate(
-    total_race = str_replace(total_race, "am_in_alask", "American Indian"),
-    total_race = str_replace(total_race, "hawaii_pi", "Pacific Islander")
-  )  %>% 
-  ggplot(
-    aes(x = total_race, y = total_estimate, color = total_race, fill = total_race)
-  ) +
-  geom_bar(stat = "identity") +
-  theme(
-      axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
-      legend.position = "none") +
-  labs(
-    x = "",
-    y = "Total"
-  )
+    race = str_replace(race, "white", "White"),
+    race = str_replace(race, "black", "Black"),
+    race = str_replace(race, "asian", "Asian"),
+    race = str_replace(race, "pacific_islander", "Pacific Islander"),
+    race = str_replace(race, "native_american", "Native American"),
+    year = as.numeric(year)
+  ) 
 
-race_mpv =
-  mpv_demo_df %>%
+write_csv(race_pop_df, "./data/race_pop_df.csv")
+```
+
+
+### Police Killings over Time by Race animated plot using proportion of police killing by race instead of total 
+
+```{r}
+anim_scatter =
+  mpv_df %>% 
   mutate(
-    race = str_replace_all(race, "unknown race", "Unknown race"),
-    race = str_replace(race, "NA", "Unknown race")
-    ) %>%
-  group_by(race) %>% 
-  count() %>% 
-  ggplot(aes(x = race, y = n, color = race, fill = race)) +
-  geom_bar(stat = "identity") +
-  theme(
-    axis.text.x = element_text(angle = 45, vjust = 0.5, hjust = 1),
-    legend.position = "none") +
-  labs(
-    x = "",
-    y = "Total"
-  )
+    race = str_replace_all(race, "unknown race", "Unknown race")
+    ) %>% 
+  filter(year < 2020) %>% 
+  group_by(year, race) %>% 
+  count() 
 
-total_race + race_mpv
+anim_scatter = left_join(anim_scatter, race_pop_df, by = c("year" = "year", "race" = "race"))
+
+anim_scatter %>% 
+  mutate(
+    proportion = (n/population)*1000000
+  ) %>% 
+  drop_na() %>% 
+  ggplot(aes(x = year, y = proportion, color = race)) +
+  geom_line() +
+  geom_point() +
+  labs(title = "Number of Police Killings Over Time by Race",
+       x = "Year",
+       y = "Number of Police Killings per 1,000,000") +
+  transition_reveal(year)
+
+animate(anim_scatter, renderer = gifski_renderer())
 ```
