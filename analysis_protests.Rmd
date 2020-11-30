@@ -150,6 +150,7 @@ The above plot depicts the number of protest events that occurred in each state 
 &nbsp;
 
 ### Protests Across the US by Income Class
+
 ```{r, message = FALSE}
 protest_demo_df2 =
   read_csv("./data/protest_demo_df2.csv") %>% 

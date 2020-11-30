@@ -89,20 +89,19 @@ anim_scatter2 = left_join(scatter_df, race_pop_df, by = c("year" = "year", "race
 anim_scatter2 = 
 anim_scatter2 %>% 
   mutate(
-    proportion = (n/population)*1000000
+    proportion = (n/population)*100000
   ) %>% 
   drop_na() %>% 
   ggplot(aes(x = year, y = proportion, color = race)) +
   geom_line() +
   geom_point() +
-  labs(title = "Number of Police Killings Over Time by Race",
+  labs(title = "Proportion of Police Killings by Race (2013-2019)",
        x = "Year",
-       y = "Number of Police Killings per 1,000,000") +
+       y = "Proportion of Police Killings per 100,000") +
   transition_reveal(year)
 
 animate(anim_scatter2, renderer = gifski_renderer())
 ```
-
 
 The plot above shows the total number police killings per year from 2013 through 2019. As displayed in the plot, the total number of killings has remained relatively unchanged the past 6 years despite increased public awareness of police brutality. We should also consider the possibility of error in classification due to cause of death, and potential for cases to not be classified as police violence.
 
@@ -185,7 +184,7 @@ race_mpv =
     x = "",
     y = "Total"
   ) +
-  ggtitle("Number of Police Killed by Race")
+  ggtitle("Number of People Killed by Race")
 
 total_race + race_mpv
 ```
@@ -279,4 +278,4 @@ mpv_case =
 
 mpv_case
 ```
-<br>The above plot shows the breakdown of whether charges were pressed against police after each case. In total,`r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
+<br>The above plot shows the breakdown of whether charges were pressed against police after each case. In total, `r mpv_df %>% filter(criminal_charges == "Charged with a crime") %>% count()` charges were brought up against police, compared to the `r mpv_df %>% filter(criminal_charges == "No known charges") %>% count()` cases where police were not charged. 
