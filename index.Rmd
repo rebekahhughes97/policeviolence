@@ -30,7 +30,7 @@ We focus primarily on communicating information through visualizations (such as 
 &nbsp;
 
 # Website Overview
-Data for this project was acquired from the Mapping Police Violence group for data on police violence in the United States, the ACLED US Crisis Monitor for data on 2020 Black Lives Matter protests in the United States, and the American Community Survey for data on income.
+Data for this project was acquired from the Mapping Police Violence group for data on police violence in the United States, the ACLED US Crisis Monitor for data on 2020 Black Lives Matter protests in the United States, and the American Community Survey for data on race and income by county.
 
 In the Exploratory Analysis tab, you will find:
 <ul>
@@ -44,12 +44,12 @@ In the Regression Analyses tab, you will find:
 <li>Poisson and negative binomial models investigating associations between income at the county-level and number of protests per county.</li>
 </ul>
 
-The interactive maps tab will lead you to a dashboard including interactive maps and plots that will change depending on your selection. From here, you can explore instances of police violence over time geographically and protests by state.
+The interactive maps tab will lead you to a dashboard that includes interactive maps and plots that will change depending on your selection. From here, you can explore instances of police violence and protests held over time geographically.
 
 &nbsp;
 
 # Additional Information
-1. Visit the [Project Report](proj_report.html) tab in the upper right of the website for a full page on what was done from start to finish in this project; and
+1. Visit the [Project Report](proj_report.html) tab in the upper right of the website for a full page write-up on what was done from start to finish in this project; and
 2. Visit our project Youtube video, linked in the upper right corner of the website, for a brief introduction and overview of the project.
 
 &nbsp;

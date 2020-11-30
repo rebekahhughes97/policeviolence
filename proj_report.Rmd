@@ -56,6 +56,8 @@ mpv_demo_df =
 <style type="text/css">
 </style>
 
+&nbsp;
+
 ## Motivation
 
 This project is overall motivated by the killing of George Floyd in 2020 and the protests and demonstrations that followed. Police violence and violence against protesters has been a highly talked about issue in 2020 thus far and we were interested in finding and analyzing data related to police violence and the Black Lives Matter protests.
@@ -64,9 +66,9 @@ This project is overall motivated by the killing of George Floyd in 2020 and the
 
 ### *Motivating Sources*
 
-* "A crisis that began with an image of police violence keeps providing more" from NY Times. [Link](https://www.nytimes.com/2020/06/05/us/police-violence-george-floyd.html)
-* "Protests about police brutality are met with wave of police brutality in US" from NY Times. [Link](https://www.theguardian.com/us-news/2020/jun/06/police-violence-protests-us-george-floyd)
-* "How George Floyd's death ignited a racial reckoning that shows no sign of slowing down" from CNN. [Link](https://www.cnn.com/2020/08/09/us/george-floyd-protests-different-why/index.html)
+* "A crisis that began with an image of police violence keeps providing more" from NY Times -  [Link](https://www.nytimes.com/2020/06/05/us/police-violence-george-floyd.html)
+* "Protests about police brutality are met with wave of police brutality in US" from NY Times -  [Link](https://www.theguardian.com/us-news/2020/jun/06/police-violence-protests-us-george-floyd)
+* "How George Floyd's death ignited a racial reckoning that shows no sign of slowing down" from CN -  [Link](https://www.cnn.com/2020/08/09/us/george-floyd-protests-different-why/index.html)
 
 &nbsp;
 
@@ -82,6 +84,9 @@ The questions for this project are based on the 3 datasets we used that are list
 &nbsp;
 
 ## Data
+
+&nbsp;
+
 ### *Data Sources*
 * Mapping Police Violence in the US -- [Link](https://mappingpoliceviolence.org/)
 * ACLED US Crisis Monitor -- [Link](https://acleddata.com/special-projects/us-crisis-monitor/)
@@ -148,13 +153,15 @@ For the ACS data we looked at race and income; each category had their own separ
 
 ## Exploratory Analysis
 
+&nbsp;
+
 ### *ACS Data*
 <br>The exploratory analysis for ACS data was used to provide preliminary context for current country demographics and supplement our analysis of police violence and protests throughout the country.
 
 &nbsp;
 
 #### **US Population by Race**
-<br> This plot shows the total population of each racial group in the US in total and contextualizes the police violence data. Comparing the police killings by race to the total population by race shows us that proportionally, black people have a higher likelihood to be a victim of police brutality.
+<br> This plot shows the total population of each racial group in the US in total and contextualizes the police violence data. Comparing the police killings by race to the total population by race shows us that proportionally, Black people have a higher likelihood to be a victim of police brutality.
 
 ```{r, warning = FALSE}
 mpv_demo_df %>% 
@@ -244,7 +251,7 @@ This informed the regression analysis we performed using the police violence dat
 &nbsp;
 
 #### **People killed due to police violence by race**
-<br>The following plot displays the number of individuals killed by police over time by race. According to the data displayed in the plot below, the most killings have occurred among white people, followed by black and Hispanic individuals, according to record. This is inconsistent with many findings, which could point to inadequate record of individuals killed by police. This plot along with the map above were used in informing what the regression analysis would examine for this project.
+<br>The following plot displays the number of individuals killed by police over time by race. According to the data displayed in the plot below, the most killings have occurred among white people, followed by Black and Hispanic individuals, according to record. This is inconsistent with many findings, which could point to inadequate record of individuals killed by police. This plot along with the map above were used in informing what the regression analysis would examine for this project.
 
 ```{r}
 anim_scatter =
@@ -332,7 +339,7 @@ protest_demo_df2 %>%
 
 ### *Police Violence Data*
 
-We opted to investigate two separate outcomes, using this data. The primary model explored whether race was associated with charges laid against police as a result of police violence. Logistic regression was used to investigate this association, as the outcome was binary. We included confounders in the model based on both *a priori* hypotheses and a >10% change in the estimate. Using these criteria, we adjusted for gender and recorded symptoms of mental illness. We then conducted a sensitivity analysis, excluding pending investigations which would have acted to produce misclassification of the outcome. Once we omitted pending cases, a similar association was observed between race and charges laid against police.
+Using this data, we opted to investigate two separate outcomes. The primary model explored whether race was associated with charges laid against police as a result of police violence. Logistic regression was used to investigate this association, as the outcome was binary. We included confounders in the model based on both *a priori* hypotheses and a >10% change in the estimate. Using these criteria, we adjusted for gender and recorded symptoms of mental illness. We then conducted a sensitivity analysis, excluding pending investigations which would have acted to produce misclassification of the outcome. Once we omitted pending cases, a similar association was observed between race and charges laid against police.
 
 The second model assessed the relationship between gender and reported symptoms of mental illness as an outcome. Using the same criteria as outlined above for confounder selection. After adjustment for age and race, we found no significant association between gender and reported symptoms of mental illness.
 

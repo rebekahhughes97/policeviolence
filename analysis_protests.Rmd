@@ -178,4 +178,4 @@ protest_demo_df2 %>%
     )
 ```
 
-This map shows the protests that have taken place across the US with the different colored dots representing the income class of that county, ranging from very low to very high income class. This map informed the basis of our regression analysis on the protest data. Similar to previous plots, predictably, areas in the US that are more populated have more protests. At first glance it seems that there is an even spread of protests in low and high incomes.
+This map shows the protests that have taken place across the US with the different colored dots representing the income class (ranging from very low to very high) of that county. This map informed the basis of our regression analysis on the protest data. Similar to previous plots, predictably, areas in the US that are more populated have more protests. At first glance it seems that there is an even spread of protests in low and high income areas.

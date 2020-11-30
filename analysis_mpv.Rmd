@@ -155,7 +155,7 @@ race_mpv =
 total_race + race_mpv
 ```
 
-The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are black when compared to the total US population. When analyzing these estimates as proportions, we find that white people are underrepresented in police killings and Black people are overrepresented.
+The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are Black when compared to the total US population. When analyzing these estimates as proportions, we find that white people are underrepresented in police killings and Black people are overrepresented.
 
 &nbsp;
 
