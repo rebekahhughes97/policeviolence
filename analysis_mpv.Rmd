@@ -111,7 +111,7 @@ This plot shows the number of deaths per 100,000 due to police intervention from
 
 &nbsp;
 
-### US Population by Race vs. Persons Killed by Police by Race
+### US Population by Race vs. Persons Killed by Police by Race/Ethnicity
 
 ```{r, warning = FALSE}
 total_race =
