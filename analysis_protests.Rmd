@@ -145,7 +145,7 @@ protest_data %>%
     yaxis = list(title = "Number of Protests"))
 ```
 
-The above plot depicts the number of protest events that occurred in each state between May and October 2020. Overall, there were more protests in California than in any other state. Florida, Illinois, New York, Pennsylvania, and Texas also had larger numbers of protests during the data coverage period. This is not surprising given that these states have large populations and have highly populated cities; however, among states with urban areas, the number of protests per state is salient.
+The above plot depicts the number of protest events that occurred in each state between May and October 2020. Overall, there were more protests in California than in any other state. Florida, Illinois, New York, Pennsylvania, and Texas also had larger numbers of protests during the data coverage period. This is not surprising given that these states have large populations and have highly populated cities; however, among states with larger urban areas, the number of protests per state remains informative.
 
 &nbsp;
 
