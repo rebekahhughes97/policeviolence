@@ -75,7 +75,7 @@ The plot above shows the total number police killings per year from 2013 through
 
 ### Proportion of Police Killings over Time by Race 
 
-```{r , message = FALSE}
+```{r, message = FALSE}
 race_pop_df =
   read_csv("./data/race_pop_df.csv")
 
@@ -107,7 +107,7 @@ anim_scatter2 %>%
 animate(anim_scatter2, renderer = gifski_renderer())
 ```
 
-This plot shows the number of people per million killed by police from 2013 through 2019 by race. From this graph, those identifying as Black, Native American, and Pacific Islander are the victims of most incidents of police violence. This holds relatively steady throughout this time period. This finding is consistent with recent findings showing the Black Americans are disproportionately affected by police violence. 
+This plot shows the number of people per 100,000 population killed by police from 2013 through 2019 by race. From this graph, those identifying as Black, Native American, and Pacific Islander are the victims of most incidents of police violence. This holds relatively steady throughout this time period. This finding is consistent with recent findings showing the Black Americans are disproportionately affected by police violence. A limitation of this plot is that it does not include the Hispanic population as a separate group. This is because the population counts came from the US Census and the census does not consider Hispanic as a race category.
 
 &nbsp;
 
@@ -167,7 +167,7 @@ race_mpv =
 total_race + race_mpv
 ```
 
-The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). As displayed in the plots above, a much higher proportion of those who are killed by police are Black when compared to the total US population. When analyzing these estimates as proportions, we find that white people are underrepresented in police killings and Black people are overrepresented.
+The above plot compares the total US population estimate by race according to ACS data (left) compared with the total number of people killed by police broken down by race (right). These plots further show the breakdown of race, as introduced in the previous plot, but do include the Hispanic population in the plot showing the breakdown of individuals killed by race. As displayed in the plots above, a much higher proportion of those who are killed by police are Black when compared to the total US population. When analyzing these estimates as proportions, we find that white people are underrepresented in police killings and Black people are overrepresented.
 
 &nbsp;
 
