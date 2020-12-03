@@ -30,7 +30,7 @@ We focus primarily on communicating information through visualizations (such as 
 &nbsp;
 
 # Website Overview
-Data for this project was acquired from the Mapping Police Violence group for data on police violence in the United States, the ACLED US Crisis Monitor for data on 2020 Black Lives Matter protests in the United States, the American Community Survey for data on race and income by county, and the US Census for information on population breakdown by race.
+Data for this project was acquired from the Mapping Police Violence group for data on police violence in the United States, the ACLED US Crisis Monitor for data on 2020 Black Lives Matter protests in the United States, the American Community Survey for data on race and income by county, and the US Census for information on overall population breakdown by race.
 
 In the Exploratory Analyses tab, you will find:
 <ul>

@@ -107,7 +107,7 @@ anim_scatter2 %>%
 animate(anim_scatter2, renderer = gifski_renderer())
 ```
 
-This plot shows the number of deaths per 100,000 due to police intervention from 2013 through 2019 by race. From this graph, those identifying as Black, Native American, and Pacific Islander are subject to the greatest proportion of police violence. This relationship holds relatively steady throughout this time period; people identifying as Pacific Islander represent the greatest proportion of deaths. This finding is consistent with recent findings showing the Black Americans are disproportionately affected by police violence. A limitation of this plot is that it does not include the Hispanic population as a separate group. This is because the population counts came from the US Census, which classifies Hispanic as an ethnicity and is thus not included in the racial information.
+This plot shows the number of deaths per 100,000 due to police intervention from 2013 through 2019 by race. From this graph, those identifying as Black, Native American, and Pacific Islander are subject to the greatest proportion of police violence. This relationship holds relatively steady throughout this time period; people identifying as Pacific Islander represent the greatest proportion of deaths. This finding is consistent with recent findings showing that Black people are disproportionately affected by police violence in comparison to white folks. A limitation of this plot is that it does not include the Hispanic population as a separate group. This is because the population counts came from the US Census, which classifies Hispanic as an ethnicity and is thus not included in the racial information.
 
 &nbsp;
 
@@ -208,7 +208,7 @@ mpv_df %>%
 )
 ```
 
-These two graphs show us the total number people killed per state from 2013-2020. The first graph contains numbers for all 50 states and the second graph contains the top 10 states with the highest number of police killings. At the top is California which is almost double the next highest state, Texas. It is notable that states among the top 10 when considering the most deaths due to legal intervention are not all the most populous states; as we can see from the graph, New York doesn't classify as one of the top states with the most police killings, even though the NYS population is one of the highest.
+These two graphs show us the total number people killed per state from 2013-2020. The first graph contains numbers for all 50 states and the second graph contains the top 10 states with the highest number of police killings. At the top is California which is almost double the next highest state, Texas. It is notable that states among the top 10 when considering the most deaths due to legal intervention are not all the most populous states; as we can see from the graph, New York doesn't classify as one of the top states with the most police killings, even though the NYS population is one of the highest. Again, we should consider limitations regarding classification of death as legal intervention.
 
 &nbsp;
 

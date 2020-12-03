@@ -240,7 +240,7 @@ glm(MI ~ race_rec, data = mpv_df_charges, family = binomial()) %>%
 
 ### Adjusted Analysis
 
-After adjustment for age and race, we found no association between gender and recorded symptoms of mental illness (aOR: 0.68, 95% CI: 0.52, 0.89). While we should avoid interpreting covariates other than the exposure of interest due to the Table 2 fallacy, they are presented here for completeness.
+After adjustment for age and race, we found no association between gender and recorded symptoms of mental illness (aOR: 0.68, 95% CI: 0.52, 0.89). While we should avoid interpreting covariates other than the exposure of interest due to Table 2 fallacy, they are presented here for completeness.
 
 ```{r}
 glm(MI ~ gender + race_rec + age_rec, data = mpv_df_charges, family = binomial()) %>% 
