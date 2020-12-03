@@ -21,7 +21,7 @@ navbar:
     - text: "Project Report"
       href: proj_report.html
     - icon: fa-youtube
-      href:
+      href: https://www.youtube.com/watch?v=5oObMqzIwXU
     - icon: fa-github fa-lg
       href: https://github.com/rebekahhughes97/p8105_final_proj.github.io.git
 output:
